@@ -9,6 +9,28 @@
 #ifndef COLECCIONINTERDEP_HPP
 #define COLECCIONINTERDEP_HPP
 
+using namespace std;
+
+// PREDECLARACION DEL TAD GENERICO coleccionInterdep (inicio INTERFAZ)
+
+/*
+ *  Los valores del TAD representan colecciones de elementos formados como tuplas
+ *  de la forma (ident, val, -, NumDepend) o bien (ident, val, identSup, NumDepend). A los elementos
+ *  con forma (ident, val, -, NumDepend) los llamaremos en general ‘elementos independientes’,
+ *  mientras que a los elementos con forma (ident, val, identSup, NumDepend), los llamaremos en
+ *  general ‘elementos dependientes’. En la colección no podrá haber dos elementos con el mismo
+ *  ident.
+ *  En las tuplas que representan elementos dependientes, la información identSup será la 
+ *  identificación del elemento del que es directamente dependiente el elemento con identificación
+ *  ident. Ningún elemento de la colección podrá ser directamente dependiente de sí mismo, y todo
+ *  elemento dependiente debe serlo de otro elemento que exista en la colección (que a su vez puede
+ *  ser un elemento independiente o dependiente).
+ *  En cada elemento, la información NumDepend de su tupla representará el número total de elementos
+ *  en la colección que son directamente dependientes del elemento con identificador ident, y que
+ *  será 0 si ningún elemento de la colección depende de dicho elemento.}
+*/
+template<typename T> struct colecInterdep;
+
 /**
  * @brief Crea una coleccion vacia, sin elementos.
  * @tparam T Tipo de los elementos de la coleccion.
