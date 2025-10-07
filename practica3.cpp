@@ -12,6 +12,9 @@
 
 #include <iostream>
 
+#include "evento.hpp"
+#include "coleccionInterdep.hpp"
+
 using namespace std;
 
 int main()
