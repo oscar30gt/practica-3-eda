@@ -6,8 +6,6 @@
  * Óscar Grimal Torres (926897)
  */
 
-using namespace std;
-
 #ifndef COLECCIONINTERDEP_HPP
 #define COLECCIONINTERDEP_HPP
 
@@ -15,14 +13,15 @@ using namespace std;
 
 // PREDECLARACION DEL TAD GENERICO coleccionInterdep (inicio INTERFAZ)
 
-/*
- *  Los valores del TAD representan colecciones de elementos formados como tuplas
+/**
+ *  @struct TAD colecInterdep.
+ *  @brief Los valores del TAD representan colecciones de elementos formados como tuplas
  *  de la forma (ident, val, -, NumDepend) o bien (ident, val, identSup, NumDepend). A los elementos
  *  con forma (ident, val, -, NumDepend) los llamaremos en general ‘elementos independientes’,
  *  mientras que a los elementos con forma (ident, val, identSup, NumDepend), los llamaremos en
  *  general ‘elementos dependientes’. En la colección no podrá haber dos elementos con el mismo
  *  ident.
- *  En las tuplas que representan elementos dependientes, la información identSup será la 
+ *  En las tuplas que representan elementos dependientes, la información identSup será la
  *  identificación del elemento del que es directamente dependiente el elemento con identificación
  *  ident. Ningún elemento de la colección podrá ser directamente dependiente de sí mismo, y todo
  *  elemento dependiente debe serlo de otro elemento que exista en la colección (que a su vez puede
@@ -30,8 +29,9 @@ using namespace std;
  *  En cada elemento, la información NumDepend de su tupla representará el número total de elementos
  *  en la colección que son directamente dependientes del elemento con identificador ident, y que
  *  será 0 si ningún elemento de la colección depende de dicho elemento.}
-*/
-template<typename Ident, typename Val> struct colecInterdep;
+ */
+template <typename Ident, typename Val>
+struct colecInterdep;
 
 /**
  * @brief Inicializa una coleccion vacia, sin elementos.
@@ -235,7 +235,7 @@ bool existeSiguiente(const colecInterdep<Ident, Val> &c);
  * @note Parcial: La operación no está definida si no quedan elementos por visitar (no existeSiguiente?(c))
  */
 template <typename Ident, typename Val>
-Ident siguienteIdent(colecInterdep<Ident, Val> &c);
+Ident siguienteIdent(const colecInterdep<Ident, Val> &c);
 
 /**
  * @brief Obtiene el valor del siguiente elemento a visitar en la coleccion.
@@ -247,7 +247,7 @@ Ident siguienteIdent(colecInterdep<Ident, Val> &c);
  * @note Parcial: La operación no está definida si no quedan elementos por visitar (no existeSiguiente?(c))
  */
 template <typename Ident, typename Val>
-Val siguienteVal(colecInterdep<Ident, Val> &c);
+Val siguienteVal(const colecInterdep<Ident, Val> &c);
 
 /**
  * @brief Indica si el siguiente elemento a visitar en la coleccion es dependiente.
@@ -271,7 +271,7 @@ bool siguienteDependiente(const colecInterdep<Ident, Val> &c);
  * @note Parcial: La operación no está definida si no quedan elementos por visitar (no existeSiguiente?(c)) o si el siguiente elemento es independiente (no siguienteDependiente(c))
  */
 template <typename Ident, typename Val>
-Ident siguienteSuperior(colecInterdep<Ident, Val> &c);
+Ident siguienteSuperior(const colecInterdep<Ident, Val> &c);
 
 /**
  * @brief Obtiene el numero de elementos que dependen del siguiente elemento a visitar en la coleccion.
@@ -283,7 +283,7 @@ Ident siguienteSuperior(colecInterdep<Ident, Val> &c);
  * @note Parcial: La operación no está definida si no quedan elementos por visitar (no existeSiguiente?(c))
  */
 template <typename Ident, typename Val>
-int siguienteNumDependientes(colecInterdep<Ident, Val> &c);
+int siguienteNumDependientes(const colecInterdep<Ident, Val> &c);
 
 /**
  * @brief Avanza el iterador de la coleccion al siguiente elemento.
@@ -296,6 +296,10 @@ int siguienteNumDependientes(colecInterdep<Ident, Val> &c);
 template <typename Ident, typename Val>
 void avanzarIterador(colecInterdep<Ident, Val> &c);
 
+// FIN PREDECLARACION DEL TAD GENERICO coleccionInterdep (fin INTERFAZ)
+
+// IMPLEMENTACION DEL TAD GENERICO coleccionInterdep (inicio IMPLEMENTACION)
+
 /**
  * @brief Estructura que representa una coleccion de elementos interdependientes.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
@@ -304,6 +308,34 @@ void avanzarIterador(colecInterdep<Ident, Val> &c);
 template <typename Ident, typename Val>
 struct colecInterdep
 {
+
+private:
+    /**
+     * Nodo que constituye la lista enlazada que representa la coleccion.
+     * Cada nodo representa un elemento.
+     */
+    struct nodo
+    {
+        Ident ident;
+        Val val;
+        bool esDependiente;
+        Ident indentSup = nullptr;
+        int numDepend = 0;
+
+        /** Puntero al siguiente nodo en la coleccion. */
+        nodo *sig = nullptr;
+    };
+
+    /** Primer nodo de la coleccion. */
+    nodo *primero = nullptr;
+
+    /** Numero de elementos en la coleccion. */
+    int tamanyo = 0;
+
+    /** Nodo actual del iterador. */
+    nodo *actual = nullptr;
+
+public:
     // Funciones de interfaz
     friend void crear<Ident, Val>(colecInterdep<Ident, Val> &c);
     friend int tamanyo<Ident, Val>(const colecInterdep<Ident, Val> &c);
@@ -322,41 +354,15 @@ struct colecInterdep
     friend void borrar<Ident, Val>(Ident id, colecInterdep<Ident, Val> &c);
     friend void iniciarIterador<Ident, Val>(colecInterdep<Ident, Val> &c);
     friend bool existeSiguiente<Ident, Val>(const colecInterdep<Ident, Val> &c);
-    friend Ident siguienteIdent<Ident, Val>(colecInterdep<Ident, Val> &c);
-    friend Val siguienteVal<Ident, Val>(colecInterdep<Ident, Val> &c);
+    friend Ident siguienteIdent<Ident, Val>(const colecInterdep<Ident, Val> &c);
+    friend Val siguienteVal<Ident, Val>(const colecInterdep<Ident, Val> &c);
     friend bool siguienteDependiente<Ident, Val>(const colecInterdep<Ident, Val> &c);
-    friend Ident siguienteSuperior<Ident, Val>(colecInterdep<Ident, Val> &c);
-    friend int siguienteNumDependientes<Ident, Val>(colecInterdep<Ident, Val> &c);
+    friend Ident siguienteSuperior<Ident, Val>(const colecInterdep<Ident, Val> &c);
+    friend int siguienteNumDependientes<Ident, Val>(const colecInterdep<Ident, Val> &c);
     friend void avanzarIterador<Ident, Val>(colecInterdep<Ident, Val> &c);
 
     // Funciones auxiliares
-    friend auto insertarOrdenado<Ident, Val>(colecInterdep<Ident, Val> &c, typename colecInterdep<Ident, Val>::nodo *nuevoNodo);
-
-private:
-    /** Primer nodo de la coleccion. */
-    nodo *primero = nullptr;
-
-    /** Numero de elementos en la coleccion. */
-    int tamanyo = 0;
-
-    /** Nodo actual del iterador. */
-    int actual = 0;
-
-    /**
-     * Nodo que constituye la lista enlazada que representa la coleccion.
-     * Cada nodo representa un elemento.
-     */
-    struct nodo
-    {
-        Ident ident;
-        Val val;
-        bool esDependiente;
-        Ident indentSup = nullptr;
-        int numDepend = 0;
-
-        /** Puntero al siguiente nodo en la coleccion. */
-        nodo *sig = nullptr;
-    };
+    friend auto insertarOrdenado(colecInterdep<Ident, Val> &c, nodo *nuevoNodo);
 };
 
 /**
@@ -791,8 +797,10 @@ void borrar(Ident id, colecInterdep<Ident, Val> &c)
 
     // Borra el nodo
     if (nodoAnterior == nullptr)
+        // El nodo a borrar es el primero
         c.primero = nodoActual->sig;
     else
+        // El nodo a borrar no es el primero
         nodoAnterior->sig = nodoActual->sig;
 
     delete nodoActual;
@@ -808,7 +816,7 @@ void borrar(Ident id, colecInterdep<Ident, Val> &c)
 template <typename Ident, typename Val>
 void iniciarIterador(colecInterdep<Ident, Val> &c)
 {
-    c.actual = 0;
+    c.actual = c.primero;
 }
 
 /**
@@ -821,7 +829,7 @@ void iniciarIterador(colecInterdep<Ident, Val> &c)
 template <typename Ident, typename Val>
 bool existeSiguiente(const colecInterdep<Ident, Val> &c)
 {
-    return c.actual < c.total;
+    return c.actual != nullptr;
 }
 
 /**
@@ -834,21 +842,12 @@ bool existeSiguiente(const colecInterdep<Ident, Val> &c)
  * @note Parcial: La operación no está definida si no quedan elementos por visitar (no existeSiguiente?(c))
  */
 template <typename Ident, typename Val>
-Ident siguienteIdent(colecInterdep<Ident, Val> &c)
+Ident siguienteIdent(const colecInterdep<Ident, Val> &c)
 {
-    if(!existeSiguiente(c)) {
+    if (!existeSiguiente(c))
         throw runtime_error("Error: no quedan elementos por visitar.");
-    }
 
-    auto *nodoActual = c.primero;
-    int i = 0;
-    while (nodoActual != nullptr && i < c.actual)
-    {
-        nodoActual = nodoActual->sig;
-        i++;
-    }
-
-    return nodoActual->ident;
+    return c.actual->ident;
 }
 
 /**
@@ -861,21 +860,12 @@ Ident siguienteIdent(colecInterdep<Ident, Val> &c)
  * @note Parcial: La operación no está definida si no quedan elementos por visitar (no existeSiguiente?(c))
  */
 template <typename Ident, typename Val>
-Val siguienteVal(colecInterdep<Ident, Val> &c)
+Val siguienteVal(const colecInterdep<Ident, Val> &c)
 {
-    if(!existeSiguiente(c)) {
+    if (!existeSiguiente(c))
         throw runtime_error("Error: no quedan elementos por visitar.");
-    }
 
-    auto *nodoActual = c.primero;
-    int i = 0;
-    while (nodoActual != nullptr && i < c.actual)
-    {
-        nodoActual = nodoActual->sig;
-        i++;
-    }
-
-    return nodoActual->val;
+    return c.actual->val;
 }
 
 /**
@@ -890,21 +880,11 @@ Val siguienteVal(colecInterdep<Ident, Val> &c)
 template <typename Ident, typename Val>
 bool siguienteDependiente(const colecInterdep<Ident, Val> &c)
 {
-    if(!existeSiguiente(c)) {
+    if (!existeSiguiente(c))
         throw runtime_error("Error: no quedan elementos por visitar.");
-    }
 
-    auto *nodoActual = c.primero;
-    int i = 0;
-    while (nodoActual != nullptr && i < c.actual)
-    {
-        nodoActual = nodoActual->sig;
-        i++;
-    }
-
-    return nodoActual->indentSup != nullptr;
+    return c.actual->esDependiente;
 }
-
 
 /**
  * @brief Obtiene el supervisor del siguiente elemento a visitar en la coleccion.
@@ -916,25 +896,15 @@ bool siguienteDependiente(const colecInterdep<Ident, Val> &c)
  * @note Parcial: La operación no está definida si no quedan elementos por visitar (no existeSiguiente?(c)) o si el siguiente elemento es independiente (no siguienteDependiente(c))
  */
 template <typename Ident, typename Val>
-Ident siguienteSuperior(colecInterdep<Ident, Val> &c)
+Ident siguienteSuperior(const colecInterdep<Ident, Val> &c)
 {
-    if(!existeSiguiente(c)) {
+    if (!existeSiguiente(c))
         throw runtime_error("Error: no quedan elementos por visitar.");
-    }
 
-    if(!siguienteDependiente(c)) {
+    if (!siguienteDependiente(c))
         throw runtime_error("Error: el siguiente elemento es independiente.");
-    }
 
-    auto *nodoActual = c.primero;
-    int i = 0;
-    while (nodoActual != nullptr && i < c.actual)
-    {
-        nodoActual = nodoActual->sig;
-        i++;
-    }
-
-    return nodoActual->indentSup;
+    return c.actual->indentSup;
 }
 
 /**
@@ -947,21 +917,12 @@ Ident siguienteSuperior(colecInterdep<Ident, Val> &c)
  * @note Parcial: La operación no está definida si no quedan elementos por visitar (no existeSiguiente?(c))
  */
 template <typename Ident, typename Val>
-int siguienteNumDependientes(colecInterdep<Ident, Val> &c)
+int siguienteNumDependientes(const colecInterdep<Ident, Val> &c)
 {
-    if(!existeSiguiente(c)) {
+    if (!existeSiguiente(c))
         throw runtime_error("Error: no quedan elementos por visitar.");
-    }
 
-    auto *nodoActual = c.primero;
-    int i = 0;
-    while (nodoActual != nullptr && i < c.actual)
-    {
-        nodoActual = nodoActual->sig;
-        i++;
-    }
-
-    return nodoActual->numDepend;
+    return c.actual->numDepend;
 }
 
 /**
@@ -975,10 +936,12 @@ int siguienteNumDependientes(colecInterdep<Ident, Val> &c)
 template <typename Ident, typename Val>
 void avanzarIterador(colecInterdep<Ident, Val> &c)
 {
-    if(!existeSiguiente(c)) {
+    if (!existeSiguiente(c))
         throw runtime_error("Error: no quedan elementos por visitar.");
-    }
 
-    c.actual++;
+    c.actual = c.actual->sig;
 }
+
+// FIN IMPLEMENTACION DEL TAD GENERICO coleccionInterdep (fin IMPLEMENTACION)
+
 #endif // COLECCIONINTERDEP_HPP
