@@ -74,20 +74,136 @@ int main()
     return 0;
 }
 
+// Añadir la información de un nuevo nombre y evento a la colección
 void A(colecInterdep<string, evento> &c, ifstream &f)
 {
+    int tamIn = tamanyo(c);
+    string id, desc, dep, sup;
+    int prio;
+
+    getline(f, id);
+    getline(f, desc);
+    f >> prio;
+    f.ignore(); // Ignorar el salto de línea después de leer prio
+    getline(f, dep);
+    getline(f, sup);
+
+    evento e;
+    crearEvento(desc, prio, e);
+
+    if(dep == "INDependiente")
+    {
+        anyadirIndependiente(c, id, e);
+    }
+    else
+    {
+        anyadirDependiente(c, id, e, sup);
+    }
+
+    int tamFin = tamanyo(c);
+
+    if(tamFin > tamIn)
+    {
+        cout << "INTRODUCIDO: [ " << id;
+        if(dep == "DEPendiente")
+        {
+            cout << " -de-> " << sup; 
+        }
+        cout << " ] --- " << desc << " --- ( " << prio << " )" << endl;
+        
+    }
+    else
+    {
+        cout << "NO INTRODUCIDO: [ " << id;
+        if(dep == "DEPendiente")
+        {
+            cout << " -de-> " << sup; 
+        }
+        cout << " ] --- " << desc << " --- ( " << prio << " )" << endl;
+    }
 }
 
+// Cambiar la información de un evento en la colección para un nombre dado
 void C(colecInterdep<string, evento> &c, ifstream &f)
 {
+    string id, desc;
+    int prio;
+
+    getline(f, id);
+    getline(f, desc);
+    f >> prio;
+    f.ignore(); // Ignorar el salto de línea después de leer prio
+
+    if(!existe(id, c))
+    {
+        cout << "NO CAMBIADO: " << id << endl;
+    }
+    else
+    {
+        evento e = obtenerVal(id, c);
+        cambiarDescripcion(e, desc);
+        cambiarPrioridad(e, prio);
+        
+        if(existeIndependiente(id, c))
+        {
+            cout << "CAMBIADO: [ " << id << " --- " << obtenerNumDependientes(id, c) << " ]"
+                 << " --- " << desc << " --- ( " << prio << " )" << endl;
+        }
+        else
+        {
+            cout << "CAMBIADO: [ " << id << " -de-> " << obtenerSupervisor(id, c) << " ;;; " << obtenerNumDependientes(id, c) << " ]"
+                 << " --- " << desc << " --- ( " << prio << " )" << endl;
+        }
+    }
 }
 
+// Obtener toda la información relativa al evento de la colección correspondiente a un nombre dado
 void O(colecInterdep<string, evento> &c, ifstream &f)
 {
+    string id;
+    getline(f, id);
+
+    if(!existe(id, c))
+    {
+        cout << "NO LOCALIZADO: " << id << endl;
+    }
+    else
+    {
+        evento e = obtenerVal(id, c);
+
+        if(existeIndependiente(id, c))
+        {
+            cout << "CAMBIADO: [ " << id << " --- " << obtenerNumDependientes(id, c) << " ]"
+                 << " --- " << descripcion(e) << " --- ( " << suPrioridad(e) << " )" << endl;
+        }
+        else
+        {
+            cout << "CAMBIADO: [ " << id << " -de-> " << obtenerSupervisor(id, c) << " ;;; " << obtenerNumDependientes(id, c) << " ]"
+                 << " --- " << descripcion(e) << " --- ( " << suPrioridad(e) << " )" << endl;
+        }
+    }
 }
 
+// Existe algún evento relativo a un nombre dado
 void E(colecInterdep<string, evento> &c, ifstream &f)
 {
+    string id;
+    getline(f, id);
+
+    if(existe(id, c))
+    {
+        if(existeIndependiente(id, c))
+        {
+            cout << "INDependiente: " << id << endl;
+        }
+        else
+        {
+            cout << "DEPendiente: " << id << endl;
+        }
+    }
+    else{
+        cout << "DESCONOCIDO: " << id << endl;
+    }
 }
 
 // Hacer dependiente (1 argumento: id del evento)
