@@ -19,15 +19,15 @@
 
 using namespace std;
 
-void A(ifstream &f, colecInterdep<string, evento> &c);
-void C(ifstream &f, colecInterdep<string, evento> &c);
-void O(ifstream &f, colecInterdep<string, evento> &c);
-void E(ifstream &f, colecInterdep<string, evento> &c);
-void I(ifstream &f, colecInterdep<string, evento> &c);
-void D(ifstream &f, colecInterdep<string, evento> &c);
-void BI(ifstream &f, colecInterdep<string, evento> &c);
-void DI(ifstream &f, colecInterdep<string, evento> &c);
-void T(ifstream &f, colecInterdep<string, evento> &c);
+void A(colecInterdep<string, evento> &c, ifstream &f);
+void C(colecInterdep<string, evento> &c, ifstream &f);
+void O(colecInterdep<string, evento> &c, ifstream &f);
+void E(colecInterdep<string, evento> &c, ifstream &f);
+void I(colecInterdep<string, evento> &c, ifstream &f);
+void D(colecInterdep<string, evento> &c, ifstream &f);
+void B(colecInterdep<string, evento> &c, ifstream &f);
+void LD(colecInterdep<string, evento> &c, ifstream &f);
+void LT(colecInterdep<string, evento> &c);
 
 int main()
 {
@@ -47,53 +47,73 @@ int main()
     string instruccion;
     while (getline(f, instruccion))
     {
-        if (instruccion == "A") A(f, c);
-        else if (instruccion == "C") C(f, c);
-        else if (instruccion == "O") O(f, c);
-        else if (instruccion == "E") E(f, c);
-        else if (instruccion == "I") I(f, c);
-        else if (instruccion == "D") D(f, c);
-        else if (instruccion == "BI") BI(f, c);
-        else if (instruccion == "DI") DI(f, c);
-        else if (instruccion == "T") T(f, c);
+        if (instruccion == "A")
+            A(c, f);
+        else if (instruccion == "C")
+            C(c, f);
+        else if (instruccion == "O")
+            O(c, f);
+        else if (instruccion == "E")
+            E(c, f);
+        else if (instruccion == "I")
+            I(c, f);
+        else if (instruccion == "D")
+            D(c, f);
+        else if (instruccion == "B")
+            B(c, f);
+        else if (instruccion == "LD")
+            LD(c, f);
+        else if (instruccion == "LT")
+            LT(c);
     }
 
     f.close();
     return 0;
 }
 
-void A(ifstream &f, colecInterdep<string, evento> &c)
+void A(colecInterdep<string, evento> &c, ifstream &f)
 {
 }
 
-void C(ifstream &f, colecInterdep<string, evento> &c)
+void C(colecInterdep<string, evento> &c, ifstream &f)
 {
 }
 
-void O(ifstream &f, colecInterdep<string, evento> &c)
+void O(colecInterdep<string, evento> &c, ifstream &f)
 {
 }
 
-void E(ifstream &f, colecInterdep<string, evento> &c)
+void E(colecInterdep<string, evento> &c, ifstream &f)
 {
 }
 
-void I(ifstream &f, colecInterdep<string, evento> &c)
+void I(colecInterdep<string, evento> &c, ifstream &f)
 {
 }
 
-void D(ifstream &f, colecInterdep<string, evento> &c)
+void D(colecInterdep<string, evento> &c, ifstream &f)
 {
 }
 
-void BI(ifstream &f, colecInterdep<string, evento> &c)
+void B(colecInterdep<string, evento> &c, ifstream &f)
 {
 }
 
-void DI(ifstream &f, colecInterdep<string, evento> &c)
+void LD(colecInterdep<string, evento> &c, ifstream &f)
 {
 }
 
-void T(ifstream &f, colecInterdep<string, evento> &c)
+// LT: Listar todos los eventos de la coleccion
+void LT(colecInterdep<string, evento> &c)
 {
+    cout << "-----LISTADO: " << tamanyo(c) << endl;
+    iniciarIterador(c);
+    while (existeSiguiente(c))
+    {
+        evento ev = siguienteVal(c);
+        cout << "[ " << siguienteIdent(c) << " --- " << siguienteNumDependientes(c) << " ] --- "
+             << descripcion(ev)
+             << " --- ( " << suPrioridad(ev) << " ) " << endl;
+        avanzarIterador(c);
+    }
 }
