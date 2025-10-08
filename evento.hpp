@@ -26,34 +26,34 @@ struct Evento;
  * @brief Inicializa un evento compuesto con descripción `descrip` y con prioridad `prio`.
  * @param descrip Descripción del evento.
  * @param prio Prioridad del evento.
- * @param e Evento cuyo valor se quiere inicializar.
+ * @param[out] e Evento cuyo valor se quiere inicializar.
  */
 void crearEvento(string descrip, int prio, Evento &e);
 
 /**
  * @brief Dado un evento `e`, devuelve la descripción en el evento.
- * @param e Evento del que se quiere obtener la descripción.
+ * @param[in] e Evento del que se quiere obtener la descripción.
  * @return Descripción del evento.
  */
 string descripcion(const Evento &e);
 
 /**
  * @brief Dado un evento `e`, cambia su descripción a `nueva`.
- * @param e Evento del que se quiere cambiar la descripción.
+ * @param[in, out] e Evento del que se quiere cambiar la descripción.
  * @param nueva Nueva descripción del evento.
  */
 void cambiarDescripcion(Evento &e, const string nueva);
 
 /**
  * @brief Dado un evento `e`, obtiene su prioridad `p`.
- * @param e Evento del que se quiere obtener la prioridad.
+ * @param[in] e Evento del que se quiere obtener la prioridad.
  * @returns Prioridad del evento.
  */
 int suPrioridad(const Evento &e);
 
 /**
  * @brief Dado un evento `e`, y un natural `pri`, cambia la prioridad del evento `e` a `pri`.
- * @param e Evento del que se quiere cambiar la prioridad.
+ * @param[in, out] e Evento del que se quiere cambiar la prioridad.
  * @param pri Nueva prioridad del evento.
  */
 void cambiarPrioridad(Evento &e, const int pri);

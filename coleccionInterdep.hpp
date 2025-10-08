@@ -37,7 +37,7 @@ struct colecInterdep;
  * @brief Inicializa una coleccion vacia, sin elementos.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
- * @param c Coleccion a inicializar.
+ * @param[out] c Coleccion a inicializar.
  */
 template <typename Ident, typename Val>
 void crear(colecInterdep<Ident, Val> &c);
@@ -46,7 +46,7 @@ void crear(colecInterdep<Ident, Val> &c);
  * @brief Devuelve el numero de elementos de la coleccion.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
- * @param c Coleccion de la que se quiere obtener el numero de elementos.
+ * @param[in] c Coleccion de la que se quiere obtener el numero de elementos.
  * @returns Numero de elementos de la coleccion.
  */
 template <typename Ident, typename Val>
@@ -56,7 +56,7 @@ int tamanyo(const colecInterdep<Ident, Val> &c);
  * @brief Devuelve `true` si la coleccion esta vacia, `false` en caso contrario.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
- * @param c Coleccion que se quiere comprobar si esta vacia.
+ * @param[in] c Coleccion que se quiere comprobar si esta vacia.
  * @returns `true` si la coleccion esta vacia, `false` en caso contrario.
  */
 template <typename Ident, typename Val>
@@ -67,7 +67,7 @@ bool esVacia(const colecInterdep<Ident, Val> &c);
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
  * @param id Identificador del elemento que se quiere buscar en la coleccion.
- * @param c Coleccion en la que se quiere buscar el elemento con identificador `id`.
+ * @param[in] c Coleccion en la que se quiere buscar el elemento con identificador `id`.
  * @returns `true` si existe un elemento con identificador `id` en la coleccion, `false` en caso contrario.
  */
 template <typename Ident, typename Val>
@@ -78,7 +78,7 @@ bool existe(Ident id, const colecInterdep<Ident, Val> &c);
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
  * @param id Identificador del elemento dependiente que se quiere buscar en la coleccion.
- * @param c Coleccion en la que se quiere buscar el elemento dependiente con identificador `id`.
+ * @param[in] c Coleccion en la que se quiere buscar el elemento dependiente con identificador `id`.
  * @returns `true` si existe un elemento dependiente con identificador `id` en la coleccion, `false` en caso contrario.
  */
 template <typename Ident, typename Val>
@@ -89,7 +89,7 @@ bool existeDependiente(Ident id, const colecInterdep<Ident, Val> &c);
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
  * @param id Identificador del elemento independiente que se quiere buscar en la coleccion.
- * @param c Coleccion en la que se quiere buscar el elemento independiente con identificador `id`.
+ * @param[in] c Coleccion en la que se quiere buscar el elemento independiente con identificador `id`.
  * @returns `true` si existe un elemento independiente con identificador `id` en la coleccion, `false` en caso contrario.
  */
 template <typename Ident, typename Val>
@@ -100,7 +100,7 @@ bool existeIndependiente(Ident id, const colecInterdep<Ident, Val> &c);
  * En caso de que el elemento con identificador `id` ya exista en la coleccion, no se añade nada.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
- * @param c Coleccion a la que se quiere añadir el elemento dependiente.
+ * @param[in, out] c Coleccion a la que se quiere añadir el elemento dependiente.
  * @param id Identificador del elemento dependiente que se quiere añadir a la coleccion.
  * @param v Valor del elemento dependiente que se quiere añadir a la coleccion.
  */
@@ -112,7 +112,7 @@ void anyadirIndependiente(colecInterdep<Ident, Val> &c, Ident id, Val v);
  * En caso de que el elemento con identificador `id` ya exista en la coleccion, no se añade nada.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
- * @param c Coleccion a la que se quiere añadir el elemento independiente.
+ * @param[in, out] c Coleccion a la que se quiere añadir el elemento independiente.
  * @param id Identificador del elemento independiente que se quiere añadir a la coleccion.
  * @param v Valor del elemento independiente que se quiere añadir a la coleccion.
  * @param super Identificador del elemento independiente que sera el supervisor del nuevo elemento dependiente.
@@ -125,7 +125,7 @@ void anyadirDependiente(colecInterdep<Ident, Val> &c, Ident id, Val v, Ident sup
  * En caso de que el elemento con identificador `id` ya sea dependiente, no se realiza ningun cambio.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
- * @param c Coleccion en la que se encuentra el elemento que se quiere convertir en dependiente.
+ * @param[in, out] c Coleccion en la que se encuentra el elemento que se quiere convertir en dependiente.
  * @param id Identificador del elemento que se quiere convertir en dependiente.
  * @param super Identificador del elemento que sera el supervisor del elemento que se quiere convertir en dependiente.
  */
@@ -137,7 +137,7 @@ void hacerDependiente(const colecInterdep<Ident, Val> &c, Ident id, Ident super)
  * En caso de que el elemento con identificador `id` ya sea independiente, no se realiza ningun cambio.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
- * @param c Coleccion en la que se encuentra el elemento que se quiere convertir en independiente.
+ * @param[in, out] c Coleccion en la que se encuentra el elemento que se quiere convertir en independiente.
  * @param id Identificador del elemento que se quiere convertir en independiente.
  */
 template <typename Ident, typename Val>
@@ -147,21 +147,21 @@ void hacerIndependiente(const colecInterdep<Ident, Val> &c, Ident id);
  * @brief Actualiza el valor del elemento con identificador `id` en la coleccion.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
- * @param c Coleccion en la que se encuentra el elemento que se quiere actualizar.
+ * @param[in, out] c Coleccion en la que se encuentra el elemento que se quiere actualizar.
  * @param id Identificador del elemento que se quiere actualizar.
  * @param nuevo Nuevo valor que se quiere asignar al elemento con identificador `id`.
  *
  * @note Parcial: Si no existe un elemento con identificador `id` en la coleccion, el comportamiento es indefinido.
  */
 template <typename Ident, typename Val>
-void actualizarVal(colecInterdep<Ident, Val> &c, Ident id, Val nuevo);
+void actualizarVal(const colecInterdep<Ident, Val> &c, Ident id, Val nuevo);
 
 /**
  * @brief Obtiene el valor del elemento con identificador `id` de la coleccion.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
  * @param id Identificador del elemento del que se quiere obtener el valor.
- * @param c Coleccion de la que se quiere obtener el valor del elemento con identificador `id`.
+ * @param[in] c Coleccion de la que se quiere obtener el valor del elemento con identificador `id`.
  * @returns Valor del elemento con identificador `id`.
  *
  * @note Parcial: Si no existe un elemento con identificador `id` en la coleccion, el comportamiento es indefinido.
@@ -174,7 +174,7 @@ Val obtenerVal(Ident id, const colecInterdep<Ident, Val> &c);
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
  * @param id Identificador del elemento del que se quiere obtener el identificador de su supervisor.
- * @param c Coleccion de la que se quiere obtener el identificador del supervisor del elemento con identificador `id`.
+ * @param[in] c Coleccion de la que se quiere obtener el identificador del supervisor del elemento con identificador `id`.
  * @returns Identificador del supervisor del elemento con identificador `id`.
  *
  * @note Parcial: Si no existe un elemento con identificador `id` en la coleccion, el comportamiento es indefinido.
@@ -187,7 +187,7 @@ Ident obtenerSupervisor(Ident id, const colecInterdep<Ident, Val> &c);
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
  * @param id Identificador del elemento del que se quiere obtener el numero de elementos dependientes.
- * @param c Coleccion de la que se quiere obtener el numero de elementos dependientes del elemento con identificador `id`.
+ * @param[in] c Coleccion de la que se quiere obtener el numero de elementos dependientes del elemento con identificador `id`.
  * @returns Numero de elementos dependientes del elemento con identificador `id`.
  *
  * @note Parcial: Si no existe un elemento con identificador `id` en la coleccion, el comportamiento es indefinido.
@@ -201,7 +201,7 @@ int obtenerNumDependientes(Ident id, const colecInterdep<Ident, Val> &c);
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
  * @param id Identificador del elemento que se quiere eliminar de la coleccion.
- * @param c Coleccion de la que se quiere eliminar el elemento con identificador `id`.
+ * @param[in, out] c Coleccion de la que se quiere eliminar el elemento con identificador `id`.
  */
 template <typename Ident, typename Val>
 void borrar(Ident id, colecInterdep<Ident, Val> &c);
@@ -210,7 +210,7 @@ void borrar(Ident id, colecInterdep<Ident, Val> &c);
  * @brief Inicializa el iterador de la coleccion para recorrer sus elementos de menor a mayor identificador
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
- * @param c Coleccion cuyo iterador se quiere inicializar.
+ * @param[in, out] c Coleccion cuyo iterador se quiere inicializar.
  */
 template <typename Ident, typename Val>
 void iniciarIterador(colecInterdep<Ident, Val> &c);
@@ -219,7 +219,7 @@ void iniciarIterador(colecInterdep<Ident, Val> &c);
  * @brief Comprueba queda algún elemento por visitar con el iterador de la colección.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
- * @param c Coleccion que se quiere comprobar.
+ * @param[in] c Coleccion que se quiere comprobar.
  * @returns `true` si existe un siguiente elemento, `false` en caso contrario.
  */
 template <typename Ident, typename Val>
@@ -229,7 +229,7 @@ bool existeSiguiente(const colecInterdep<Ident, Val> &c);
  * @brief Obtiene el identificador del siguiente elemento a visitar en la coleccion.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
- * @param c Coleccion de la que se quiere obtener el identificador del siguiente elemento.
+ * @param[in] c Coleccion de la que se quiere obtener el identificador del siguiente elemento.
  * @returns Identificador del siguiente elemento.
  *
  * @note Parcial: La operación no está definida si no quedan elementos por visitar (no existeSiguiente?(c))
@@ -241,7 +241,7 @@ Ident siguienteIdent(const colecInterdep<Ident, Val> &c);
  * @brief Obtiene el valor del siguiente elemento a visitar en la coleccion.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
- * @param c Coleccion de la que se quiere obtener el valor del siguiente elemento.
+ * @param[in] c Coleccion de la que se quiere obtener el valor del siguiente elemento.
  * @returns Valor del siguiente elemento.
  *
  * @note Parcial: La operación no está definida si no quedan elementos por visitar (no existeSiguiente?(c))
@@ -253,7 +253,7 @@ Val siguienteVal(const colecInterdep<Ident, Val> &c);
  * @brief Indica si el siguiente elemento a visitar en la coleccion es dependiente.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
- * @param c Coleccion de la que se quiere comprobar si el siguiente elemento es dependiente.
+ * @param[in] c Coleccion de la que se quiere comprobar si el siguiente elemento es dependiente.
  * @returns `true` si el siguiente elemento es dependiente, `false` en caso contrario.
  *
  * @note Parcial: La operación no está definida si no quedan elementos por visitar (no existeSiguiente?(c))
@@ -265,7 +265,7 @@ bool siguienteDependiente(const colecInterdep<Ident, Val> &c);
  * @brief Obtiene el supervisor del siguiente elemento a visitar en la coleccion.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
- * @param c Coleccion de la que se quiere obtener el identificador del supervisor del siguiente elemento.
+ * @param[in] c Coleccion de la que se quiere obtener el identificador del supervisor del siguiente elemento.
  * @returns Identificador del supervisor del siguiente elemento.
  *
  * @note Parcial: La operación no está definida si no quedan elementos por visitar (no existeSiguiente?(c)) o si el siguiente elemento es independiente (no siguienteDependiente(c))
@@ -277,7 +277,7 @@ Ident siguienteSuperior(const colecInterdep<Ident, Val> &c);
  * @brief Obtiene el numero de elementos que dependen del siguiente elemento a visitar en la coleccion.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
- * @param c Coleccion de la que se quiere obtener el numero de elementos dependientes del siguiente elemento.
+ * @param[in] c Coleccion de la que se quiere obtener el numero de elementos dependientes del siguiente elemento.
  * @returns Numero de elementos dependientes del siguiente elemento.
  *
  * @note Parcial: La operación no está definida si no quedan elementos por visitar (no existeSiguiente?(c))
@@ -289,7 +289,7 @@ int siguienteNumDependientes(const colecInterdep<Ident, Val> &c);
  * @brief Avanza el iterador de la coleccion al siguiente elemento.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion
- * @param c Coleccion cuyo iterador se quiere avanzar.
+ * @param[in, out] c Coleccion cuyo iterador se quiere avanzar.
  *
  * @note Parcial: La operación no está definida si no quedan elementos por visitar (no existeSiguiente?(c))
  */
@@ -300,6 +300,11 @@ void avanzarIterador(colecInterdep<Ident, Val> &c);
 
 // IMPLEMENTACION DEL TAD GENERICO coleccionInterdep (inicio IMPLEMENTACION)
 
+template <typename Ident, typename Val>
+void insertarOrdenado(
+    colecInterdep<Ident, Val> &c,
+    typename colecInterdep<Ident, Val>::nodo *nuevoNodo);
+
 /**
  * @brief Estructura que representa una coleccion de elementos interdependientes.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
@@ -308,7 +313,6 @@ void avanzarIterador(colecInterdep<Ident, Val> &c);
 template <typename Ident, typename Val>
 struct colecInterdep
 {
-
 private:
     /**
      * Nodo que constituye la lista enlazada que representa la coleccion.
@@ -319,7 +323,7 @@ private:
         Ident ident;
         Val val;
         bool esDependiente;
-        Ident indentSup = nullptr;
+        Ident indentSup;
         int numDepend = 0;
 
         /** Puntero al siguiente nodo en la coleccion. */
@@ -330,7 +334,7 @@ private:
     nodo *primero = nullptr;
 
     /** Numero de elementos en la coleccion. */
-    int tamanyo = 0;
+    int tam = 0;
 
     /** Nodo actual del iterador. */
     nodo *actual = nullptr;
@@ -347,7 +351,7 @@ public:
     friend void anyadirDependiente<Ident, Val>(colecInterdep<Ident, Val> &c, Ident id, Val v, Ident super);
     friend void hacerDependiente<Ident, Val>(const colecInterdep<Ident, Val> &c, Ident id, Ident super);
     friend void hacerIndependiente<Ident, Val>(const colecInterdep<Ident, Val> &c, Ident id);
-    friend void actualizarVal<Ident, Val>(colecInterdep<Ident, Val> &c, Ident id, Val nuevo);
+    friend void actualizarVal<Ident, Val>(const colecInterdep<Ident, Val> &c, Ident id, Val nuevo);
     friend Val obtenerVal<Ident, Val>(Ident id, const colecInterdep<Ident, Val> &c);
     friend Ident obtenerSupervisor<Ident, Val>(Ident id, const colecInterdep<Ident, Val> &c);
     friend int obtenerNumDependientes<Ident, Val>(Ident id, const colecInterdep<Ident, Val> &c);
@@ -362,20 +366,20 @@ public:
     friend void avanzarIterador<Ident, Val>(colecInterdep<Ident, Val> &c);
 
     // Funciones auxiliares
-    friend auto insertarOrdenado(colecInterdep<Ident, Val> &c, nodo *nuevoNodo);
+    friend void insertarOrdenado<Ident, Val>(colecInterdep<Ident, Val> &c, nodo *nuevoNodo);
 };
 
 /**
  * @brief Inicializa una coleccion vacia, sin elementos.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
- * @param c Coleccion a inicializar.
+ * @param[out] c Coleccion a inicializar.
  */
 template <typename Ident, typename Val>
 void crear(colecInterdep<Ident, Val> &c)
 {
     c.primero = nullptr;
-    c.tamanyo = 0;
+    c.tam = 0;
     c.actual = 0;
 }
 
@@ -383,26 +387,26 @@ void crear(colecInterdep<Ident, Val> &c)
  * @brief Devuelve el numero de elementos de la coleccion.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
- * @param c Coleccion de la que se quiere obtener el numero de elementos.
+ * @param[in] c Coleccion de la que se quiere obtener el numero de elementos.
  * @returns Numero de elementos de la coleccion.
  */
 template <typename Ident, typename Val>
 int tamanyo(const colecInterdep<Ident, Val> &c)
 {
-    return c.tamanyo;
+    return c.tam;
 }
 
 /**
  * @brief Devuelve `true` si la coleccion esta vacia, `false` en caso contrario.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
- * @param c Coleccion que se quiere comprobar si esta vacia.
+ * @param[in] c Coleccion que se quiere comprobar si esta vacia.
  * @returns `true` si la coleccion esta vacia, `false` en caso contrario.
  */
 template <typename Ident, typename Val>
 bool esVacia(const colecInterdep<Ident, Val> &c)
 {
-    return c.tamanyo == 0;
+    return c.tam == 0;
 }
 
 /**
@@ -410,7 +414,7 @@ bool esVacia(const colecInterdep<Ident, Val> &c)
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
  * @param id Identificador del elemento que se quiere buscar en la coleccion.
- * @param c Coleccion en la que se quiere buscar el elemento con identificador `id`.
+ * @param[in] c Coleccion en la que se quiere buscar el elemento con identificador `id`.
  * @returns `true` si existe un elemento con identificador `id` en la coleccion, `false` en caso contrario.
  */
 template <typename Ident, typename Val>
@@ -437,7 +441,7 @@ bool existe(Ident id, const colecInterdep<Ident, Val> &c)
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
  * @param id Identificador del elemento dependiente que se quiere buscar en la coleccion.
- * @param c Coleccion en la que se quiere buscar el elemento dependiente con identificador `id`.
+ * @param[in] c Coleccion en la que se quiere buscar el elemento dependiente con identificador `id`.
  * @returns `true` si existe un elemento dependiente con identificador `id` en la coleccion, `false` en caso contrario.
  */
 template <typename Ident, typename Val>
@@ -466,7 +470,7 @@ bool existeDependiente(Ident id, const colecInterdep<Ident, Val> &c)
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
  * @param id Identificador del elemento independiente que se quiere buscar en la coleccion.
- * @param c Coleccion en la que se quiere buscar el elemento independiente con identificador `id`.
+ * @param[in] c Coleccion en la que se quiere buscar el elemento independiente con identificador `id`.
  * @returns `true` si existe un elemento independiente con identificador `id` en la coleccion, `false` en caso contrario.
  */
 template <typename Ident, typename Val>
@@ -480,7 +484,7 @@ bool existeIndependiente(Ident id, const colecInterdep<Ident, Val> &c)
         if (nodoActual->ident == id)
 
             // No existen identificadores repetidos, por lo que el resultado depende de si ese nodo es independiente o no
-            return !nodoActual->esIndependiente;
+            return !nodoActual->esDependiente;
 
         // Avanza al siguiente nodo
         nodoActual = nodoActual->sig;
@@ -494,8 +498,8 @@ bool existeIndependiente(Ident id, const colecInterdep<Ident, Val> &c)
  * @brief Inserta un nuevo nodo en la coleccion de forma ordenada por identificador.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo del identificador de los elementos de la coleccion.
- * @param c Coleccion en la que se quiere insertar el nuevo nodo.
- * @param nuevoNodo Nodo que se quiere insertar en la coleccion.
+ * @param[in, out] c Coleccion en la que se quiere insertar el nuevo nodo.
+ * @param[in, out] nuevoNodo Nodo que se quiere insertar en la coleccion.
  *
  * @note Funcion auxiliar, no forma parte de la interfaz pública.
  */
@@ -534,7 +538,7 @@ void insertarOrdenado(
         }
     }
 
-    c.tamanyo++;
+    c.tam++;
 }
 
 /**
@@ -542,7 +546,7 @@ void insertarOrdenado(
  * En caso de que el elemento con identificador `id` ya exista en la coleccion, no se añade nada.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
- * @param c Coleccion a la que se quiere añadir el elemento independiente.
+ * @param[in, out] c Coleccion a la que se quiere añadir el elemento independiente.
  * @param id Identificador del elemento independiente que se quiere añadir a la coleccion.
  * @param v Valor del elemento independiente que se quiere añadir a la coleccion.
  * @param super Identificador del elemento independiente que sera el supervisor del nuevo elemento dependiente.
@@ -551,12 +555,15 @@ template <typename Ident, typename Val>
 void anyadirIndependiente(colecInterdep<Ident, Val> &c, Ident id, Val v)
 {
     if (existe(id, c))
+    {
+        cerr << "Error: El identificador ya existe en la coleccion." << endl;
         return;
+    }
 
     auto nuevoNodo = new typename colecInterdep<Ident, Val>::nodo;
     nuevoNodo->ident = id;
     nuevoNodo->val = v;
-    nuevoNodo->esIndependiente = true;
+    nuevoNodo->esDependiente = false;
     nuevoNodo->numDepend = 0;
     nuevoNodo->sig = nullptr;
 
@@ -567,7 +574,7 @@ void anyadirIndependiente(colecInterdep<Ident, Val> &c, Ident id, Val v)
  * En caso de que el elemento con identificador `id` ya exista en la coleccion, no se añade nada.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
- * @param c Coleccion a la que se quiere añadir el elemento dependiente.
+ * @param[in, out] c Coleccion a la que se quiere añadir el elemento dependiente.
  * @param id Identificador del elemento dependiente que se quiere añadir a la coleccion.
  * @param v Valor del elemento dependiente que se quiere añadir a la coleccion.
  */
@@ -575,7 +582,10 @@ template <typename Ident, typename Val>
 void anyadirDependiente(colecInterdep<Ident, Val> &c, Ident id, Val v, Ident super)
 {
     if (existe(id, c) || !existe(super, c))
+    {
+        cerr << "El identificador ya existe en la coleccion o el supervisor no existe." << endl;
         return;
+    }
 
     auto nuevoNodo = new typename colecInterdep<Ident, Val>::nodo;
     nuevoNodo->ident = id;
@@ -601,7 +611,7 @@ void anyadirDependiente(colecInterdep<Ident, Val> &c, Ident id, Val v, Ident sup
  * En caso de que el elemento con identificador `id` ya sea dependiente, no se realiza ningun cambio.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
- * @param c Coleccion en la que se encuentra el elemento que se quiere convertir en dependiente.
+ * @param[in, out] c Coleccion en la que se encuentra el elemento que se quiere convertir en dependiente.
  * @param id Identificador del elemento que se quiere convertir en dependiente.
  * @param super Identificador del elemento que sera el supervisor del elemento que se quiere convertir en dependiente.
  */
@@ -610,7 +620,10 @@ void hacerDependiente(const colecInterdep<Ident, Val> &c, Ident id, Ident super)
 {
     // Si no existe el elemento o ya es dependiente, no se realiza ningun cambio
     if (!existeIndependiente(id, c))
+    {
+        cerr << "Error: El identificador no existe en la coleccion o ya es dependiente." << endl;   
         return;
+    }
 
     // Busca el nodo con identificador `id` y lo convierte en dependiente
     for (auto nodo = c.primero; nodo != nullptr; nodo = nodo->sig)
@@ -635,7 +648,7 @@ void hacerDependiente(const colecInterdep<Ident, Val> &c, Ident id, Ident super)
  * En caso de que el elemento con identificador `id` ya sea independiente, no se realiza ningun cambio.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
- * @param c Coleccion en la que se encuentra el elemento que se quiere convertir en independiente.
+ * @param[in, out] c Coleccion en la que se encuentra el elemento que se quiere convertir en independiente.
  * @param id Identificador del elemento que se quiere convertir en independiente.
  */
 template <typename Ident, typename Val>
@@ -645,10 +658,10 @@ void hacerIndependiente(const colecInterdep<Ident, Val> &c, Ident id)
 
     // Busca el nodo con identificador `id` y lo convierte en independiente
     for (auto nodo = c.primero; nodo != nullptr; nodo = nodo->sig)
-        if (nodo->ident == id)
+        if (nodo->esDependiente && nodo->ident == id)
         {
             super = nodo->indentSup;
-            nodo->esIndependiente = true;
+            nodo->esDependiente = false;
             break;
         }
 
@@ -666,11 +679,13 @@ void hacerIndependiente(const colecInterdep<Ident, Val> &c, Ident id)
  * En caso de que el elemento con identificador `id` ya sea independiente, no se realiza ningun cambio.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
- * @param c Coleccion en la que se encuentra el elemento que se quiere convertir en independiente.
+ * @param[in, out] c Coleccion en la que se encuentra el elemento que se quiere convertir en independiente.
  * @param id Identificador del elemento que se quiere convertir en independiente.
+ * 
+ * @note Parcial: Si no existe un elemento con identificador `id` en la coleccion, el comportamiento es indefinido.
  */
 template <typename Ident, typename Val>
-void actualizarVal(colecInterdep<Ident, Val> &c, Ident id, Val nuevo)
+void actualizarVal(const colecInterdep<Ident, Val> &c, Ident id, Val nuevo)
 {
     // Busca el nodo con identificador `id` y actualiza su valor
     for (auto nodo = c.primero; nodo != nullptr; nodo = nodo->sig)
@@ -689,7 +704,7 @@ void actualizarVal(colecInterdep<Ident, Val> &c, Ident id, Val nuevo)
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
  * @param id Identificador del elemento del que se quiere obtener el valor.
- * @param c Coleccion de la que se quiere obtener el valor del elemento con identificador `id`.
+ * @param[in] c Coleccion de la que se quiere obtener el valor del elemento con identificador `id`.
  * @returns Valor del elemento con identificador `id`.
  *
  * @note Parcial: Si no existe un elemento con identificador `id` en la coleccion, el comportamiento es indefinido.
@@ -711,7 +726,7 @@ Val obtenerVal(Ident id, const colecInterdep<Ident, Val> &c)
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
  * @param id Identificador del elemento del que se quiere obtener el identificador de su supervisor.
- * @param c Coleccion de la que se quiere obtener el identificador del supervisor del elemento con identificador `id`.
+ * @param[in] c Coleccion de la que se quiere obtener el identificador del supervisor del elemento con identificador `id`.
  * @returns Identificador del supervisor del elemento con identificador `id`.
  *
  * @note Parcial: Si no existe un elemento con identificador `id` en la coleccion o el elemento no es dependiente, el comportamiento es indefinido.
@@ -737,7 +752,7 @@ Ident obtenerSupervisor(Ident id, const colecInterdep<Ident, Val> &c)
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
  * @param id Identificador del elemento del que se quiere obtener el numero de elementos dependientes.
- * @param c Coleccion de la que se quiere obtener el numero de elementos dependientes del elemento con identificador `id`.
+ * @param[in] c Coleccion de la que se quiere obtener el numero de elementos dependientes del elemento con identificador `id`.
  * @returns Numero de elementos dependientes del elemento con identificador `id`.
  *
  * @note Parcial: Si no existe un elemento con identificador `id` en la coleccion, el comportamiento es indefinido.
@@ -760,13 +775,13 @@ int obtenerNumDependientes(Ident id, const colecInterdep<Ident, Val> &c)
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
  * @param id Identificador del elemento que se quiere eliminar de la coleccion.
- * @param c Coleccion de la que se quiere eliminar el elemento con identificador `id`.
+ * @param[in, out] c Coleccion de la que se quiere eliminar el elemento con identificador `id`.
  */
 template <typename Ident, typename Val>
 void borrar(Ident id, colecInterdep<Ident, Val> &c)
 {
     auto *nodoActual = c.primero;
-    auto *nodoAnterior = nullptr;
+    typename colecInterdep<Ident, Val>::nodo *nodoAnterior = nullptr;
 
     while (nodoActual != nullptr && nodoActual->ident != id)
     {
@@ -776,7 +791,17 @@ void borrar(Ident id, colecInterdep<Ident, Val> &c)
 
     // Si no encuentra el identificador, no se realiza ningun cambio
     if (nodoActual == nullptr)
+    {
+        cerr << "El identificador no existe en la coleccion. No se puede borrar." << endl;
         return;
+    }
+
+    // No se puede borrar un nodo que tenga dependientes
+    if (nodoActual->numDepend > 0)
+    {
+        cerr << "No se puede borrar un elemento que tiene dependientes." << endl;
+        return;
+    }
 
     // Si el nodo a borrar es dependiente, actualiza el numero de dependientes del supervisor
     if (nodoActual->esDependiente)
@@ -790,12 +815,10 @@ void borrar(Ident id, colecInterdep<Ident, Val> &c)
     // Si el nodo a borrar tiene dependientes, los convierte en independientes
     if (nodoActual->numDepend > 0)
         for (auto nodo = c.primero; nodo != nullptr; nodo = nodo->sig)
-            if (nodo->indentSup == id)
-            {
-                nodo->indentSup = nullptr;
-            }
+            if (nodo->esDependiente && nodo->indentSup == id)
+                nodo->esDependiente = false;
 
-    // Borra el nodo
+    // Borra el nodo y actualiza los enlaces de la lista
     if (nodoAnterior == nullptr)
         // El nodo a borrar es el primero
         c.primero = nodoActual->sig;
@@ -804,14 +827,14 @@ void borrar(Ident id, colecInterdep<Ident, Val> &c)
         nodoAnterior->sig = nodoActual->sig;
 
     delete nodoActual;
-    c.tamanyo--;
+    c.tam--;
 }
 
 /**
  * @brief Inicializa el iterador de la coleccion para recorrer sus elementos de menor a mayor identificador
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
- * @param c Coleccion cuyo iterador se quiere inicializar.
+ * @param[in, out] c Coleccion cuyo iterador se quiere inicializar.
  */
 template <typename Ident, typename Val>
 void iniciarIterador(colecInterdep<Ident, Val> &c)
@@ -823,7 +846,7 @@ void iniciarIterador(colecInterdep<Ident, Val> &c)
  * @brief Comprueba queda algún elemento por visitar con el iterador de la colección.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
- * @param c Coleccion que se quiere comprobar.
+ * @param[in] c Coleccion que se quiere comprobar.
  * @returns `true` si existe un siguiente elemento, `false` en caso contrario.
  */
 template <typename Ident, typename Val>
@@ -836,7 +859,7 @@ bool existeSiguiente(const colecInterdep<Ident, Val> &c)
  * @brief Obtiene el identificador del siguiente elemento a visitar en la coleccion.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
- * @param c Coleccion de la que se quiere obtener el identificador del siguiente elemento.
+ * @param[in] c Coleccion de la que se quiere obtener el identificador del siguiente elemento.
  * @returns Identificador del siguiente elemento.
  *
  * @note Parcial: La operación no está definida si no quedan elementos por visitar (no existeSiguiente?(c))
@@ -854,7 +877,7 @@ Ident siguienteIdent(const colecInterdep<Ident, Val> &c)
  * @brief Obtiene el valor del siguiente elemento a visitar en la coleccion.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
- * @param c Coleccion de la que se quiere obtener el valor del siguiente elemento.
+ * @param[in] c Coleccion de la que se quiere obtener el valor del siguiente elemento.
  * @returns Valor del siguiente elemento.
  *
  * @note Parcial: La operación no está definida si no quedan elementos por visitar (no existeSiguiente?(c))
@@ -872,7 +895,7 @@ Val siguienteVal(const colecInterdep<Ident, Val> &c)
  * @brief Indica si el siguiente elemento a visitar en la coleccion es dependiente.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
- * @param c Coleccion de la que se quiere comprobar si el siguiente elemento es dependiente.
+ * @param[in] c Coleccion de la que se quiere comprobar si el siguiente elemento es dependiente.
  * @returns `true` si el siguiente elemento es dependiente, `false` en caso contrario.
  *
  * @note Parcial: La operación no está definida si no quedan elementos por visitar (no existeSiguiente?(c))
@@ -890,7 +913,7 @@ bool siguienteDependiente(const colecInterdep<Ident, Val> &c)
  * @brief Obtiene el supervisor del siguiente elemento a visitar en la coleccion.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
- * @param c Coleccion de la que se quiere obtener el identificador del supervisor del siguiente elemento.
+ * @param[in] c Coleccion de la que se quiere obtener el identificador del supervisor del siguiente elemento.
  * @returns Identificador del supervisor del siguiente elemento.
  *
  * @note Parcial: La operación no está definida si no quedan elementos por visitar (no existeSiguiente?(c)) o si el siguiente elemento es independiente (no siguienteDependiente(c))
@@ -911,7 +934,7 @@ Ident siguienteSuperior(const colecInterdep<Ident, Val> &c)
  * @brief Obtiene el numero de elementos que dependen del siguiente elemento a visitar en la coleccion.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion.
- * @param c Coleccion de la que se quiere obtener el numero de elementos dependientes del siguiente elemento.
+ * @param[in] c Coleccion de la que se quiere obtener el numero de elementos dependientes del siguiente elemento.
  * @returns Numero de elementos dependientes del siguiente elemento.
  *
  * @note Parcial: La operación no está definida si no quedan elementos por visitar (no existeSiguiente?(c))
@@ -929,7 +952,7 @@ int siguienteNumDependientes(const colecInterdep<Ident, Val> &c)
  * @brief Avanza el iterador de la coleccion al siguiente elemento.
  * @tparam Ident Tipo del identificador de los elementos de la coleccion.
  * @tparam Val Tipo de los elementos de la coleccion
- * @param c Coleccion cuyo iterador se quiere avanzar.
+ * @param[in, out] c Coleccion cuyo iterador se quiere avanzar.
  *
  * @note Parcial: La operación no está definida si no quedan elementos por visitar (no existeSiguiente?(c))
  */
