@@ -20,7 +20,7 @@ using namespace std;
  * (descripción, prioridad) siendo la descripción una cadena y la
  * prioridad un número natural.
  */
-struct Evento;
+struct evento;
 
 /**
  * @brief Inicializa un evento compuesto con descripción `descrip` y con prioridad `prio`.
@@ -28,35 +28,35 @@ struct Evento;
  * @param prio Prioridad del evento.
  * @param[out] e Evento cuyo valor se quiere inicializar.
  */
-void crearEvento(string descrip, int prio, Evento &e);
+void crearEvento(string descrip, int prio, evento &e);
 
 /**
  * @brief Dado un evento `e`, devuelve la descripción en el evento.
  * @param[in] e Evento del que se quiere obtener la descripción.
  * @return Descripción del evento.
  */
-string descripcion(const Evento &e);
+string descripcion(const evento &e);
 
 /**
  * @brief Dado un evento `e`, cambia su descripción a `nueva`.
  * @param[in, out] e Evento del que se quiere cambiar la descripción.
  * @param nueva Nueva descripción del evento.
  */
-void cambiarDescripcion(Evento &e, const string nueva);
+void cambiarDescripcion(evento &e, const string nueva);
 
 /**
  * @brief Dado un evento `e`, obtiene su prioridad `p`.
  * @param[in] e Evento del que se quiere obtener la prioridad.
  * @returns Prioridad del evento.
  */
-int suPrioridad(const Evento &e);
+int suPrioridad(const evento &e);
 
 /**
  * @brief Dado un evento `e`, y un natural `pri`, cambia la prioridad del evento `e` a `pri`.
  * @param[in, out] e Evento del que se quiere cambiar la prioridad.
  * @param pri Nueva prioridad del evento.
  */
-void cambiarPrioridad(Evento &e, const int pri);
+void cambiarPrioridad(evento &e, const int pri);
 
 // FIN de la PREDECLARACION DEL TAD evento (fin INTERFAZ)
 
@@ -65,13 +65,13 @@ void cambiarPrioridad(Evento &e, const int pri);
 /**
  * @brief Estructura que representa un evento.
  */
-struct Evento
+struct evento
 {
-	friend void crearEvento(string descrip, int prio, Evento &e);
-	friend string descripcion(const Evento &e);
-	friend void cambiarDescripcion(Evento &e, const string nueva);
-	friend int suPrioridad(const Evento &e);
-	friend void cambiarPrioridad(Evento &e, const int pri);
+	friend void crearEvento(string descrip, int prio, evento &e);
+	friend string descripcion(const evento &e);
+	friend void cambiarDescripcion(evento &e, const string nueva);
+	friend int suPrioridad(const evento &e);
+	friend void cambiarPrioridad(evento &e, const int pri);
 
 private:
 

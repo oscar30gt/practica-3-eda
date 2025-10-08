@@ -1,5 +1,5 @@
 /**
- * @file coleccionInterdep.hpp
+ * @file colecInterdep.hpp
  *
  * @authors
  * Hugo García Sánchez (930108)
