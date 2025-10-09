@@ -621,26 +621,25 @@ void hacerDependiente(const colecInterdep<Ident, Val> &c, Ident id, Ident super)
     // Si no existe el elemento o ya es dependiente, no se realiza ningun cambio
     if (!existeIndependiente(id, c))
     {
-        cerr << "Error: El identificador no existe en la coleccion o ya es dependiente." << endl;   
+        cerr << "Error: El identificador no existe en la coleccion o ya es dependiente." << endl;
         return;
     }
 
     // Busca el nodo con identificador `id` y lo convierte en dependiente
     for (auto nodo = c.primero; nodo != nullptr; nodo = nodo->sig)
+    {
         if (nodo->ident == id)
         {
             nodo->esDependiente = true;
             nodo->indentSup = super;
             break;
         }
-
-    // Actualiza el número de dependientes del supervisor
-    for (auto nodo = c.primero; nodo != nullptr; nodo = nodo->sig)
         if (nodo->ident == super)
         {
             nodo->numDepend++;
             break;
         }
+    }
 }
 
 /**
@@ -658,20 +657,19 @@ void hacerIndependiente(const colecInterdep<Ident, Val> &c, Ident id)
 
     // Busca el nodo con identificador `id` y lo convierte en independiente
     for (auto nodo = c.primero; nodo != nullptr; nodo = nodo->sig)
+    {
         if (nodo->esDependiente && nodo->ident == id)
         {
             super = nodo->indentSup;
             nodo->esDependiente = false;
             break;
         }
-
-    // Actualiza el número de dependientes del antiguo supervisor
-    for (auto nodo = c.primero; nodo != nullptr; nodo = nodo->sig)
         if (nodo->ident == super)
         {
             nodo->numDepend--;
             break;
         }
+    }
 }
 
 /**
@@ -681,7 +679,7 @@ void hacerIndependiente(const colecInterdep<Ident, Val> &c, Ident id)
  * @tparam Val Tipo de los elementos de la coleccion.
  * @param[in, out] c Coleccion en la que se encuentra el elemento que se quiere convertir en independiente.
  * @param id Identificador del elemento que se quiere convertir en independiente.
- * 
+ *
  * @note Parcial: Si no existe un elemento con identificador `id` en la coleccion, el comportamiento es indefinido.
  */
 template <typename Ident, typename Val>

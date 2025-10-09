@@ -272,7 +272,7 @@ void LD(colecInterdep<string, evento> &c, ifstream &f)
     // No existe el evento
     if (!existe(id, c))
     {
-        cout << "**** DESCONCIDO" << endl;
+        cout << "****DESCONOCIDO" << endl;
         return;
     }
 
@@ -326,4 +326,6 @@ void LT(colecInterdep<string, evento> &c)
                  << " --- ( " << suPrioridad(ev) << " ) " << endl;
         avanzarIterador(c);
     }
+    
+    cout << "-----" << endl;
 }
