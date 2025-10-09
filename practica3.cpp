@@ -170,12 +170,12 @@ void O(colecInterdep<string, evento> &c, ifstream &f)
 
         if(existeIndependiente(id, c))
         {
-            cout << "CAMBIADO: [ " << id << " --- " << obtenerNumDependientes(id, c) << " ]"
+            cout << "LOCALIZADO: [ " << id << " --- " << obtenerNumDependientes(id, c) << " ]"
                  << " --- " << descripcion(e) << " --- ( " << suPrioridad(e) << " )" << endl;
         }
         else
         {
-            cout << "CAMBIADO: [ " << id << " -de-> " << obtenerSupervisor(id, c) << " ;;; " << obtenerNumDependientes(id, c) << " ]"
+            cout << "LOCALIZADO: [ " << id << " -de-> " << obtenerSupervisor(id, c) << " ;;; " << obtenerNumDependientes(id, c) << " ]"
                  << " --- " << descripcion(e) << " --- ( " << suPrioridad(e) << " )" << endl;
         }
     }
@@ -191,7 +191,7 @@ void E(colecInterdep<string, evento> &c, ifstream &f)
     {
         if(existeIndependiente(id, c))
         {
-            cout << "INDependiente: " << id << endl;
+            cout << "INDEPendiente: " << id << endl;
         }
         else
         {
