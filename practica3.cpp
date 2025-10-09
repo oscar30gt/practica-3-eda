@@ -8,7 +8,7 @@
  * Óscar Grimal Torres (926897)
  *
  * Programa principal de la práctica 3.
- * 
+ *
  * Repositorio
  * https://github.com/oscar30gt/practica-3-eda
  */
@@ -22,16 +22,23 @@
 
 using namespace std;
 
-void A(colecInterdep<string, evento> &c, ifstream &f);
-void C(colecInterdep<string, evento> &c, ifstream &f);
-void O(colecInterdep<string, evento> &c, ifstream &f);
-void E(colecInterdep<string, evento> &c, ifstream &f);
-void I(colecInterdep<string, evento> &c, ifstream &f);
-void D(colecInterdep<string, evento> &c, ifstream &f);
-void B(colecInterdep<string, evento> &c, ifstream &f);
-void LD(colecInterdep<string, evento> &c, ifstream &f);
-void LT(colecInterdep<string, evento> &c);
+void A(colecInterdep<string, evento> &c, ifstream &i, ofstream &o);
+void C(colecInterdep<string, evento> &c, ifstream &i, ofstream &o);
+void O(colecInterdep<string, evento> &c, ifstream &i, ofstream &o);
+void E(colecInterdep<string, evento> &c, ifstream &i, ofstream &o);
+void I(colecInterdep<string, evento> &c, ifstream &i, ofstream &o);
+void D(colecInterdep<string, evento> &c, ifstream &i, ofstream &o);
+void B(colecInterdep<string, evento> &c, ifstream &i, ofstream &o);
+void LD(colecInterdep<string, evento> &c, ifstream &i, ofstream &o);
+void LT(colecInterdep<string, evento> &c, ofstream &o);
 
+/**
+ * @brief Programa principal de la práctica 3.
+ * 
+ * Lee las instrucciones de un fichero de entrada y las ejecuta sobre una 
+ * colección de eventos `colecInterdep<string, evento>`. Escribe de forma
+ * formateada los resultados de las instrucciones en un fichero de salida.
+ */
 int main()
 {
     // Inicializa la coleccion
@@ -39,59 +46,66 @@ int main()
     crear(c);
 
     // Abre el fichero de entrada
-    ifstream f("entrada.txt");
-    if (!f.is_open())
+    ifstream entrada("entrada.txt");
+    if (!entrada.is_open())
     {
         cerr << "Error al abrir el fichero de entrada." << endl;
         return 1;
     }
 
-    // Lee las instrucciones del fichero de entrada y las ejecuta
-    string instruccion;
-    while (getline(f, instruccion))
+    // Abre el fichero de salida
+    ofstream salida("salida.txt");
+    if (!salida.is_open())
     {
-        if (instruccion == "A")
-            A(c, f);
-        else if (instruccion == "C")
-            C(c, f);
-        else if (instruccion == "O")
-            O(c, f);
-        else if (instruccion == "E")
-            E(c, f);
-        else if (instruccion == "I")
-            I(c, f);
-        else if (instruccion == "D")
-            D(c, f);
-        else if (instruccion == "B")
-            B(c, f);
-        else if (instruccion == "LD")
-            LD(c, f);
-        else if (instruccion == "LT")
-            LT(c);
+        cerr << "Error al abrir el fichero de salida." << endl;
+        return 1;
     }
 
-    f.close();
+    // Lee las instrucciones del fichero de entrada y las ejecuta
+    string instruccion;
+    while (getline(entrada, instruccion))
+    {
+        if (instruccion == "A")
+            A(c, entrada, salida);
+        else if (instruccion == "C")
+            C(c, entrada, salida);
+        else if (instruccion == "O")
+            O(c, entrada, salida);
+        else if (instruccion == "E")
+            E(c, entrada, salida);
+        else if (instruccion == "I")
+            I(c, entrada, salida);
+        else if (instruccion == "D")
+            D(c, entrada, salida);
+        else if (instruccion == "B")
+            B(c, entrada, salida);
+        else if (instruccion == "LD")
+            LD(c, entrada, salida);
+        else if (instruccion == "LT")
+            LT(c, salida);
+    }
+
+    entrada.close();
     return 0;
 }
 
-// Añadir la información de un nuevo nombre y evento a la colección
-void A(colecInterdep<string, evento> &c, ifstream &f)
+// A: Añadir nuevo evento (5 argumentos: id del evento, descripción, prioridad, tipo (INDependiente/DEPendiente) e id del supervisor (si es dependiente))
+void A(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
 {
-    int tamIn = tamanyo(c);
     string id, desc, dep, sup;
-    int prio;
+    int prio, tamInicial = tamanyo(c);
 
-    getline(f, id);
-    getline(f, desc);
-    f >> prio;
-    f.ignore(); // Ignorar el salto de línea después de leer prio
-    getline(f, dep);
-    getline(f, sup);
+    getline(i, id);
+    getline(i, desc);
+    i >> prio;
+    i.ignore(); // Ignorar el salto de línea después de leer prio
+    getline(i, dep);
+    getline(i, sup);
 
     evento e;
     crearEvento(desc, prio, e);
 
-    if(dep == "INDependiente")
+    if (dep == "INDependiente")
     {
         anyadirIndependiente(c, id, e);
     }
@@ -100,232 +114,303 @@ void A(colecInterdep<string, evento> &c, ifstream &f)
         anyadirDependiente(c, id, e, sup);
     }
 
-    int tamFin = tamanyo(c);
-
-    if(tamFin > tamIn)
+    if (tamanyo(c) > tamInicial)
     {
-        cout << "INTRODUCIDO: [ " << id;
-        if(dep == "DEPendiente")
+        o << "INTRODUCIDO: [ " << id;
+        if (dep == "DEPendiente")
         {
-            cout << " -de-> " << sup; 
+            o << " -de-> " << sup;
         }
-        cout << " ] --- " << desc << " --- ( " << prio << " )" << endl;
-        
+        o << " ] --- " << desc << " --- ( " << prio << " )" << endl;
     }
     else
     {
-        cout << "NO INTRODUCIDO: [ " << id;
-        if(dep == "DEPendiente")
+        o << "NO INTRODUCIDO: [ " << id;
+        if (dep == "DEPendiente")
         {
-            cout << " -de-> " << sup; 
+            o << " -de-> " << sup;
         }
-        cout << " ] --- " << desc << " --- ( " << prio << " )" << endl;
+        o << " ] --- " << desc << " --- ( " << prio << " )" << endl;
     }
 }
 
-// Cambiar la información de un evento en la colección para un nombre dado
-void C(colecInterdep<string, evento> &c, ifstream &f)
+// C: Cambiar la información de un evento (3 argumentos: id del evento, nueva descripción y nueva prioridad)
+void C(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
 {
     string id, desc;
     int prio;
 
-    getline(f, id);
-    getline(f, desc);
-    f >> prio;
-    f.ignore(); // Ignorar el salto de línea después de leer prio
+    getline(i, id);
+    getline(i, desc);
+    i >> prio;
+    i.ignore(); // Ignorar el salto de línea después de leer prio
 
-    if(!existe(id, c))
+    evento e;
+    bool error;
+    obtenerVal(id, c, e, error);
+
+    if (error) // El elemento no existe
     {
-        cout << "NO CAMBIADO: " << id << endl;
+        o << "NO CAMBIADO: " << id << endl;
     }
     else
     {
-        evento e = obtenerVal(id, c);
         cambiarDescripcion(e, desc);
         cambiarPrioridad(e, prio);
-        
-        if(existeIndependiente(id, c))
+
+        int numDep;
+        obtenerNumDependientes(id, c, numDep, error);
+        // El elemento siempre existe (comprobado antes)
+
+        string sup;
+        obtenerSupervisor(id, c, sup, error);
+
+        if (error) // El elemento es independiente
         {
-            cout << "CAMBIADO: [ " << id << " --- " << obtenerNumDependientes(id, c) << " ]"
-                 << " --- " << desc << " --- ( " << prio << " )" << endl;
+            o << "CAMBIADO: [ " << id << " --- " << numDep << " ]"
+              << " --- " << desc << " --- ( " << prio << " )" << endl;
         }
-        else
+        else // El elemento es dependiente
         {
-            cout << "CAMBIADO: [ " << id << " -de-> " << obtenerSupervisor(id, c) << " ;;; " << obtenerNumDependientes(id, c) << " ]"
-                 << " --- " << desc << " --- ( " << prio << " )" << endl;
+            o << "CAMBIADO: [ " << id << " -de-> " << sup << " ;;; " << numDep << " ]"
+              << " --- " << desc << " --- ( " << prio << " )" << endl;
         }
     }
 }
 
-// Obtener toda la información relativa al evento de la colección correspondiente a un nombre dado
-void O(colecInterdep<string, evento> &c, ifstream &f)
+// O: Obtener información de un evento (1 argumento: id del evento)
+void O(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
 {
     string id;
-    getline(f, id);
+    getline(i, id);
 
-    if(!existe(id, c))
+    evento e;
+    bool error;
+    obtenerVal(id, c, e, error);
+
+    if (error) // El elemento no existe
     {
-        cout << "NO LOCALIZADO: " << id << endl;
+        o << "NO LOCALIZADO: " << id << endl;
     }
     else
     {
-        evento e = obtenerVal(id, c);
+        int numDep;
+        obtenerNumDependientes(id, c, numDep, error);
+        // El elemento siempre existe (comprobado antes)
 
-        if(existeIndependiente(id, c))
+        string sup;
+        obtenerSupervisor(id, c, sup, error);
+
+        if (error) // El elemento es independiente
         {
-            cout << "CAMBIADO: [ " << id << " --- " << obtenerNumDependientes(id, c) << " ]"
-                 << " --- " << descripcion(e) << " --- ( " << suPrioridad(e) << " )" << endl;
+            o << "LOCALIZADO: [ " << id << " --- " << numDep << " ]"
+              << " --- " << descripcion(e) << " --- ( " << suPrioridad(e) << " )" << endl;
         }
-        else
+        else // El elemento es dependiente
         {
-            cout << "CAMBIADO: [ " << id << " -de-> " << obtenerSupervisor(id, c) << " ;;; " << obtenerNumDependientes(id, c) << " ]"
-                 << " --- " << descripcion(e) << " --- ( " << suPrioridad(e) << " )" << endl;
+            o << "LOCALIZADO: [ " << id << " -de-> " << sup << " ;;; " << numDep << " ]"
+              << " --- " << descripcion(e) << " --- ( " << suPrioridad(e) << " )" << endl;
         }
     }
 }
 
-// Existe algún evento relativo a un nombre dado
-void E(colecInterdep<string, evento> &c, ifstream &f)
+// E: Existe el evento? (1 argumento: id del evento)
+void E(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
 {
     string id;
-    getline(f, id);
+    getline(i, id);
 
-    if(existe(id, c))
+    if (existeIndependiente(id, c))
     {
-        if(existeIndependiente(id, c))
-        {
-            cout << "INDependiente: " << id << endl;
-        }
-        else
-        {
-            cout << "DEPendiente: " << id << endl;
-        }
+        o << "INDEPendiente: " << id << endl;
     }
-    else{
-        cout << "DESCONOCIDO: " << id << endl;
+    else if (existeDependiente(id, c))
+    {
+        o << "DEPendiente: " << id << endl;
+    }
+    else // No existe
+    {
+        o << "DESCONOCIDO: " << id << endl;
     }
 }
 
-// Hacer dependiente (1 argumento: id del evento)
-void I(colecInterdep<string, evento> &c, ifstream &f)
+// I: Hacer evento independiente (1 argumento: id del evento)
+void I(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
 {
-    // Evento a hacer independiente
     string id;
-    getline(f, id);
+    getline(i, id);
 
     if (existeDependiente(id, c))
     {
-        cout << "INDEPENDIZADO: ";
+        o << "INDEPENDIZADO: ";
         hacerIndependiente(c, id);
     }
     else if (existeIndependiente(id, c))
-        cout << "YA ERA INDepend.: ";
-    else
-        cout << "NO INDEPENDIZADO: ";
-}
-
-// Hacer dependiente (2 argumentos: id del evento y id del evento supervisor)
-void D(colecInterdep<string, evento> &c, ifstream &f)
-{
-    // Eventos a hacer dependientes
-    string dep, sup;
-    getline(f, dep);
-    getline(f, sup);
-
-    if (!existe(dep, c) || !existe(sup, c))
-        cout << "IMPOSIBLE hacer depend.: ";
+    {
+        o << "YA ERA INDepend.: ";
+    }
     else
     {
-        cout << "INTENTANDO hacer depend.: ";
-        hacerDependiente(c, dep, sup);
+        o << "NO INDEPENDIZADO: ";
     }
-
-    cout << dep << " -de-> " << sup << endl;
 }
 
-// Borrar evento (1 argumento: identificador del evento)
-void B(colecInterdep<string, evento> &c, ifstream &f)
+// D: Hacer dependiente (2 argumentos: id del evento y id del evento supervisor)
+void D(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
 {
-    // Id del evento a borrar
+    string dep, sup;
+    getline(i, dep);
+    getline(i, sup);
+
+    if (existe(dep, c) && existe(sup, c))
+    {
+        o << "INTENTANDO hacer depend.: ";
+        hacerDependiente(c, dep, sup);
+    }
+    else // No existe algun evento
+    {
+        o << "IMPOSIBLE hacer depend.: ";
+    }
+
+    o << dep << " -de-> " << sup << endl;
+}
+
+// B: Borrar evento (1 argumento: identificador del evento)
+void B(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
+{
     string id;
-    getline(f, id);
+    getline(i, id);
 
     int tamAntes = tamanyo(c);
     borrar(id, c);
 
-    if (tamanyo(c) == tamAntes)
-        cout << "NO BORRADO: " << id << endl;
-    else
-        cout << "BORRADO: " << id << endl;
+    if (tamanyo(c) < tamAntes)
+        o << "BORRADO: " << id << endl;
+    else // No se ha podido borrar
+        o << "NO BORRADO: " << id << endl;
 }
 
 // LD: Listar eventos dependientes de un evento dado (1 argumento: identificador del evento)
-void LD(colecInterdep<string, evento> &c, ifstream &f)
+void LD(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
 {
     // Id del evento a borrar
     string id;
-    getline(f, id);
+    getline(i, id);
 
     // Encabezado
-    cout << "****DEPENDIENTES: " << id << endl;
+    o << "****DEPENDIENTES: " << id << endl;
 
-    // No existe el evento
-    if (!existe(id, c))
+    evento ev;
+    bool error;
+    obtenerVal(id, c, ev, error);
+
+    if (error) // No existe el evento
     {
-        cout << "****DESCONOCIDO" << endl;
+        o << "****DESCONOCIDO" << endl;
         return;
     }
-
-    // Evento padre
-    evento ev = obtenerVal(id, c);
-    if (existeDependiente(id, c))
-        cout << "[ " << id << " -de-> " << obtenerSupervisor(id, c)
-             << " ;;; " << obtenerNumDependientes(id, c) << " ] --- "
-             << descripcion(ev)
-             << " --- ( " << suPrioridad(ev) << " ) ****" << endl;
     else
-        cout << "[ " << id << " --- " << obtenerNumDependientes(id, c) << " ] --- "
-             << descripcion(ev)
-             << " --- ( " << suPrioridad(ev) << " ) ****" << endl;
-
-    // Lista de dependientes
-    iniciarIterador(c);
-    int i = 1;
-    while (existeSiguiente(c))
     {
-        if (siguienteDependiente(c) && siguienteSuperior(c) == id)
+        // ==== Evento padre ====
+        int numDep;
+        obtenerNumDependientes(id, c, numDep, error);
+        // El elemento siempre existe (comprobado antes)
+
+        string sup;
+        obtenerSupervisor(id, c, sup, error);
+
+        if (error) // El elemento es independiente
         {
-            evento evDep = siguienteVal(c);
-            cout << "[ " << i++ << " -> " << siguienteIdent(c)
-                 << " -de-> " << id << " ;;; " << siguienteNumDependientes(c) << " ] --- "
-                 << descripcion(evDep)
-                 << " --- ( " << suPrioridad(evDep) << " ) ;;;;" << endl;
+            o << "[ " << id << " --- " << numDep << " ] --- "
+              << descripcion(ev)
+              << " --- ( " << suPrioridad(ev) << " ) ****" << endl;
         }
-        avanzarIterador(c);
+        else // El elemento es dependiente
+        {
+            o << "[ " << id << " -de-> " << sup
+              << " ;;; " << numDep << " ] --- "
+              << descripcion(ev)
+              << " --- ( " << suPrioridad(ev) << " ) ****" << endl;
+        }
+
+        // ==== Lista de dependientes ====
+        iniciarIterador(c);
+        int i = 1;
+        while (existeSiguiente(c))
+        {
+            bool dep;
+            siguienteDependiente(c, dep, error);
+            // Dado que existe siguiente, no hay error
+
+            if (dep) // Es dependiente
+            {
+                string sup;
+                siguienteSuperior(c, sup, error);
+                // Dado que es dependiente, no hay error
+
+                if (sup == id) // Es dependiente del evento buscado
+                {
+                    evento evDep;
+                    string idDep;
+                    int numDepDep;
+                    siguienteVal(c, evDep, error);
+                    siguienteIdent(c, idDep, error);
+                    siguienteNumDependientes(c, numDepDep, error);
+                    // Dado que existe siguiente, no hay errores
+
+                    o << "[ " << i++ << " -> " << idDep
+                      << " -de-> " << id << " ;;; " << numDepDep << " ] --- "
+                      << descripcion(evDep)
+                      << " --- ( " << suPrioridad(evDep) << " ) ;;;;" << endl;
+                }
+            }
+
+            avanzarIterador(c, error);
+            // if (error) break; -> no hay siguiente
+        }
     }
 
-    cout << "FINAL dependientes -de->" << id << endl;
+    o << "FINAL dependientes -de->" << id << endl;
 }
 
 // LT: Listar todos los eventos de la coleccion (0 argumentos)
-void LT(colecInterdep<string, evento> &c)
+void LT(colecInterdep<string, evento> &c, ofstream &o)
 {
-    cout << "-----LISTADO: " << tamanyo(c) << endl;
+    o << "-----LISTADO: " << tamanyo(c) << endl;
+
     iniciarIterador(c);
     while (existeSiguiente(c))
     {
-        evento ev = siguienteVal(c);
-        if (siguienteDependiente(c))
-            cout << "[ " << siguienteIdent(c) << " -de-> " << siguienteSuperior(c)
-                 << " ;;; " << siguienteNumDependientes(c) << " ] --- "
-                 << descripcion(ev)
-                 << " --- ( " << suPrioridad(ev) << " ) " << endl;
-        else
-            cout << "[ " << siguienteIdent(c) << " --- " << siguienteNumDependientes(c) << " ] --- "
-                 << descripcion(ev)
-                 << " --- ( " << suPrioridad(ev) << " ) " << endl;
-        avanzarIterador(c);
+        bool error;
+
+        evento ev;
+        string id;
+        int numDep;
+        siguienteVal(c, ev, error);
+        siguienteIdent(c, id, error);
+        siguienteNumDependientes(c, numDep, error);
+        // Dado que existe siguiente, no hay errores
+
+        string sup;
+        siguienteSuperior(c, sup, error);
+
+        if (error) // El elemento es independiente
+        {
+            o << "[ " << id << " --- " << numDep << " ] --- "
+              << descripcion(ev)
+              << " --- ( " << suPrioridad(ev) << " ) " << endl;
+        }
+        else // El elemento es dependiente
+        {
+            o << "[ " << id << " -de-> " << sup
+              << " ;;; " << numDep << " ] --- "
+              << descripcion(ev)
+              << " --- ( " << suPrioridad(ev) << " ) " << endl;
+        }
+
+        avanzarIterador(c, error);
+        // if (error) break; -> no hay siguiente
     }
-    
-    cout << "-----" << endl;
+
+    o << "-----" << endl;
 }
