@@ -15,8 +15,9 @@ using namespace std;
 
 // PREDECLARACION DEL TAD evento (inicio INTERFAZ)
 
-/*
- * Los valores del TAD evento representarán tuplas formadas como:
+/**
+ * @struct evento
+ * @brief Los valores del TAD evento representarán tuplas formadas como:
  * (descripción, prioridad) siendo la descripción una cadena y la
  * prioridad un número natural.
  */
@@ -58,7 +59,7 @@ int suPrioridad(const evento &e);
  */
 void cambiarPrioridad(evento &e, const int pri);
 
-// FIN de la PREDECLARACION DEL TAD evento (fin INTERFAZ)
+// FIN PREDECLARACION DEL TAD evento (fin INTERFAZ)
 
 // DECLARACION DEL TAD evento
 
@@ -76,12 +77,12 @@ struct evento
 private:
 
 	/** Descripcion del evento */
-	string descripcion;
+	string desc;
 	
 	/** Prioridad del evento */
-	int prioridad;
+	int pri;
 };
 
-// FIN de la DECLARACION DEL TAD evento
+// FIN DECLARACION DEL TAD evento
 
 #endif // EVENTO_HPP

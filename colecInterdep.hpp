@@ -6,15 +6,15 @@
  * Óscar Grimal Torres (926897)
  */
 
-#ifndef COLECCIONINTERDEP_HPP
-#define COLECCIONINTERDEP_HPP
+#ifndef COLECINTERDEP_HPP
+#define COLECINTERDEP_HPP
 
 using namespace std;
 
 // PREDECLARACION DEL TAD GENERICO colecInterdep (inicio INTERFAZ)
 
 /**
- *  @struct TAD colecInterdep.
+ *  @struct colecInterdep.
  *  @brief Los valores del TAD representan colecciones de elementos formados como tuplas
  *  de la forma (ident, val, -, NumDepend) o bien (ident, val, identSup, NumDepend). A los elementos
  *  con forma (ident, val, -, NumDepend) los llamaremos en general ‘elementos independientes’,
@@ -311,7 +311,7 @@ void avanzarIterador(colecInterdep<I, V> &c, bool &error);
 
 // FIN PREDECLARACION DEL TAD GENERICO colecInterdep (fin INTERFAZ)
 
-// IMPLEMENTACION DEL TAD GENERICO coleccionInterdep (inicio IMPLEMENTACION)
+// DECLARACION DEL TAD GENERICO coleccionInterdep (inicio IMPLEMENTACION)
 
 /**
  * @brief Estructura que representa una coleccion de elementos interdependientes.
@@ -323,56 +323,6 @@ void avanzarIterador(colecInterdep<I, V> &c, bool &error);
 template <typename I, typename V>
 struct colecInterdep
 {
-private:
-    /**
-     * @brief Nodo que constituye la lista enlazada que representa la coleccion.
-     * Cada elemento de la coleccion se representa como un nodo en la lista enlazada.
-     */
-    struct nodo
-    {
-        /**
-         * Identificador
-         */
-        I ident;
-
-        /**
-         * Valor del elemento.
-         */
-        V val;
-
-        /**
-         * Elemento del que es directamente dependiente este elemento.
-         * Si el elemento es independiente, `nullptr`.
-         */
-        nodo *super = nullptr;
-
-        /**
-         * Numero de elementos que dependen directamente de este elemento.
-         */
-        int numDepend = 0;
-
-        /**
-         * Puntero al siguiente nodo en la coleccion.
-         */
-        nodo *sig = nullptr;
-    };
-
-    /**
-     * Numero de elementos en la coleccion.
-     */
-    int tam = 0;
-
-    /**
-     * Puntero al primer nodo de la coleccion. Si la coleccion esta vacia, `nullptr`.
-     */
-    nodo *primero = nullptr;
-
-    /**
-     * Nodo actual del iterador.
-     */
-    nodo *actual = nullptr;
-
-public:
     // Funciones de interfaz
     friend void crear<I, V>(colecInterdep<I, V> &c);
     friend int tamanyo<I, V>(const colecInterdep<I, V> &c);
@@ -397,6 +347,38 @@ public:
     friend void siguienteSuperior<I, V>(const colecInterdep<I, V> &c, I &sup, bool &error);
     friend void siguienteNumDependientes<I, V>(const colecInterdep<I, V> &c, int &num, bool &error);
     friend void avanzarIterador<I, V>(colecInterdep<I, V> &c, bool &error);
+
+private:
+    /**
+     * @brief Nodo que constituye la lista enlazada que representa la coleccion.
+     * Cada elemento de la coleccion se representa como un nodo en la lista enlazada.
+     */
+    struct nodo
+    {
+        /** Identificador */
+        I ident;
+
+        /** Valor del elemento. */
+        V val;
+
+        /** Elemento del que es directamente dependiente este elemento. Si el elemento es independiente, `nullptr`. */
+        nodo *super = nullptr;
+
+        /** Numero de elementos que dependen directamente de este elemento. */
+        int numDepend = 0;
+
+        /** Puntero al siguiente nodo en la coleccion. */
+        nodo *sig = nullptr;
+    };
+
+    /** Numero de elementos en la coleccion.*/
+    int tam = 0;
+
+    /** Puntero al primer nodo de la coleccion. Si la coleccion esta vacia, `nullptr`. */
+    nodo *primero = nullptr;
+
+    /** Nodo actual del iterador. */
+    nodo *actual = nullptr;
 };
 
 /**
@@ -531,7 +513,7 @@ bool existeDependiente(I id, const colecInterdep<I, V> &c)
 template <typename I, typename V>
 bool existeIndependiente(I id, const colecInterdep<I, V> &c)
 {
-    bool esDep = false, salir = false;
+    bool esInd = false, salir = false;
 
     // Itera la coleccion desde el primer nodo en busca del elemento con identificador `id`
     typename colecInterdep<I, V>::nodo *nodoActual = c.primero;
@@ -541,7 +523,7 @@ bool existeIndependiente(I id, const colecInterdep<I, V> &c)
         if (nodoActual->ident == id)
         {
             // No existen identificadores repetidos, por lo que el resultado depende de si este nodo es dependiente o no
-            esDep = nodoActual->super != nullptr;
+            esInd = nodoActual->super == nullptr;
             salir = true;
         }
 
@@ -558,7 +540,7 @@ bool existeIndependiente(I id, const colecInterdep<I, V> &c)
         }
     }
 
-    return !esDep;
+    return esInd;
 }
 
 /**
@@ -701,36 +683,40 @@ void anyadirDependiente(colecInterdep<I, V> &c, I id, V v, I super)
 template <typename I, typename V>
 void hacerDependiente(const colecInterdep<I, V> &c, I id, I super)
 {
-    typename colecInterdep<I, V>::nodo *dep = nullptr;
-    typename colecInterdep<I, V>::nodo *sup = nullptr;
-
-    // Busca las referencias a los nodos del elemento y su supervisor
-    for (
-        typename colecInterdep<I, V>::nodo *nodo = c.primero;
-        nodo != nullptr && (dep == nullptr || sup == nullptr);
-        nodo = nodo->sig)
+    // Un elemento no puede depender de si mismo
+    if (id != super)
     {
-        if (nodo->ident == id)
-        {
-            dep = nodo;
-        }
-        if (nodo->ident == super)
-        {
-            sup = nodo;
-        }
-    }
+        typename colecInterdep<I, V>::nodo *dep = nullptr;
+        typename colecInterdep<I, V>::nodo *sup = nullptr;
 
-    // Si ha encontrado ambos nodos, actualiza los campos correspondientes
-    if (dep != nullptr && sup != nullptr)
-    {
-        // Si `dep` ya era dependiente, se decrementa el contador de su antiguo supervisor
-        if (dep->super != nullptr)
+        // Busca las referencias a los nodos del elemento y su supervisor
+        for (
+            typename colecInterdep<I, V>::nodo *nodo = c.primero;
+            nodo != nullptr && (dep == nullptr || sup == nullptr);
+            nodo = nodo->sig)
         {
-            dep->super->numDepend--;
+            if (nodo->ident == id)
+            {
+                dep = nodo;
+            }
+            if (nodo->ident == super)
+            {
+                sup = nodo;
+            }
         }
 
-        dep->super = sup;
-        sup->numDepend++;
+        // Si ha encontrado ambos nodos, actualiza los campos correspondientes
+        if (dep != nullptr && sup != nullptr)
+        {
+            // Si `dep` ya era dependiente, se decrementa el contador de su antiguo supervisor
+            if (dep->super != nullptr)
+            {
+                dep->super->numDepend--;
+            }
+
+            dep->super = sup;
+            sup->numDepend++;
+        }
     }
 }
 
@@ -1115,6 +1101,6 @@ void avanzarIterador(colecInterdep<I, V> &c, bool &error)
     }
 }
 
-// FIN IMPLEMENTACION DEL TAD GENERICO coleccionInterdep (fin IMPLEMENTACION)
+// FIN DECLARACION DEL TAD GENERICO coleccionInterdep (fin IMPLEMENTACION)
 
 #endif // COLECINTERDEP_HPP

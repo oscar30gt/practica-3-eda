@@ -22,6 +22,13 @@
 
 using namespace std;
 
+/*
+ * Funciones que implementan las instrucciones del programa.
+ * Cada función lee los argumentos necesarios de un flujo de
+ * entrada `i` (si los necesita), actualiza la colección `c`
+ * y escribe los resultados de la operación en un flujo de
+ * salida `o`.
+ */
 void A(colecInterdep<string, evento> &c, ifstream &i, ofstream &o);
 void C(colecInterdep<string, evento> &c, ifstream &i, ofstream &o);
 void O(colecInterdep<string, evento> &c, ifstream &i, ofstream &o);
@@ -34,8 +41,8 @@ void LT(colecInterdep<string, evento> &c, ofstream &o);
 
 /**
  * @brief Programa principal de la práctica 3.
- * 
- * Lee las instrucciones de un fichero de entrada y las ejecuta sobre una 
+ *
+ * Lee las instrucciones de un fichero de entrada y las ejecuta sobre una
  * colección de eventos `colecInterdep<string, evento>`. Escribe de forma
  * formateada los resultados de las instrucciones en un fichero de salida.
  */
@@ -62,9 +69,11 @@ int main()
     }
 
     // Lee las instrucciones del fichero de entrada y las ejecuta
-    string instruccion;
-    while (getline(entrada, instruccion))
+    string instruccion, salto;
+    while (entrada >> instruccion)
     {
+        getline(entrada, salto); // Ignorar el resto de la línea
+
         if (instruccion == "A")
             A(c, entrada, salida);
         else if (instruccion == "C")
@@ -157,6 +166,7 @@ void C(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
     {
         cambiarDescripcion(e, desc);
         cambiarPrioridad(e, prio);
+        actualizarVal(c, id, e, error);
 
         int numDep;
         obtenerNumDependientes(id, c, numDep, error);
@@ -253,9 +263,11 @@ void I(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
     {
         o << "NO INDEPENDIZADO: ";
     }
+
+    o << id << endl;
 }
 
-// D: Hacer dependiente (2 argumentos: id del evento y id del evento supervisor)
+// D: Hacer dependiente (2 argumentos: id del evento e id del evento supervisor)
 void D(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
 {
     string dep, sup;
@@ -275,7 +287,7 @@ void D(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
     o << dep << " -de-> " << sup << endl;
 }
 
-// B: Borrar evento (1 argumento: identificador del evento)
+// B: Borrar evento (1 argumento: id del evento)
 void B(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
 {
     string id;
@@ -290,7 +302,7 @@ void B(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
         o << "NO BORRADO: " << id << endl;
 }
 
-// LD: Listar eventos dependientes de un evento dado (1 argumento: identificador del evento)
+// LD: Listar eventos dependientes de un evento dado (1 argumento: id del evento)
 void LD(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
 {
     // Id del evento a borrar
@@ -358,8 +370,8 @@ void LD(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
                     siguienteNumDependientes(c, numDepDep, error);
                     // Dado que existe siguiente, no hay errores
 
-                    o << "[ " << i++ << " -> " << idDep
-                      << " -de-> " << id << " ;;; " << numDepDep << " ] --- "
+                    o << "[" << i++ << " -> " << idDep
+                      << " -de-> " << id << " ;;;  " << numDepDep << " ] --- "
                       << descripcion(evDep)
                       << " --- ( " << suPrioridad(evDep) << " ) ;;;;" << endl;
                 }
@@ -370,7 +382,7 @@ void LD(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
         }
     }
 
-    o << "FINAL dependientes -de->" << id << endl;
+    o << "****FINAL dependientes -de-> " << id << endl;
 }
 
 // LT: Listar todos los eventos de la coleccion (0 argumentos)
@@ -403,7 +415,7 @@ void LT(colecInterdep<string, evento> &c, ofstream &o)
         else // El elemento es dependiente
         {
             o << "[ " << id << " -de-> " << sup
-              << " ;;; " << numDep << " ] --- "
+              << " ;;;  " << numDep << " ] --- "
               << descripcion(ev)
               << " --- ( " << suPrioridad(ev) << " ) " << endl;
         }

@@ -15,8 +15,8 @@
  * @param[out] e Evento cuyo valor se quiere inicializar.
  */
 void crearEvento(string descrip, int prio, evento& e) {
-    e.descripcion = descrip;
-    e.prioridad = prio;
+    e.desc = descrip;
+    e.pri = prio;
 }
 
 /**
@@ -25,7 +25,7 @@ void crearEvento(string descrip, int prio, evento& e) {
  * @return Descripción del evento.
  */
 string descripcion(const evento& e) {
-    return e.descripcion;
+    return e.desc;
 }
 
 /**
@@ -34,7 +34,7 @@ string descripcion(const evento& e) {
  * @param nueva Nueva descripción del evento.
  */
 void cambiarDescripcion(evento& e, const string nueva) {
-    e.descripcion = nueva;
+    e.desc = nueva;
 }
 
 /**
@@ -43,7 +43,7 @@ void cambiarDescripcion(evento& e, const string nueva) {
  * @returns Prioridad del evento.
  */
 int suPrioridad(const evento& e) {
-    return e.prioridad;
+    return e.pri;
 }
 
 /**
@@ -52,5 +52,5 @@ int suPrioridad(const evento& e) {
  * @param pri Nueva prioridad del evento.
  */
 void cambiarPrioridad(evento& e, const int pri) {
-    e.prioridad = pri;
+    e.pri = pri;
 }
