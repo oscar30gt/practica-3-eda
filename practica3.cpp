@@ -206,7 +206,6 @@ void O(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
     {
         int numDep;
         obtenerNumDependientes(id, c, numDep, error);
-        // El elemento siempre existe (comprobado antes)
 
         string sup;
         obtenerSupervisor(id, c, sup, error);

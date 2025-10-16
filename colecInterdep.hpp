@@ -14,21 +14,23 @@ using namespace std;
 // PREDECLARACION DEL TAD GENERICO colecInterdep (inicio INTERFAZ)
 
 /**
- *  @struct colecInterdep.
- *  @brief Los valores del TAD representan colecciones de elementos formados como tuplas
- *  de la forma (ident, val, -, NumDepend) o bien (ident, val, identSup, NumDepend). A los elementos
- *  con forma (ident, val, -, NumDepend) los llamaremos en general ‘elementos independientes’,
- *  mientras que a los elementos con forma (ident, val, identSup, NumDepend), los llamaremos en
- *  general ‘elementos dependientes’. En la colección no podrá haber dos elementos con el mismo
- *  ident.
- *  En las tuplas que representan elementos dependientes, la información identSup será la
- *  identificación del elemento del que es directamente dependiente el elemento con identificación
- *  ident. Ningún elemento de la colección podrá ser directamente dependiente de sí mismo, y todo
- *  elemento dependiente debe serlo de otro elemento que exista en la colección (que a su vez puede
- *  ser un elemento independiente o dependiente).
- *  En cada elemento, la información NumDepend de su tupla representará el número total de elementos
- *  en la colección que son directamente dependientes del elemento con identificador ident, y que
- *  será 0 si ningún elemento de la colección depende de dicho elemento.}
+ * @struct colecInterdep
+ * @brief Representa una colección de elementos, cada uno definido como una tupla con la forma:
+ *        - (ident, val, -, NumDepend) para elementos independientes.
+ *        - (ident, val, `identSup`, NumDepend) para elementos dependientes.
+ *
+ * Los elementos independientes son aquellos con la forma (ident, val, -, NumDepend), mientras que
+ * los elementos dependientes tienen la forma (ident, val, identSup, NumDepend). No pueden existir
+ * dos elementos en la colección con el mismo identificador `ident`.
+ *
+ * Para los elementos dependientes, el campo `identSup` representa el identificador del elemento del
+ * que dependen directamente. Ningún elemento en la colección puede depender directamente de sí mismo,
+ * y cada elemento dependiente debe depender de otro elemento existente en la colección (que puede ser
+ * independiente o dependiente).
+ *
+ * El campo `NumDepend` en la tupla de cada elemento representa el número total de elementos en la colección
+ * que dependen directamente del elemento con el identificador dado (`ident`). Si no hay elementos que dependan
+ * de él, `NumDepend` será 0.
  */
 template <typename I, typename V>
 struct colecInterdep;
@@ -432,29 +434,16 @@ bool esVacia(const colecInterdep<I, V> &c)
 template <typename I, typename V>
 bool existe(I id, const colecInterdep<I, V> &c)
 {
-    bool encontrado = false, salir = false;
+    bool encontrado = false;
 
-    // Itera la coleccion desde el primer nodo en busca del elemento con identificador `id`
-    typename colecInterdep<I, V>::nodo *nodoActual = c.primero;
-    while (nodoActual != nullptr && !salir)
+    // Itera la coleccion desde el primer nodo hasta la posicion donde deberia estar el elemento con identificador `id`
+    for (typename colecInterdep<I, V>::nodo *nodo = c.primero;
+         nodo != nullptr && nodo->ident <= id;
+         nodo = nodo->sig)
     {
-        // Si encuentra el identificador, deja de buscar
-        if (nodoActual->ident == id)
+        if (nodo->ident == id)
         {
             encontrado = true;
-            salir = true;
-        }
-
-        // Si se ha pasado la posicion donde deberia estar el identificador, deja de buscar
-        else if (nodoActual->ident > id)
-        {
-            salir = true;
-        }
-
-        // Avanza al siguiente nodo
-        else
-        {
-            nodoActual = nodoActual->sig;
         }
     }
 
@@ -472,30 +461,17 @@ bool existe(I id, const colecInterdep<I, V> &c)
 template <typename I, typename V>
 bool existeDependiente(I id, const colecInterdep<I, V> &c)
 {
-    bool esDep = false, salir = false;
+    bool esDep = false;
 
-    // Itera la coleccion desde el primer nodo en busca del elemento con identificador `id`
-    typename colecInterdep<I, V>::nodo *nodoActual = c.primero;
-    while (nodoActual != nullptr && !salir)
+    // Itera la coleccion desde el primer nodo hasta la posicion donde deberia estar el elemento con identificador `id`
+    for (typename colecInterdep<I, V>::nodo *nodo = c.primero;
+         nodo != nullptr && nodo->ident <= id;
+         nodo = nodo->sig)
     {
-        // Si encuentra el identificador, deja de buscar
-        if (nodoActual->ident == id)
+        if (nodo->ident == id)
         {
             // No existen identificadores repetidos, por lo que el resultado depende de si este nodo es dependiente o no
-            esDep = nodoActual->super != nullptr;
-            salir = true;
-        }
-
-        // Si se ha pasado la posicion donde deberia estar el identificador, deja de buscar
-        else if (nodoActual->ident > id)
-        {
-            salir = true;
-        }
-
-        // Avanza al siguiente nodo
-        else
-        {
-            nodoActual = nodoActual->sig;
+            esDep = nodo->super != nullptr;
         }
     }
 
@@ -513,30 +489,17 @@ bool existeDependiente(I id, const colecInterdep<I, V> &c)
 template <typename I, typename V>
 bool existeIndependiente(I id, const colecInterdep<I, V> &c)
 {
-    bool esInd = false, salir = false;
+    bool esInd = false;
 
-    // Itera la coleccion desde el primer nodo en busca del elemento con identificador `id`
-    typename colecInterdep<I, V>::nodo *nodoActual = c.primero;
-    while (nodoActual != nullptr && !salir)
+    // Itera la coleccion desde el primer nodo hasta la posicion donde deberia estar el elemento con identificador `id`
+    for (typename colecInterdep<I, V>::nodo *nodo = c.primero;
+         nodo != nullptr && nodo->ident <= id;
+         nodo = nodo->sig)
     {
-        // Si encuentra el identificador, guarda si es dependiente o no
-        if (nodoActual->ident == id)
+        if (nodo->ident == id)
         {
             // No existen identificadores repetidos, por lo que el resultado depende de si este nodo es dependiente o no
-            esInd = nodoActual->super == nullptr;
-            salir = true;
-        }
-
-        // Si se ha pasado la posicion donde deberia estar el identificador, deja de buscar
-        else if (nodoActual->ident > id)
-        {
-            salir = true;
-        }
-
-        // Avanza al siguiente nodo
-        else
-        {
-            nodoActual = nodoActual->sig;
+            esInd = nodo->super == nullptr;
         }
     }
 
@@ -555,7 +518,7 @@ bool existeIndependiente(I id, const colecInterdep<I, V> &c)
 template <typename I, typename V>
 void anyadirIndependiente(colecInterdep<I, V> &c, I id, V v)
 {
-    // Se insertara justo antes del nodoActual, y despues del nodoAnterior
+    // Se insertara justo antes del `nodoActual`, y despues del `nodoAnterior`
     typename colecInterdep<I, V>::nodo *nodoActual = c.primero;
     typename colecInterdep<I, V>::nodo *nodoAnterior = nullptr;
 
@@ -608,7 +571,7 @@ void anyadirDependiente(colecInterdep<I, V> &c, I id, V v, I super)
     // Ademas, ya que un elemento no puede depender de si mismo, `id` y `super` deben ser distintos.
     if (c.tam > 0 && id != super)
     {
-        // Se insertara justo antes del nodoActual, y despues del nodoAnterior, con dependencia del nodoSuper
+        // Se insertara justo antes del `nodoActual`, y despues del `nodoAnterior`, con dependencia del `nodoSuper`
         typename colecInterdep<I, V>::nodo *nodoActual = c.primero;
         typename colecInterdep<I, V>::nodo *nodoAnterior = nullptr;
         typename colecInterdep<I, V>::nodo *nodoSuper = nullptr;
@@ -626,7 +589,7 @@ void anyadirDependiente(colecInterdep<I, V> &c, I id, V v, I super)
         }
 
         // Si aun no se ha encontrado el supervisor, sigue buscando desde el punto
-        // donde se ha quedado, manteniendo un coste O(n), pero sin avanzar el nodoActual
+        // donde se ha quedado, manteniendo un coste O(n), pero sin avanzar `nodoActual`
         if (nodoSuper == nullptr)
         {
             nodoSuper = nodoActual;
@@ -686,22 +649,29 @@ void hacerDependiente(const colecInterdep<I, V> &c, I id, I super)
     // Un elemento no puede depender de si mismo
     if (id != super)
     {
-        typename colecInterdep<I, V>::nodo *dep = nullptr;
+        // Se busca el nodo `dep`, que dependera de `sup`
+        typename colecInterdep<I, V>::nodo *dep = c.primero;
         typename colecInterdep<I, V>::nodo *sup = nullptr;
 
-        // Busca las referencias a los nodos del elemento y su supervisor
-        for (
-            typename colecInterdep<I, V>::nodo *nodo = c.primero;
-            nodo != nullptr && (dep == nullptr || sup == nullptr);
-            nodo = nodo->sig)
+        // Itera la coleccion usando `dep` como iterador, pero buscando `sup` al mismo tiempo
+        while (dep != nullptr && dep->ident < id)
         {
-            if (nodo->ident == id)
+            // Busca el supervisor mientras itera
+            if (dep->ident == super)
             {
-                dep = nodo;
+                sup = dep;
             }
-            if (nodo->ident == super)
+            dep = dep->sig;
+        }
+
+        // Si aun no se ha encontrado el supervisor, sigue buscando desde el punto
+        // donde se ha quedado, manteniendo un coste O(n), pero sin avanzar `dep`
+        if (sup == nullptr)
+        {
+            sup = dep;
+            while (sup != nullptr && sup->ident != super)
             {
-                sup = nodo;
+                sup = sup->sig;
             }
         }
 
@@ -732,25 +702,21 @@ void hacerDependiente(const colecInterdep<I, V> &c, I id, I super)
 template <typename I, typename V>
 void hacerIndependiente(const colecInterdep<I, V> &c, I id)
 {
-    typename colecInterdep<I, V>::nodo *dep = nullptr;
-
-    // Busca la referencia al nodo del elemento dependiente
+    // Itera la coleccion hasta el punto donde deberia estar el elemento con identificador `id`
     for (
         typename colecInterdep<I, V>::nodo *nodo = c.primero;
-        nodo != nullptr && dep == nullptr;
+        nodo != nullptr && nodo->ident <= id;
         nodo = nodo->sig)
     {
+        // Si encuentra el identificador, lo hace independiente (si no lo era antes)
         if (nodo->ident == id)
         {
-            dep = nodo;
+            if (nodo->super != nullptr)
+            {
+                nodo->super->numDepend--;
+            }
+            nodo->super = nullptr;
         }
-    }
-
-    // Si ha encontrado el nodo (y este es dependiente), se actualizan sus campos y los de su antiguo supervisor
-    if (dep != nullptr && dep->super != nullptr)
-    {
-        dep->super->numDepend--;
-        dep->super = nullptr;
     }
 }
 
@@ -768,21 +734,20 @@ void hacerIndependiente(const colecInterdep<I, V> &c, I id)
 template <typename I, typename V>
 void actualizarVal(const colecInterdep<I, V> &c, I id, V nuevo, bool &error)
 {
-    bool encontrado = false;
+    error = true;
 
-    // Busca el nodo con identificador `id` y actualiza su valor
+    // Itera la coleccion hasta el punto donde deberia estar el elemento con identificador `id`
     for (typename colecInterdep<I, V>::nodo *nodo = c.primero;
-         nodo != nullptr && !encontrado;
+         nodo != nullptr && nodo->ident <= id;
          nodo = nodo->sig)
     {
+        // Si encuentra el identificador, actualiza su valor
         if (nodo->ident == id)
         {
             nodo->val = nuevo;
-            encontrado = true;
+            error = false;
         }
     }
-
-    error = !encontrado;
 }
 
 /**
@@ -799,21 +764,20 @@ void actualizarVal(const colecInterdep<I, V> &c, I id, V nuevo, bool &error)
 template <typename I, typename V>
 void obtenerVal(I id, const colecInterdep<I, V> &c, V &v, bool &error)
 {
-    bool encontrado = false;
+    error = true;
 
-    // Busca el nodo con identificador `id` y devuelve su valor
+    // Itera la coleccion hasta el punto donde deberia estar el elemento con identificador `id`
     for (typename colecInterdep<I, V>::nodo *nodo = c.primero;
-         nodo != nullptr && !encontrado;
+         nodo != nullptr && nodo->ident <= id;
          nodo = nodo->sig)
     {
+        // Si encuentra el identificador, guarda su valor
         if (nodo->ident == id)
         {
             v = nodo->val;
-            encontrado = true;
+            error = false;
         }
     }
-
-    error = !encontrado;
 }
 
 /**
@@ -830,28 +794,21 @@ void obtenerVal(I id, const colecInterdep<I, V> &c, V &v, bool &error)
 template <typename I, typename V>
 void obtenerSupervisor(I id, const colecInterdep<I, V> &c, I &sup, bool &error)
 {
-    bool encontrado = false, esDep = false;
-    typename colecInterdep<I, V>::nodo *nodo = c.primero;
+    error = true;
 
-    // Busca el nodo con identificador `id` y devuelve su supervisor
+    // Itera la coleccion hasta el punto donde deberia estar el elemento con identificador `id`
     for (typename colecInterdep<I, V>::nodo *nodo = c.primero;
-         nodo != nullptr && !encontrado;
+         nodo != nullptr && nodo->ident <= id;
          nodo = nodo->sig)
     {
-        if (nodo->ident == id)
+        // Si encuentra el identificador, comprueba si es dependiente y guarda su supervisor
+        // Solo se puede obtener el supervisor si el nodo es dependiente
+        if (nodo->ident == id && nodo->super != nullptr)
         {
-            // Solo se puede obtener el supervisor si el nodo es dependiente
-            if (nodo->super != nullptr)
-            {
-                esDep = true;
-                sup = nodo->super->ident;
-            }
-
-            encontrado = true;
+            sup = nodo->super->ident;
+            error = false;
         }
     }
-
-    error = !encontrado || !esDep;
 }
 
 /**
@@ -868,21 +825,20 @@ void obtenerSupervisor(I id, const colecInterdep<I, V> &c, I &sup, bool &error)
 template <typename I, typename V>
 void obtenerNumDependientes(I id, const colecInterdep<I, V> &c, int &num, bool &error)
 {
-    bool encontrado = false;
+    error = true;
 
     // Busca el nodo con identificador `id` y devuelve su numero de dependientes
     for (typename colecInterdep<I, V>::nodo *nodo = c.primero;
-         nodo != nullptr && !encontrado;
+         nodo != nullptr && nodo->ident <= id;
          nodo = nodo->sig)
     {
+        // Si encuentra el identificador, guarda su numero de dependientes
         if (nodo->ident == id)
         {
             num = nodo->numDepend;
-            encontrado = true;
+            error = false;
         }
     }
-
-    error = !encontrado;
 }
 
 /**
@@ -902,14 +858,14 @@ void borrar(I id, colecInterdep<I, V> &c)
     typename colecInterdep<I, V>::nodo *nodoAnterior = nullptr;
 
     // Itera la coleccion en busca del nodo con identificador `id`
-    while (nodoActual != nullptr && nodoActual->ident != id)
+    while (nodoActual != nullptr && nodoActual->ident < id)
     {
         nodoAnterior = nodoActual;
         nodoActual = nodoActual->sig;
     }
 
     // Si no encuentra el identificador o tiene elementos que dependen de él, no se realiza ningun cambio
-    if (nodoActual != nullptr && nodoActual->numDepend == 0)
+    if (nodoActual != nullptr && nodoActual->ident == id && nodoActual->numDepend == 0)
     {
         // Si el nodo a borrar es dependiente, actualiza el numero de dependientes del supervisor
         if (nodoActual->super != nullptr)
@@ -971,14 +927,10 @@ bool existeSiguiente(const colecInterdep<I, V> &c)
 template <typename I, typename V>
 void siguienteIdent(const colecInterdep<I, V> &c, I &id, bool &error)
 {
-    if (existeSiguiente(c))
+    error = !existeSiguiente(c);
+    if (!error)
     {
         id = c.actual->ident;
-        error = false;
-    }
-    else
-    {
-        error = true;
     }
 }
 
@@ -995,14 +947,10 @@ void siguienteIdent(const colecInterdep<I, V> &c, I &id, bool &error)
 template <typename I, typename V>
 void siguienteVal(const colecInterdep<I, V> &c, V &v, bool &error)
 {
-    if (existeSiguiente(c))
+    error = !existeSiguiente(c);
+    if (!error)
     {
         v = c.actual->val;
-        error = false;
-    }
-    else
-    {
-        error = true;
     }
 }
 
@@ -1019,14 +967,10 @@ void siguienteVal(const colecInterdep<I, V> &c, V &v, bool &error)
 template <typename I, typename V>
 void siguienteDependiente(const colecInterdep<I, V> &c, bool &dep, bool &error)
 {
-    if (existeSiguiente(c))
+    error = !existeSiguiente(c);
+    if (!error)
     {
         dep = c.actual->super != nullptr;
-        error = false;
-    }
-    else
-    {
-        error = true;
     }
 }
 
@@ -1043,14 +987,10 @@ void siguienteDependiente(const colecInterdep<I, V> &c, bool &dep, bool &error)
 template <typename I, typename V>
 void siguienteSuperior(const colecInterdep<I, V> &c, I &id, bool &error)
 {
-    if (existeSiguiente(c) && c.actual->super != nullptr) // Siguiente dependiente
+    error = !existeSiguiente(c) || c.actual->super == nullptr;
+    if (!error)
     {
         id = c.actual->super->ident;
-        error = false;
-    }
-    else
-    {
-        error = true;
     }
 }
 
@@ -1067,14 +1007,10 @@ void siguienteSuperior(const colecInterdep<I, V> &c, I &id, bool &error)
 template <typename I, typename V>
 void siguienteNumDependientes(const colecInterdep<I, V> &c, int &num, bool &error)
 {
-    if (existeSiguiente(c))
+    error = !existeSiguiente(c);
+    if (!error)
     {
         num = c.actual->numDepend;
-        error = false;
-    }
-    else
-    {
-        error = true;
     }
 }
 
@@ -1090,14 +1026,10 @@ void siguienteNumDependientes(const colecInterdep<I, V> &c, int &num, bool &erro
 template <typename I, typename V>
 void avanzarIterador(colecInterdep<I, V> &c, bool &error)
 {
-    if (existeSiguiente(c))
+    error = !existeSiguiente(c);
+    if (!error)
     {
         c.actual = c.actual->sig;
-        error = false;
-    }
-    else
-    {
-        error = true;
     }
 }
 
