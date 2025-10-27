@@ -1,90 +1,87 @@
------LISTADO: 0
------
-NO CAMBIADO: apertura_2025_10_6
-INTRODUCIDO: [ cierre_2025_10_6 ] --- Cierre del edificio --- ( 2 )
-INTENTANDO hacer depend.: cierre_2025_10_6 -de-> cierre_2025_10_6
-NO INTRODUCIDO: [ ON_luces Z008 -de-> presencia_S008 ] --- Encendidas luces008, deteccion sensor presencia --- ( 2 )
-****DEPENDIENTES: presencia_S008
-****DESCONOCIDO
+INTRODUCIDO: [ gp_silverstone_2025 ] --- Comienzo del F1 GP de Silverstone 2025 --- ( 1 )
 -----LISTADO: 1
-[ cierre_2025_10_6 --- 0 ] --- Cierre del edificio --- ( 2 ) 
+[ gp_silverstone_2025 --- 0 ] --- Comienzo del F1 GP de Silverstone 2025 --- ( 1 ) 
 -----
-INTRODUCIDO: [ Validacion_P001_exterior ] --- Validacion acceso en puerta P001, desde exterior --- ( 3 )
-INTRODUCIDO: [ apertura_P001 -de-> Validacion_P001_exterior ] --- Abierta puerta P001  --- ( 3 )
-INTRODUCIDO: [ presencia_S008 ] --- Deteccion presencia, sensor S008 --- ( 3 )
-INTRODUCIDO: [ ON_luces Z008 -de-> presencia_S008 ] --- Encendidas luces008, deteccion sensor presencia --- ( 4 )
-INTRODUCIDO: [ OFF_luces Z008 -de-> ON_luces Z008 ] --- Apagadas luces zona 008, por expiracion tiempo --- ( 2 )
+INTRODUCIDO: [ formation_lap -de-> gp_silverstone_2025 ] --- Comienza vuelta de formacion --- ( 2 )
+INTRODUCIDO: [ CL16_pits -de-> formation_lap ] --- Charles Leclerc entra en boxes --- ( 2 )
+CAMBIADO: [ CL16_pits -de-> formation_lap ;;; 0 ] --- Charles Leclerc y George Russell entran en boxes --- ( 2 )
+-----LISTADO: 3
+[ CL16_pits -de-> formation_lap ;;;  0 ] --- Charles Leclerc y George Russell entran en boxes --- ( 2 ) 
+[ formation_lap -de-> gp_silverstone_2025 ;;;  1 ] --- Comienza vuelta de formacion --- ( 2 ) 
+[ gp_silverstone_2025 --- 1 ] --- Comienzo del F1 GP de Silverstone 2025 --- ( 1 ) 
+-----
+DESCONOCIDO: CS55_pits
+****DEPENDIENTES: formation_lap
+[ formation_lap -de-> gp_silverstone_2025 ;;; 1 ] --- Comienza vuelta de formacion --- ( 2 ) ****
+[1 -> CL16_pits -de-> formation_lap ;;;  0 ] --- Charles Leclerc y George Russell entran en boxes --- ( 2 ) ;;;;
+****FINAL dependientes -de-> formation_lap
+INTRODUCIDO: [ race_start -de-> gp_silverstone_2025 ] --- Comienzo de la carrera --- ( 1 )
+INTRODUCIDO: [ rain_prediction ] --- Prediccion de lluvia para la vuelta 15 --- ( 3 )
+CAMBIADO: [ rain_prediction --- 0 ] --- Lluvia prevista para la vuelta 13 --- ( 2 )
+INTRODUCIDO: [ red_flag ] --- La lluvia obliga a detener la carrera --- ( 1 )
+INTENTANDO hacer depend.: red_flag -de-> rain_prediction
 -----LISTADO: 6
-[ OFF_luces Z008 -de-> ON_luces Z008 ;;;  0 ] --- Apagadas luces zona 008, por expiracion tiempo --- ( 2 ) 
-[ ON_luces Z008 -de-> presencia_S008 ;;;  1 ] --- Encendidas luces008, deteccion sensor presencia --- ( 4 ) 
-[ Validacion_P001_exterior --- 1 ] --- Validacion acceso en puerta P001, desde exterior --- ( 3 ) 
-[ apertura_P001 -de-> Validacion_P001_exterior ;;;  0 ] --- Abierta puerta P001  --- ( 3 ) 
-[ cierre_2025_10_6 --- 0 ] --- Cierre del edificio --- ( 2 ) 
-[ presencia_S008 --- 1 ] --- Deteccion presencia, sensor S008 --- ( 3 ) 
+[ CL16_pits -de-> formation_lap ;;;  0 ] --- Charles Leclerc y George Russell entran en boxes --- ( 2 ) 
+[ formation_lap -de-> gp_silverstone_2025 ;;;  1 ] --- Comienza vuelta de formacion --- ( 2 ) 
+[ gp_silverstone_2025 --- 2 ] --- Comienzo del F1 GP de Silverstone 2025 --- ( 1 ) 
+[ race_start -de-> gp_silverstone_2025 ;;;  0 ] --- Comienzo de la carrera --- ( 1 ) 
+[ rain_prediction --- 1 ] --- Lluvia prevista para la vuelta 13 --- ( 2 ) 
+[ red_flag -de-> rain_prediction ;;;  0 ] --- La lluvia obliga a detener la carrera --- ( 1 ) 
 -----
-LOCALIZADO: [ presencia_S008 --- 1 ] --- Deteccion presencia, sensor S008 --- ( 3 )
-LOCALIZADO: [ OFF_luces Z008 -de-> ON_luces Z008 ;;; 0 ] --- Apagadas luces zona 008, por expiracion tiempo --- ( 2 )
-NO LOCALIZADO: apertura_2025_10_7
-INDEPendiente: presencia_S008
-DEPendiente: OFF_luces Z008
-DESCONOCIDO: apertura_2025_10_7
-****DEPENDIENTES: Validacion_P001_exterior
-[ Validacion_P001_exterior --- 1 ] --- Validacion acceso en puerta P001, desde exterior --- ( 3 ) ****
-[1 -> apertura_P001 -de-> Validacion_P001_exterior ;;;  0 ] --- Abierta puerta P001  --- ( 3 ) ;;;;
-****FINAL dependientes -de-> Validacion_P001_exterior
-CAMBIADO: [ apertura_P001 -de-> Validacion_P001_exterior ;;; 0 ] --- Abierta puerta P001, previa validacion --- ( 2 )
-LOCALIZADO: [ apertura_P001 -de-> Validacion_P001_exterior ;;; 0 ] --- Abierta puerta P001, previa validacion --- ( 2 )
-CAMBIADO: [ presencia_S008 --- 1 ] --- presencia, sensor S008 --- ( 4 )
-****DEPENDIENTES: presencia_S008
-[ presencia_S008 --- 1 ] --- presencia, sensor S008 --- ( 4 ) ****
-[1 -> ON_luces Z008 -de-> presencia_S008 ;;;  1 ] --- Encendidas luces008, deteccion sensor presencia --- ( 4 ) ;;;;
-****FINAL dependientes -de-> presencia_S008
------LISTADO: 6
-[ OFF_luces Z008 -de-> ON_luces Z008 ;;;  0 ] --- Apagadas luces zona 008, por expiracion tiempo --- ( 2 ) 
-[ ON_luces Z008 -de-> presencia_S008 ;;;  1 ] --- Encendidas luces008, deteccion sensor presencia --- ( 4 ) 
-[ Validacion_P001_exterior --- 1 ] --- Validacion acceso en puerta P001, desde exterior --- ( 3 ) 
-[ apertura_P001 -de-> Validacion_P001_exterior ;;;  0 ] --- Abierta puerta P001, previa validacion --- ( 2 ) 
-[ cierre_2025_10_6 --- 0 ] --- Cierre del edificio --- ( 2 ) 
-[ presencia_S008 --- 1 ] --- presencia, sensor S008 --- ( 4 ) 
+INTRODUCIDO: [ race_restart -de-> race_start ] --- Reinicio de la carrera --- ( 1 )
+BORRADO: red_flag
+INTRODUCIDO: [ LS18_incident ] --- Incidente de Lance Stroll en la vuelta 18 --- ( 2 )
+INTENTANDO hacer depend.: LS18_incident -de-> gp_silverstone_2025
+****DEPENDIENTES: gp_silverstone_2025
+[ gp_silverstone_2025 --- 3 ] --- Comienzo del F1 GP de Silverstone 2025 --- ( 1 ) ****
+[1 -> LS18_incident -de-> gp_silverstone_2025 ;;;  0 ] --- Incidente de Lance Stroll en la vuelta 18 --- ( 2 ) ;;;;
+[2 -> formation_lap -de-> gp_silverstone_2025 ;;;  1 ] --- Comienza vuelta de formacion --- ( 2 ) ;;;;
+[3 -> race_start -de-> gp_silverstone_2025 ;;;  1 ] --- Comienzo de la carrera --- ( 1 ) ;;;;
+****FINAL dependientes -de-> gp_silverstone_2025
+INTRODUCIDO: [ safety_car -de-> LS18_incident ] --- Salida del coche de seguridad --- ( 1 )
+INDEPENDIZADO: safety_car
+BORRADO: LS18_incident
+BORRADO: rain_prediction
+CAMBIADO: [ safety_car --- 0 ] --- Fin del coche de seguridad. --- ( 2 )
+INTRODUCIDO: [ OP18_under_investigation -de-> safety_car ] --- Oscar Piastri bajo investigacion por incidente durante el fin del coche de seguridad --- ( 3 )
+INTRODUCIDO: [ MV01_track_exit ] --- Salida de pista de Max Verstappen --- ( 3 )
+-----LISTADO: 8
+[ CL16_pits -de-> formation_lap ;;;  0 ] --- Charles Leclerc y George Russell entran en boxes --- ( 2 ) 
+[ MV01_track_exit --- 0 ] --- Salida de pista de Max Verstappen --- ( 3 ) 
+[ OP18_under_investigation -de-> safety_car ;;;  0 ] --- Oscar Piastri bajo investigacion por incidente durante el fin del coche de seguridad --- ( 3 ) 
+[ formation_lap -de-> gp_silverstone_2025 ;;;  1 ] --- Comienza vuelta de formacion --- ( 2 ) 
+[ gp_silverstone_2025 --- 2 ] --- Comienzo del F1 GP de Silverstone 2025 --- ( 1 ) 
+[ race_restart -de-> race_start ;;;  0 ] --- Reinicio de la carrera --- ( 1 ) 
+[ race_start -de-> gp_silverstone_2025 ;;;  1 ] --- Comienzo de la carrera --- ( 1 ) 
+[ safety_car --- 1 ] --- Fin del coche de seguridad. --- ( 2 ) 
 -----
-INTENTANDO hacer depend.: OFF_luces Z008 -de-> presencia_S008
-****DEPENDIENTES: presencia_S008
-[ presencia_S008 --- 2 ] --- presencia, sensor S008 --- ( 4 ) ****
-[1 -> OFF_luces Z008 -de-> presencia_S008 ;;;  0 ] --- Apagadas luces zona 008, por expiracion tiempo --- ( 2 ) ;;;;
-[2 -> ON_luces Z008 -de-> presencia_S008 ;;;  0 ] --- Encendidas luces008, deteccion sensor presencia --- ( 4 ) ;;;;
-****FINAL dependientes -de-> presencia_S008
-YA ERA INDepend.: Validacion_P001_exterior
-NO INDEPENDIZADO: apertura_2025_10_6
-INDEPENDIZADO: apertura_P001
-****DEPENDIENTES: Validacion_P001_exterior
-[ Validacion_P001_exterior --- 0 ] --- Validacion acceso en puerta P001, desde exterior --- ( 3 ) ****
-****FINAL dependientes -de-> Validacion_P001_exterior
-CAMBIADO: [ apertura_P001 --- 0 ] --- Abierta puerta P001 sin validacion acceso --- ( 5 )
-INTENTANDO hacer depend.: presencia_S008 -de-> apertura_P001
-IMPOSIBLE hacer depend.: cierre_2025_10_6 -de-> apertura_2025_10_6
------LISTADO: 6
-[ OFF_luces Z008 -de-> presencia_S008 ;;;  0 ] --- Apagadas luces zona 008, por expiracion tiempo --- ( 2 ) 
-[ ON_luces Z008 -de-> presencia_S008 ;;;  0 ] --- Encendidas luces008, deteccion sensor presencia --- ( 4 ) 
-[ Validacion_P001_exterior --- 0 ] --- Validacion acceso en puerta P001, desde exterior --- ( 3 ) 
-[ apertura_P001 --- 1 ] --- Abierta puerta P001 sin validacion acceso --- ( 5 ) 
-[ cierre_2025_10_6 --- 0 ] --- Cierre del edificio --- ( 2 ) 
-[ presencia_S008 -de-> apertura_P001 ;;;  2 ] --- presencia, sensor S008 --- ( 4 ) 
+BORRADO: MV01_track_exit
+CAMBIADO: [ OP18_under_investigation -de-> safety_car ;;; 0 ] --- Penalizacion de 10s a Oscar Piastri por el incidente durante el fin del coche de seguridad --- ( 4 )
+INDEPENDIZADO: OP18_under_investigation
+INTRODUCIDO: [ race_end -de-> gp_silverstone_2025 ] --- Final de la carrera --- ( 1 )
+INDEPendiente: gp_silverstone_2025
+LOCALIZADO: [ gp_silverstone_2025 --- 3 ] --- Comienzo del F1 GP de Silverstone 2025 --- ( 1 )
+INTRODUCIDO: [ LN04_wins -de-> race_end ] --- Lando Norris gana el GP de Silverstone 2025 --- ( 1 )
+NO BORRADO: gp_silverstone_2025
+****DEPENDIENTES: gp_silverstone_2025
+[ gp_silverstone_2025 --- 3 ] --- Comienzo del F1 GP de Silverstone 2025 --- ( 1 ) ****
+[1 -> formation_lap -de-> gp_silverstone_2025 ;;;  1 ] --- Comienza vuelta de formacion --- ( 2 ) ;;;;
+[2 -> race_end -de-> gp_silverstone_2025 ;;;  1 ] --- Final de la carrera --- ( 1 ) ;;;;
+[3 -> race_start -de-> gp_silverstone_2025 ;;;  1 ] --- Comienzo de la carrera --- ( 1 ) ;;;;
+****FINAL dependientes -de-> gp_silverstone_2025
+INDEPENDIZADO: formation_lap
+INDEPENDIZADO: race_start
+INDEPENDIZADO: race_end
+BORRADO: gp_silverstone_2025
+-----LISTADO: 8
+[ CL16_pits -de-> formation_lap ;;;  0 ] --- Charles Leclerc y George Russell entran en boxes --- ( 2 ) 
+[ LN04_wins -de-> race_end ;;;  0 ] --- Lando Norris gana el GP de Silverstone 2025 --- ( 1 ) 
+[ OP18_under_investigation --- 0 ] --- Penalizacion de 10s a Oscar Piastri por el incidente durante el fin del coche de seguridad --- ( 4 ) 
+[ formation_lap --- 1 ] --- Comienza vuelta de formacion --- ( 2 ) 
+[ race_end --- 1 ] --- Final de la carrera --- ( 1 ) 
+[ race_restart -de-> race_start ;;;  0 ] --- Reinicio de la carrera --- ( 1 ) 
+[ race_start --- 1 ] --- Comienzo de la carrera --- ( 1 ) 
+[ safety_car --- 0 ] --- Fin del coche de seguridad. --- ( 2 ) 
 -----
-NO BORRADO: apertura_2025_10_7
-BORRADO: OFF_luces Z008
-NO BORRADO: presencia_S008
-****DEPENDIENTES: presencia_S008
-[ presencia_S008 -de-> apertura_P001 ;;; 1 ] --- presencia, sensor S008 --- ( 4 ) ****
-[1 -> ON_luces Z008 -de-> presencia_S008 ;;;  0 ] --- Encendidas luces008, deteccion sensor presencia --- ( 4 ) ;;;;
-****FINAL dependientes -de-> presencia_S008
-****DEPENDIENTES: apertura_P001
-[ apertura_P001 --- 1 ] --- Abierta puerta P001 sin validacion acceso --- ( 5 ) ****
-[1 -> presencia_S008 -de-> apertura_P001 ;;;  1 ] --- presencia, sensor S008 --- ( 4 ) ;;;;
-****FINAL dependientes -de-> apertura_P001
------LISTADO: 5
-[ ON_luces Z008 -de-> presencia_S008 ;;;  0 ] --- Encendidas luces008, deteccion sensor presencia --- ( 4 ) 
-[ Validacion_P001_exterior --- 0 ] --- Validacion acceso en puerta P001, desde exterior --- ( 3 ) 
-[ apertura_P001 --- 1 ] --- Abierta puerta P001 sin validacion acceso --- ( 5 ) 
-[ cierre_2025_10_6 --- 0 ] --- Cierre del edificio --- ( 2 ) 
-[ presencia_S008 -de-> apertura_P001 ;;;  1 ] --- presencia, sensor S008 --- ( 4 ) 
------
+INTRODUCIDO: [ NH27_first_podium ] --- Nico Hulkenberg consigue su primer podio en F1 --- ( 1 )
+NO LOCALIZADO: FA14_wins_the_33rd
