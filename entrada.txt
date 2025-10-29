@@ -1,116 +1,147 @@
-LT
-C 
-apertura_2025_10_6
-apertura del edificio 2025-10-7
+A
+gp_silverstone_2025
+Comienzo del F1 GP de Silverstone 2025
 1
-A
-cierre_2025_10_6
-Cierre del edificio
-2
 INDependiente
--.-.-.-.-
-D
-cierre_2025_10_6
-cierre_2025_10_6
-A
-ON_luces Z008
-Encendidas luces008, deteccion sensor presencia
-2
-DEPendiente
-presencia_S008
-LD
-presencia_S008
+-.-.-.-.
 LT
 A
-Validacion_P001_exterior
-Validacion acceso en puerta P001, desde exterior
+formation_lap
+Comienza vuelta de formacion
+2
+DEPendiente
+gp_silverstone_2025
+A
+CL16_pits
+Charles Leclerc entra en boxes
+2
+DEPendiente
+formation_lap
+C
+CL16_pits
+Charles Leclerc y George Russell entran en boxes
+2
+LT
+E
+CS55_pits
+LD
+formation_lap
+A 
+race_start
+Comienzo de la carrera
+1
+DEPendiente
+gp_silverstone_2025
+A 
+rain_prediction
+Prediccion de lluvia para la vuelta 15
 3
 INDependiente
--.-.-.-.-
-A
-apertura_P001
-Abierta puerta P001 
+-.-.-.-.
+C 
+rain_prediction
+Lluvia prevista para la vuelta 13
+2
+A 
+red_flag
+La lluvia obliga a detener la carrera
+1
+INDependiente
+-.-.-.-.
+D 
+red_flag
+rain_prediction
+LT
+A 
+race_restart
+Reinicio de la carrera
+1
+DEPendiente
+race_start
+B
+red_flag
+A 
+LS18_incident
+Incidente de Lance Stroll en la vuelta 18
+2
+INDependiente
+-.-.-.-.
+D 
+LS18_incident
+gp_silverstone_2025
+LD
+gp_silverstone_2025
+A 
+safety_car
+Salida del coche de seguridad
+1
+DEPendiente
+LS18_incident
+I 
+safety_car
+B 
+LS18_incident
+B 
+rain_prediction
+C 
+safety_car
+Fin del coche de seguridad.
+2
+A 
+OP18_under_investigation
+Oscar Piastri bajo investigacion por incidente durante el fin del coche de seguridad
 3
 DEPendiente
-Validacion_P001_exterior
-A
-presencia_S008
-Deteccion presencia, sensor S008
+safety_car
+A 
+MV01_track_exit
+Salida de pista de Max Verstappen
 3
 INDependiente
--.-.-.-.-
-A
-ON_luces Z008
-Encendidas luces008, deteccion sensor presencia
+-.-.-.-.
+LT
+B 
+MV01_track_exit
+C 
+OP18_under_investigation
+Penalizacion de 10s a Oscar Piastri por el incidente durante el fin del coche de seguridad
 4
+I 
+OP18_under_investigation
+A 
+race_end
+Final de la carrera
+1
 DEPendiente
-presencia_S008
-A
-OFF_luces Z008
-Apagadas luces zona 008, por expiracion tiempo
-2
+gp_silverstone_2025
+E 
+gp_silverstone_2025
+O
+gp_silverstone_2025
+A 
+LN04_wins
+Lando Norris gana el GP de Silverstone 2025
+1
 DEPendiente
-ON_luces Z008
-LT
-O
-presencia_S008
-O
-OFF_luces Z008
-O
-apertura_2025_10_7
-E
-presencia_S008
-E
-OFF_luces Z008
-E
-apertura_2025_10_7
-LD
-Validacion_P001_exterior
-C 
-apertura_P001
-Abierta puerta P001, previa validacion
-2
-O
-apertura_P001
-C 
-presencia_S008
-presencia, sensor S008
-4
-LD
-presencia_S008
-LT
-D
-OFF_luces Z008
-presencia_S008
-LD
-presencia_S008
+race_end
+B 
+gp_silverstone_2025
+LD 
+gp_silverstone_2025
 I
-Validacion_P001_exterior
+formation_lap
 I
-apertura_2025_10_6
-I
-apertura_P001
-LD
-Validacion_P001_exterior
-C 
-apertura_P001
-Abierta puerta P001 sin validacion acceso
-5
-D
-presencia_S008
-apertura_P001
-D
-cierre_2025_10_6
-apertura_2025_10_6
+race_start
+I 
+race_end
+B 
+gp_silverstone_2025
 LT
-B
-apertura_2025_10_7
-B
-OFF_luces Z008
-B
-presencia_S008
-LD
-presencia_S008
-LD
-apertura_P001
-LT
+A 
+NH27_first_podium
+Nico Hulkenberg consigue su primer podio en F1
+1
+INDependiente
+-.-.-.-.
+O
+FA14_wins_the_33rd

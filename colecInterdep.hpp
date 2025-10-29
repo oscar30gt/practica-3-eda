@@ -14,10 +14,12 @@ using namespace std;
 // PREDECLARACION DEL TAD GENERICO colecInterdep (inicio INTERFAZ)
 
 /**
- * @struct colecInterdep
  * @brief Representa una colección de elementos, cada uno definido como una tupla con la forma:
  *        - (ident, val, -, NumDepend) para elementos independientes.
  *        - (ident, val, identSup, NumDepend) para elementos dependientes.
+ * 
+ * @tparam I Tipo del identificador de los elementos de la coleccion. Debe tener definidos los operadores `<`, `>` y `==`
+ * @tparam V Tipo de los elementos de la coleccion.
  *
  * Los elementos independientes son aquellos con la forma (ident, val, -, NumDepend), mientras que
  * los elementos dependientes tienen la forma (ident, val, identSup, NumDepend). No pueden existir
@@ -73,7 +75,7 @@ bool esVacia(const colecInterdep<I, V> &c);
  * @returns `true` si existe un elemento con identificador `id` en la coleccion, `false` en caso contrario.
  */
 template <typename I, typename V>
-bool existe(const I id, const colecInterdep<I, V> &c);
+bool existe(const I &id, const colecInterdep<I, V> &c);
 
 /**
  * @brief Comprueba si el elemento con identificador `id` existe en la coleccion y es dependiente.
@@ -84,7 +86,7 @@ bool existe(const I id, const colecInterdep<I, V> &c);
  * @returns `true` si existe un elemento dependiente con identificador `id` en la coleccion, `false` en caso contrario.
  */
 template <typename I, typename V>
-bool existeDependiente(const I id, const colecInterdep<I, V> &c);
+bool existeDependiente(const I &id, const colecInterdep<I, V> &c);
 
 /**
  * @brief Comprueba si el elemento con identificador `id` existe en la coleccion y es independiente.
@@ -95,7 +97,7 @@ bool existeDependiente(const I id, const colecInterdep<I, V> &c);
  * @returns `true` si existe un elemento independiente con identificador `id` en la coleccion, `false` en caso contrario.
  */
 template <typename I, typename V>
-bool existeIndependiente(const I id, const colecInterdep<I, V> &c);
+bool existeIndependiente(const I &id, const colecInterdep<I, V> &c);
 
 /**
  * @brief Añade un elemento dependiente con identificador `id` y valor `v` a la coleccion.
@@ -107,7 +109,7 @@ bool existeIndependiente(const I id, const colecInterdep<I, V> &c);
  * @param v Valor del elemento dependiente que se quiere añadir a la coleccion.
  */
 template <typename I, typename V>
-void anyadirIndependiente(colecInterdep<I, V> &c, const I id, const V v);
+void anyadirIndependiente(colecInterdep<I, V> &c, const I &id, const V &v);
 
 /**
  * @brief Añade un elemento independiente con identificador `id` y valor `v` a la coleccion.
@@ -120,7 +122,7 @@ void anyadirIndependiente(colecInterdep<I, V> &c, const I id, const V v);
  * @param super Identificador del elemento independiente que sera el supervisor del nuevo elemento dependiente.
  */
 template <typename I, typename V>
-void anyadirDependiente(colecInterdep<I, V> &c, const I id, const V v, const I super);
+void anyadirDependiente(colecInterdep<I, V> &c, const I &id, const V &v, const I &super);
 
 /**
  * @brief Convierte el elemento con identificador `id` en dependiente del elemento con identificador `super`.
@@ -133,7 +135,7 @@ void anyadirDependiente(colecInterdep<I, V> &c, const I id, const V v, const I s
  * @param super Identificador del elemento que sera el supervisor del elemento que se quiere convertir en dependiente.
  */
 template <typename I, typename V>
-void hacerDependiente(const colecInterdep<I, V> &c, I id, I super);
+void hacerDependiente(const colecInterdep<I, V> &c, const I &id, const I &super);
 
 /**
  * @brief Convierte el elemento con identificador `id` en independiente.
@@ -145,7 +147,7 @@ void hacerDependiente(const colecInterdep<I, V> &c, I id, I super);
  * @param id Identificador del elemento que se quiere convertir en independiente.
  */
 template <typename I, typename V>
-void hacerIndependiente(const colecInterdep<I, V> &c, I id);
+void hacerIndependiente(const colecInterdep<I, V> &c, const I &id);
 
 /**
  * @brief Actualiza el valor del elemento con identificador `id` en la coleccion.
@@ -155,11 +157,9 @@ void hacerIndependiente(const colecInterdep<I, V> &c, I id);
  * @param id Identificador del elemento que se quiere actualizar.
  * @param nuevo Nuevo valor que se quiere asignar al elemento.
  * @param[out] error Indica si se ha producido un error (elemento no encontrado).
- *
- * @note Parcial: Si no existe un elemento con identificador `id` en la coleccion, el comportamiento es indefinido.
  */
 template <typename I, typename V>
-void actualizarVal(const colecInterdep<I, V> &c, I id, V nuevo, bool &error);
+void actualizarVal(const colecInterdep<I, V> &c, const I &id, const V &nuevo, bool &error);
 
 /**
  * @brief Obtiene el valor del elemento con identificador `id` de la coleccion.
@@ -169,11 +169,9 @@ void actualizarVal(const colecInterdep<I, V> &c, I id, V nuevo, bool &error);
  * @param[in] c Coleccion de la que se quiere obtener el valor del elemento con identificador `id`.
  * @param[out] v Valor del elemento con identificador `id`.
  * @param[out] error Indica si se ha producido un error (elemento no encontrado).
- *
- * @note Parcial: Si no existe un elemento con identificador `id` en la coleccion, el comportamiento es indefinido.
  */
 template <typename I, typename V>
-void obtenerVal(const I id, const colecInterdep<I, V> &c, V &v, bool &error);
+void obtenerVal(const I &id, const colecInterdep<I, V> &c, V &v, bool &error);
 
 /**
  * @brief Obtiene el identificador del supervisor del elemento con identificador `id` de la coleccion.
@@ -183,11 +181,9 @@ void obtenerVal(const I id, const colecInterdep<I, V> &c, V &v, bool &error);
  * @param[in] c Coleccion de la que se quiere obtener el identificador del supervisor del elemento con identificador `id`.
  * @param[out] sup Identificador del supervisor del elemento con identificador `id`.
  * @param[out] error Indica si se ha producido un error (elemento no encontrado o elemento independiente).
- *
- * @note Parcial: Si no existe un elemento con identificador `id` en la coleccion o el elemento no es dependiente, el comportamiento es indefinido.
  */
 template <typename I, typename V>
-void obtenerSupervisor(const I id, const colecInterdep<I, V> &c, I &sup, bool &error);
+void obtenerSupervisor(const I &id, const colecInterdep<I, V> &c, I &sup, bool &error);
 
 /**
  * @brief Obtiene el numero de elementos dependientes del elemento con identificador `id` de la coleccion.
@@ -197,11 +193,9 @@ void obtenerSupervisor(const I id, const colecInterdep<I, V> &c, I &sup, bool &e
  * @param[in] c Coleccion de la que se quiere obtener el numero de elementos dependientes del elemento con identificador `id`.
  * @param[out] num Numero de elementos dependientes del elemento con identificador `id`.
  * @param[out] error Indica si se ha producido un error (elemento no encontrado).
- *
- * @note Parcial: Si no existe un elemento con identificador `id` en la coleccion, el comportamiento es indefinido.
  */
 template <typename I, typename V>
-void obtenerNumDependientes(const I id, const colecInterdep<I, V> &c, int &num, bool &error);
+void obtenerNumDependientes(const I &id, const colecInterdep<I, V> &c, int &num, bool &error);
 
 /**
  * @brief Elimina el elemento con identificador `id` de la coleccion.
@@ -213,7 +207,7 @@ void obtenerNumDependientes(const I id, const colecInterdep<I, V> &c, int &num, 
  * @param[in, out] c Coleccion de la que se quiere eliminar el elemento con identificador `id`.
  */
 template <typename I, typename V>
-void borrar(const I id, colecInterdep<I, V> &c);
+void borrar(const I &id, colecInterdep<I, V> &c);
 
 /**
  * @brief Inicializa el iterador de la coleccion para recorrer sus elementos de menor a mayor identificador
@@ -241,8 +235,6 @@ bool existeSiguiente(const colecInterdep<I, V> &c);
  * @param[in] c Coleccion de la que se quiere obtener el identificador del siguiente elemento.
  * @param[out] id Identificador del siguiente elemento a visitar.
  * @param[out] error Indica si se ha producido un error (no quedan elementos por visitar).
- *
- * @note Parcial: La operación no está definida si no quedan elementos por visitar (no `existeSiguiente(c)`).
  */
 template <typename I, typename V>
 void siguienteIdent(const colecInterdep<I, V> &c, I &id, bool &error);
@@ -254,8 +246,6 @@ void siguienteIdent(const colecInterdep<I, V> &c, I &id, bool &error);
  * @param[in] c Coleccion de la que se quiere obtener el valor del siguiente elemento.
  * @param[out] v Valor del siguiente elemento a visitar.
  * @param[out] error Indica si se ha producido un error (no quedan elementos por visitar).
- *
- * @note Parcial: La operación no está definida si no quedan elementos por visitar (no `existeSiguiente(c)`).
  */
 template <typename I, typename V>
 void siguienteVal(const colecInterdep<I, V> &c, V &v, bool &error);
@@ -267,8 +257,6 @@ void siguienteVal(const colecInterdep<I, V> &c, V &v, bool &error);
  * @param[in] c Coleccion de la que se quiere comprobar si el siguiente elemento es dependiente.
  * @param[out] dep Si el siguiente elemento a visitar es dependiente. `true` si es dependiente, `false` si es independiente.
  * @param[out] error Indica si se ha producido un error (no quedan elementos por visitar).
- *
- * @note Parcial: La operación no está definida si no quedan elementos por visitar (no `existeSiguiente(c)`).
  */
 template <typename I, typename V>
 void siguienteDependiente(const colecInterdep<I, V> &c, bool &dep, bool &error);
@@ -280,8 +268,6 @@ void siguienteDependiente(const colecInterdep<I, V> &c, bool &dep, bool &error);
  * @param[in] c Coleccion de la que se quiere obtener el identificador del supervisor del siguiente elemento.
  * @param[out] sup Identificador del supervisor del siguiente elemento a visitar.
  * @param[out] error Indica si se ha producido un error (no quedan elementos por visitar).
- *
- * @note Parcial: La operación no está definida si no quedan elementos por visitar (no `existeSiguiente(c)`) o si el siguiente elemento es independiente (no `siguienteDependiente(c)`).
  */
 template <typename I, typename V>
 void siguienteSuperior(const colecInterdep<I, V> &c, I &sup, bool &error);
@@ -293,8 +279,6 @@ void siguienteSuperior(const colecInterdep<I, V> &c, I &sup, bool &error);
  * @param[in] c Coleccion de la que se quiere obtener el numero de elementos dependientes del siguiente elemento.
  * @param[out] num Numero de elementos dependientes del siguiente elemento a visitar.
  * @param[out] error Indica si se ha producido un error (no quedan elementos por visitar).
- *
- * @note Parcial: La operación no está definida si no quedan elementos por visitar (no `existeSiguiente(c)`)
  */
 template <typename I, typename V>
 void siguienteNumDependientes(const colecInterdep<I, V> &c, int &num, bool &error);
@@ -305,8 +289,6 @@ void siguienteNumDependientes(const colecInterdep<I, V> &c, int &num, bool &erro
  * @tparam V Tipo de los elementos de la coleccion
  * @param[in, out] c Coleccion cuyo iterador se quiere avanzar.
  * @param[out] error Indica si se ha producido un error (no quedan elementos por visitar).
- *
- * @note Parcial: La operación no está definida si no quedan elementos por visitar (no `existeSiguiente(c)`)
  */
 template <typename I, typename V>
 void avanzarIterador(colecInterdep<I, V> &c, bool &error);
@@ -316,12 +298,27 @@ void avanzarIterador(colecInterdep<I, V> &c, bool &error);
 // DECLARACION DEL TAD GENERICO coleccionInterdep (inicio IMPLEMENTACION)
 
 /**
- * @brief Estructura que representa una coleccion de elementos interdependientes.
- * @tparam I Tipo del identificador de los elementos de la coleccion.
+ * @brief Representa una colección de elementos, cada uno definido como una tupla con la forma:
+ *        - (ident, val, -, NumDepend) para elementos independientes.
+ *        - (ident, val, identSup, NumDepend) para elementos dependientes.
+ * 
+ * @tparam I Tipo del identificador de los elementos de la coleccion. Debe tener definidos los operadores `<`, `>` y `==`
  * @tparam V Tipo de los elementos de la coleccion.
  *
- * @note Especificación completa en la sección de predeclaración del TAD.
+ * Los elementos independientes son aquellos con la forma (ident, val, -, NumDepend), mientras que
+ * los elementos dependientes tienen la forma (ident, val, identSup, NumDepend). No pueden existir
+ * dos elementos en la colección con el mismo identificador `ident`.
  *
+ * Para los elementos dependientes, el campo `identSup` representa el identificador del elemento del
+ * que dependen directamente. Ningún elemento en la colección puede depender directamente de sí mismo,
+ * y cada elemento dependiente debe depender de otro elemento existente en la colección (que puede ser
+ * independiente o dependiente).
+ *
+ * El campo `NumDepend` en la tupla de cada elemento representa el número total de elementos en la colección
+ * que dependen directamente del elemento con el identificador dado (`ident`). Si no hay elementos que dependan
+ * de él, `NumDepend` será 0.
+ *
+ * DETALLES DE IMPLEMENTACION:
  * El struct colecInterdep, además de las funciones declaradas como `friend`, tiene los siguientes campos privados:
  * - `tam`: Número de elementos en la colección
  * - `primero`: Puntero al primer nodo de la colección
@@ -336,18 +333,18 @@ struct colecInterdep
     friend void crear<I, V>(colecInterdep<I, V> &c);
     friend int tamanyo<I, V>(const colecInterdep<I, V> &c);
     friend bool esVacia<I, V>(const colecInterdep<I, V> &c);
-    friend bool existe<I, V>(const I id, const colecInterdep<I, V> &c);
-    friend bool existeDependiente<I, V>(const I id, const colecInterdep<I, V> &c);
-    friend bool existeIndependiente<I, V>(const I id, const colecInterdep<I, V> &c);
-    friend void anyadirIndependiente<I, V>(colecInterdep<I, V> &c, const I id, const V v);
-    friend void anyadirDependiente<I, V>(colecInterdep<I, V> &c, const I id, const V v, const I super);
-    friend void hacerDependiente<I, V>(const colecInterdep<I, V> &c, const I id, const I super);
-    friend void hacerIndependiente<I, V>(const colecInterdep<I, V> &c, const I id);
-    friend void actualizarVal<I, V>(const colecInterdep<I, V> &c, const I id, const V nuevo, bool &error);
-    friend void obtenerVal<I, V>(const I id, const colecInterdep<I, V> &c, V &v, bool &error);
-    friend void obtenerSupervisor<I, V>(const I id, const colecInterdep<I, V> &c, I &sup, bool &error);
-    friend void obtenerNumDependientes<I, V>(const I id, const colecInterdep<I, V> &c, int &num, bool &error);
-    friend void borrar<I, V>(const I id, colecInterdep<I, V> &c);
+    friend bool existe<I, V>(const I &id, const colecInterdep<I, V> &c);
+    friend bool existeDependiente<I, V>(const I &id, const colecInterdep<I, V> &c);
+    friend bool existeIndependiente<I, V>(const I &id, const colecInterdep<I, V> &c);
+    friend void anyadirIndependiente<I, V>(colecInterdep<I, V> &c, const I &id, const V &v);
+    friend void anyadirDependiente<I, V>(colecInterdep<I, V> &c, const I &id, const V &v, const I &super);
+    friend void hacerDependiente<I, V>(const colecInterdep<I, V> &c, const I &id, const I &super);
+    friend void hacerIndependiente<I, V>(const colecInterdep<I, V> &c, const I &id);
+    friend void actualizarVal<I, V>(const colecInterdep<I, V> &c, const I &id, const V &nuevo, bool &error);
+    friend void obtenerVal<I, V>(const I &id, const colecInterdep<I, V> &c, V &v, bool &error);
+    friend void obtenerSupervisor<I, V>(const I &id, const colecInterdep<I, V> &c, I &sup, bool &error);
+    friend void obtenerNumDependientes<I, V>(const I &id, const colecInterdep<I, V> &c, int &num, bool &error);
+    friend void borrar<I, V>(const I &id, colecInterdep<I, V> &c);
     friend void iniciarIterador<I, V>(colecInterdep<I, V> &c);
     friend bool existeSiguiente<I, V>(const colecInterdep<I, V> &c);
     friend void siguienteIdent<I, V>(const colecInterdep<I, V> &c, I &id, bool &error);
@@ -454,7 +451,7 @@ bool esVacia(const colecInterdep<I, V> &c)
  * Post: devuelve `true` si existe un nodo en la coleccion `c` cuyo campo `ident` es igual a `id`, `false` en caso contrario
  */
 template <typename I, typename V>
-bool existe(const I id, const colecInterdep<I, V> &c)
+bool existe(const I &id, const colecInterdep<I, V> &c)
 {
     bool encontrado = false;
 
@@ -484,7 +481,7 @@ bool existe(const I id, const colecInterdep<I, V> &c)
  *       `false` en caso contrario
  */
 template <typename I, typename V>
-bool existeDependiente(const I id, const colecInterdep<I, V> &c)
+bool existeDependiente(const I &id, const colecInterdep<I, V> &c)
 {
     bool esDep = false;
 
@@ -515,7 +512,7 @@ bool existeDependiente(const I id, const colecInterdep<I, V> &c)
  *       `false` en caso contrario
  */
 template <typename I, typename V>
-bool existeIndependiente(const I id, const colecInterdep<I, V> &c)
+bool existeIndependiente(const I &id, const colecInterdep<I, V> &c)
 {
     bool esInd = false;
 
@@ -548,7 +545,7 @@ bool existeIndependiente(const I id, const colecInterdep<I, V> &c)
  *       que le corresponde para mantener el orden creciente de los identificadores. En caso contrario, no se añade nada
  */
 template <typename I, typename V>
-void anyadirIndependiente(colecInterdep<I, V> &c, const I id, const V v)
+void anyadirIndependiente(colecInterdep<I, V> &c, const I &id, const V &v)
 {
     // Se insertara justo antes del `nodoActual`, y despues del `nodoAnterior`
     typename colecInterdep<I, V>::nodo *nodoActual = c.primero;
@@ -602,7 +599,7 @@ void anyadirIndependiente(colecInterdep<I, V> &c, const I id, const V v)
  *       el orden creciente de los identificadores. En caso contrario, no se añade nada
  */
 template <typename I, typename V>
-void anyadirDependiente(colecInterdep<I, V> &c, const I id, const V v, const I super)
+void anyadirDependiente(colecInterdep<I, V> &c, const I &id, const V &v, const I &super)
 {
     // A diferencia de `anyadirIndependiente()`, aqui no podemos un nodo a una coleccion vacia, ya que seguro que no existe el supervisor.
     // Ademas, ya que un elemento no puede depender de si mismo, `id` y `super` deben ser distintos.
@@ -684,7 +681,7 @@ void anyadirDependiente(colecInterdep<I, V> &c, const I id, const V v, const I s
  *       pasa a depender del elemento con identificador `super`. En caso contrario, no se realiza ningun cambio
  */
 template <typename I, typename V>
-void hacerDependiente(const colecInterdep<I, V> &c, const I id, const I super)
+void hacerDependiente(const colecInterdep<I, V> &c, const I &id, const I &super)
 {
     // Un elemento no puede depender de si mismo
     if (id != super)
@@ -743,7 +740,7 @@ void hacerDependiente(const colecInterdep<I, V> &c, const I id, const I super)
  *       pasa a ser independiente. En caso contrario, no se realiza ningun cambio
  */
 template <typename I, typename V>
-void hacerIndependiente(const colecInterdep<I, V> &c, const I id)
+void hacerIndependiente(const colecInterdep<I, V> &c, const I &id)
 {
     // Itera la coleccion hasta el punto donde deberia estar el elemento con identificador `id`
     for (
@@ -772,13 +769,11 @@ void hacerIndependiente(const colecInterdep<I, V> &c, const I id)
  * @param nuevo Nuevo valor que se quiere asignar al elemento.
  * @param[out] error Indica si se ha producido un error (elemento no encontrado).
  *
- * @note Parcial: Si no existe un elemento con identificador `id` en la coleccion, el comportamiento es indefinido.
- *
  * Post: Si existe un elemento con identificador `id` en la coleccion `c`, su campo `val` se actualiza al valor `nuevo` y error=false.
  *       En caso contrario, error=true (operación parcial)
  */
 template <typename I, typename V>
-void actualizarVal(const colecInterdep<I, V> &c, const I id, const V nuevo, bool &error)
+void actualizarVal(const colecInterdep<I, V> &c, const I &id, const V &nuevo, bool &error)
 {
     error = true;
 
@@ -805,13 +800,11 @@ void actualizarVal(const colecInterdep<I, V> &c, const I id, const V nuevo, bool
  * @param[out] v Valor del elemento con identificador `id`.
  * @param[out] error Indica si se ha producido un error (elemento no encontrado).
  *
- * @note Parcial: Si no existe un elemento con identificador `id` en la coleccion, el comportamiento es indefinido.
- *
  * Post: Si existe un elemento con identificador `id` en la coleccion `c`, se le asigna a `v` su campo `val` y error=false.
  *       En caso contrario, error=true (operación parcial)
  */
 template <typename I, typename V>
-void obtenerVal(const I id, const colecInterdep<I, V> &c, V &v, bool &error)
+void obtenerVal(const I &id, const colecInterdep<I, V> &c, V &v, bool &error)
 {
     error = true;
 
@@ -838,13 +831,11 @@ void obtenerVal(const I id, const colecInterdep<I, V> &c, V &v, bool &error)
  * @param[out] sup Identificador del supervisor del elemento con identificador `id`.
  * @param[out] error Indica si se ha producido un error (elemento no encontrado o elemento independiente).
  *
- * @note Parcial: Si no existe un elemento con identificador `id` en la coleccion o el elemento no es dependiente, el comportamiento es indefinido.
- *
  * Post: Si existe un elemento con identificador `id` en la coleccion `c` y es dependiente, se le asigna a `sup` el identificador de su supervisor
  *       y error=false. En caso contrario, error=true (operación parcial)
  */
 template <typename I, typename V>
-void obtenerSupervisor(const I id, const colecInterdep<I, V> &c, I &sup, bool &error)
+void obtenerSupervisor(const I &id, const colecInterdep<I, V> &c, I &sup, bool &error)
 {
     error = true;
 
@@ -872,13 +863,11 @@ void obtenerSupervisor(const I id, const colecInterdep<I, V> &c, I &sup, bool &e
  * @param[out] num Numero de elementos dependientes del elemento con identificador `id`.
  * @param[out] error Indica si se ha producido un error (elemento no encontrado).
  *
- * @note Parcial: Si no existe un elemento con identificador `id` en la coleccion, el comportamiento es indefinido.
- *
  * Post: Si existe un elemento con identificador `id` en la coleccion `c`, se le asigna a `num` su campo `numDepend` y error=false.
  *       En caso contrario, error=true (operación parcial)
  */
 template <typename I, typename V>
-void obtenerNumDependientes(const I id, const colecInterdep<I, V> &c, int &num, bool &error)
+void obtenerNumDependientes(const I &id, const colecInterdep<I, V> &c, int &num, bool &error)
 {
     error = true;
 
@@ -909,7 +898,7 @@ void obtenerNumDependientes(const I id, const colecInterdep<I, V> &c, int &num, 
  *       se elimina ese elemento de la coleccion. En caso contrario, no se realiza ningún cambio
  */
 template <typename I, typename V>
-void borrar(const I id, colecInterdep<I, V> &c)
+void borrar(const I &id, colecInterdep<I, V> &c)
 {
     // Se borrara el nodoActual, que esta despues del nodoAnterior
     typename colecInterdep<I, V>::nodo *nodoActual = c.primero;
@@ -984,8 +973,6 @@ bool existeSiguiente(const colecInterdep<I, V> &c)
  * @param[out] id Identificador del siguiente elemento a visitar.
  * @param[out] error Indica si se ha producido un error (no quedan elementos por visitar).
  *
- * @note Parcial: La operación no está definida si no quedan elementos por visitar (no `existeSiguiente(c)`).
- *
  * Post: Si existe un siguiente elemento en la coleccion `c`, se le asigna a `id` el campo `ident` del nodo actual y error=false.
  *       En caso contrario, error=true (operación parcial)
  */
@@ -1006,8 +993,6 @@ void siguienteIdent(const colecInterdep<I, V> &c, I &id, bool &error)
  * @param[in] c Coleccion de la que se quiere obtener el valor del siguiente elemento.
  * @param[out] v Valor del siguiente elemento a visitar.
  * @param[out] error Indica si se ha producido un error (no quedan elementos por visitar).
- *
- * @note Parcial: La operación no está definida si no quedan elementos por visitar (no `existeSiguiente(c)`).
  *
  * Post: Si existe un siguiente elemento en la coleccion `c`, se le asigna a `v` el campo `val` del nodo actual y error=false.
  *       En caso contrario, error=true (operación parcial)
@@ -1030,8 +1015,6 @@ void siguienteVal(const colecInterdep<I, V> &c, V &v, bool &error)
  * @param[out] dep Si el siguiente elemento a visitar es dependiente. `true` si es dependiente, `false` si es independiente.
  * @param[out] error Indica si se ha producido un error (no quedan elementos por visitar).
  *
- * @note Parcial: La operación no está definida si no quedan elementos por visitar (no `existeSiguiente(c)`).
- *
  * Post: Si existe un siguiente elemento en la coleccion `c`, se le asigna a `dep` el resultado de comprobar si el campo `super`
  *       del nodo actual es distinto de `nullptr` y error=false. En caso contrario, error=true (operación parcial)
  */
@@ -1052,9 +1035,7 @@ void siguienteDependiente(const colecInterdep<I, V> &c, bool &dep, bool &error)
  * @param[in] c Coleccion de la que se quiere obtener el identificador del supervisor del siguiente elemento.
  * @param[out] sup Identificador del supervisor del siguiente elemento a visitar.
  * @param[out] error Indica si se ha producido un error (no quedan elementos por visitar).
- *
- * @note Parcial: La operación no está definida si no quedan elementos por visitar (no `existeSiguiente(c)`) o si el siguiente elemento es
- *       independiente (no `siguienteDependiente(c)`).
+ *      independiente (no `siguienteDependiente(c)`).
  *
  * Post: Si existe un siguiente elemento en la coleccion `c` y es dependiente, se le asigna a `sup` el campo `ident` del nodo
  *       apuntado por el campo `super` del nodo actual y error=false. En caso contrario, error=true (operación parcial)
@@ -1077,8 +1058,6 @@ void siguienteSuperior(const colecInterdep<I, V> &c, I &id, bool &error)
  * @param[out] num Numero de elementos dependientes del siguiente elemento a visitar.
  * @param[out] error Indica si se ha producido un error (no quedan elementos por visitar).
  *
- * @note Parcial: La operación no está definida si no quedan elementos por visitar (no `existeSiguiente(c)`)
- *
  * Post: Si existe un siguiente elemento en la coleccion `c`, se le asigna a `num` el campo `numDepend` del nodo actual y error=false.
  *       En caso contrario, error=true (operación parcial)
  */
@@ -1098,8 +1077,6 @@ void siguienteNumDependientes(const colecInterdep<I, V> &c, int &num, bool &erro
  * @tparam V Tipo de los elementos de la coleccion
  * @param[in, out] c Coleccion cuyo iterador se quiere avanzar.
  * @param[out] error Indica si se ha producido un error (no quedan elementos por visitar).
- *
- * @note Parcial: La operación no está definida si no quedan elementos por visitar (no `existeSiguiente(c)`)
  *
  * Post: Si existe un siguiente elemento en la coleccion `c`, el campo `actual` del iterador se actualiza al siguiente nodo
  *       y error=false. En caso contrario, error=true (operación parcial)
