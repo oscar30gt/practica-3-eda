@@ -18,7 +18,7 @@ using namespace std;
 /**
  * @struct evento
  * @brief Representa un evento, caracterizado por una descripción y su prioridad
- * 
+ *
  * Los valores del TAD evento representarán tuplas formadas como:
  * (descripción, prioridad) siendo la descripción una cadena y la
  * prioridad un número natural.
@@ -31,7 +31,7 @@ struct evento;
  * @param prio Prioridad del evento.
  * @param[out] e Evento cuyo valor se quiere inicializar.
  */
-void crearEvento(string descrip, int prio, evento &e);
+void crearEvento(const string descrip, const int prio, evento &e);
 
 /**
  * @brief Dado un evento `e`, devuelve la descripción en el evento.
@@ -75,17 +75,16 @@ void cambiarPrioridad(evento &e, const int pri);
  */
 struct evento
 {
-	friend void crearEvento(string descrip, int prio, evento &e);
+	friend void crearEvento(const string descrip, const int prio, evento &e);
 	friend string descripcion(const evento &e);
 	friend void cambiarDescripcion(evento &e, const string nueva);
 	friend int suPrioridad(const evento &e);
 	friend void cambiarPrioridad(evento &e, const int pri);
 
 private:
-
 	/* Descripcion del evento */
 	string desc;
-	
+
 	/* Prioridad del evento */
 	int pri;
 };
