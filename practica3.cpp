@@ -409,14 +409,14 @@ void LT(colecInterdep<string, evento> &c, ofstream &o)
         {
             o << "[ " << id << " --- " << numDep << " ] --- "
               << descripcion(ev)
-              << " --- ( " << suPrioridad(ev) << " ) " << endl;
+              << " --- ( " << suPrioridad(ev) << " )" << endl;
         }
         else // El elemento es dependiente
         {
             o << "[ " << id << " -de-> " << sup
               << " ;;;  " << numDep << " ] --- "
               << descripcion(ev)
-              << " --- ( " << suPrioridad(ev) << " ) " << endl;
+              << " --- ( " << suPrioridad(ev) << " )" << endl;
         }
 
         avanzarIterador(c, error);
