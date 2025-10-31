@@ -17,8 +17,8 @@
 #include <fstream>
 #include <string>
 
-#include "evento.hpp"
 #include "colecInterdep.hpp"
+#include "evento.hpp"
 
 using namespace std;
 
@@ -98,7 +98,8 @@ int main()
     return 0;
 }
 
-// A: Añadir nuevo evento (5 argumentos: id del evento, descripción, prioridad, tipo (INDependiente/DEPendiente) e id del supervisor (si es dependiente))
+// A: Añadir nuevo evento (5 argumentos: id del evento, descripción, prioridad,
+// tipo (INDependiente/DEPendiente) e id del supervisor (si es dependiente))
 void A(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
 {
     string id, desc, dep, sup;
@@ -143,7 +144,8 @@ void A(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
     }
 }
 
-// C: Cambiar la información de un evento (3 argumentos: id del evento, nueva descripción y nueva prioridad)
+// C: Cambiar la información de un evento (3 argumentos: id del evento, nueva
+// descripción y nueva prioridad)
 void C(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
 {
     string id, desc;
@@ -213,12 +215,15 @@ void O(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
         if (error) // El elemento es independiente
         {
             o << "LOCALIZADO: [ " << id << " --- " << numDep << " ]"
-              << " --- " << descripcion(e) << " --- ( " << suPrioridad(e) << " )" << endl;
+              << " --- " << descripcion(e) << " --- ( " << suPrioridad(e) << " )"
+              << endl;
         }
         else // El elemento es dependiente
         {
-            o << "LOCALIZADO: [ " << id << " -de-> " << sup << " ;;; " << numDep << " ]"
-              << " --- " << descripcion(e) << " --- ( " << suPrioridad(e) << " )" << endl;
+            o << "LOCALIZADO: [ " << id << " -de-> " << sup << " ;;; " << numDep
+              << " ]"
+              << " --- " << descripcion(e) << " --- ( " << suPrioridad(e) << " )"
+              << endl;
         }
     }
 }
@@ -258,7 +263,7 @@ void I(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
     {
         o << "YA ERA INDepend.: ";
     }
-    else
+    else // No existe
     {
         o << "NO INDEPENDIZADO: ";
     }
@@ -301,10 +306,10 @@ void B(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
         o << "NO BORRADO: " << id << endl;
 }
 
-// LD: Listar eventos dependientes de un evento dado (1 argumento: id del evento)
+// LD: Listar eventos dependientes de un evento dado (1 argumento: id del
+// evento)
 void LD(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
 {
-    // Id del evento a borrar
     string id;
     getline(i, id);
 
@@ -332,16 +337,13 @@ void LD(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
 
         if (error) // El elemento es independiente
         {
-            o << "[ " << id << " --- " << numDep << " ] --- "
-              << descripcion(ev)
+            o << "[ " << id << " --- " << numDep << " ] --- " << descripcion(ev)
               << " --- ( " << suPrioridad(ev) << " ) ****" << endl;
         }
         else // El elemento es dependiente
         {
-            o << "[ " << id << " -de-> " << sup
-              << " ;;; " << numDep << " ] --- "
-              << descripcion(ev)
-              << " --- ( " << suPrioridad(ev) << " ) ****" << endl;
+            o << "[ " << id << " -de-> " << sup << " ;;; " << numDep << " ] --- "
+              << descripcion(ev) << " --- ( " << suPrioridad(ev) << " ) ****" << endl;
         }
 
         // ==== Lista de dependientes ====
@@ -369,10 +371,9 @@ void LD(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
                     siguienteNumDependientes(c, numDepDep, error);
                     // Dado que existe siguiente, no hay errores
 
-                    o << "[" << i++ << " -> " << idDep
-                      << " -de-> " << id << " ;;;  " << numDepDep << " ] --- "
-                      << descripcion(evDep)
-                      << " --- ( " << suPrioridad(evDep) << " ) ;;;;" << endl;
+                    o << "[" << i++ << " -> " << idDep << " -de-> " << id << " ;;;  "
+                      << numDepDep << " ] --- " << descripcion(evDep) << " --- ( "
+                      << suPrioridad(evDep) << " ) ;;;;" << endl;
                 }
             }
 
@@ -393,10 +394,10 @@ void LT(colecInterdep<string, evento> &c, ofstream &o)
     while (existeSiguiente(c))
     {
         bool error;
-
+        int numDep;
         evento ev;
         string id;
-        int numDep;
+
         siguienteVal(c, ev, error);
         siguienteIdent(c, id, error);
         siguienteNumDependientes(c, numDep, error);
@@ -407,16 +408,13 @@ void LT(colecInterdep<string, evento> &c, ofstream &o)
 
         if (error) // El elemento es independiente
         {
-            o << "[ " << id << " --- " << numDep << " ] --- "
-              << descripcion(ev)
+            o << "[ " << id << " --- " << numDep << " ] --- " << descripcion(ev)
               << " --- ( " << suPrioridad(ev) << " )" << endl;
         }
         else // El elemento es dependiente
         {
-            o << "[ " << id << " -de-> " << sup
-              << " ;;;  " << numDep << " ] --- "
-              << descripcion(ev)
-              << " --- ( " << suPrioridad(ev) << " )" << endl;
+            o << "[ " << id << " -de-> " << sup << " ;;;  " << numDep << " ] --- "
+              << descripcion(ev) << " --- ( " << suPrioridad(ev) << " )" << endl;
         }
 
         avanzarIterador(c, error);

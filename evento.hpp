@@ -16,22 +16,19 @@ using namespace std;
 // PREDECLARACION DEL TAD evento (inicio INTERFAZ)
 
 /**
- * @struct evento
  * @brief Representa un evento, caracterizado por una descripción y su prioridad
  *
- * Los valores del TAD evento representarán tuplas formadas como:
- * (descripción, prioridad) siendo la descripción una cadena y la
- * prioridad un número natural.
+ * Un evento esta compuesto por una descripción y una prioridad.
  */
 struct evento;
 
 /**
- * @brief Inicializa un evento compuesto con descripción `descrip` y con prioridad `prio`.
- * @param descrip Descripción del evento.
- * @param prio Prioridad del evento.
+ * @brief Inicializa el evento `e` con una descripción `descrip` y una prioridad `prio`.
+ * @param[in] descrip Descripción del evento.
+ * @param[in] prio Prioridad del evento.
  * @param[out] e Evento cuyo valor se quiere inicializar.
  */
-void crearEvento(const string descrip, const int prio, evento &e);
+void crearEvento(const string &descrip, const int &prio, evento &e);
 
 /**
  * @brief Dado un evento `e`, devuelve la descripción en el evento.
@@ -43,12 +40,12 @@ string descripcion(const evento &e);
 /**
  * @brief Dado un evento `e`, cambia su descripción a `nueva`.
  * @param[in, out] e Evento del que se quiere cambiar la descripción.
- * @param nueva Nueva descripción del evento.
+ * @param[in] nueva Nueva descripción del evento.
  */
-void cambiarDescripcion(evento &e, const string nueva);
+void cambiarDescripcion(evento &e, const string &nueva);
 
 /**
- * @brief Dado un evento `e`, obtiene su prioridad `p`.
+ * @brief Dado un evento `e`, obtiene su prioridad.
  * @param[in] e Evento del que se quiere obtener la prioridad.
  * @returns Prioridad del evento.
  */
@@ -57,35 +54,36 @@ int suPrioridad(const evento &e);
 /**
  * @brief Dado un evento `e`, y un natural `pri`, cambia la prioridad del evento `e` a `pri`.
  * @param[in, out] e Evento del que se quiere cambiar la prioridad.
- * @param pri Nueva prioridad del evento.
+ * @param[in] pri Nueva prioridad del evento.
  */
-void cambiarPrioridad(evento &e, const int pri);
+void cambiarPrioridad(evento &e, const int &pri);
 
 // FIN PREDECLARACION DEL TAD evento (fin INTERFAZ)
 
 // DECLARACION DEL TAD evento
 
 /**
- * @struct evento
- * @brief Implementación del TAD evento
+ * @brief Representa un evento, caracterizado por una descripción y su prioridad
  *
- * El struct representa un evento usando dos campos privados:
- * - desc: cadena de caracteres con la descripción del evento
- * - pri: número natural que indica la prioridad del evento
+ * Un evento esta compuesto por una descripción y una prioridad.
  */
 struct evento
 {
-	friend void crearEvento(const string descrip, const int prio, evento &e);
+	friend void crearEvento(const string &descrip, const int &prio, evento &e);
 	friend string descripcion(const evento &e);
-	friend void cambiarDescripcion(evento &e, const string nueva);
+	friend void cambiarDescripcion(evento &e, const string &nueva);
 	friend int suPrioridad(const evento &e);
-	friend void cambiarPrioridad(evento &e, const int pri);
+	friend void cambiarPrioridad(evento &e, const int &pri);
+
+	/* El TAD evento esta implementado como una tupla simple con dos campos privados:
+	   `desc` es una cadena que contiene la descripcion del evento.
+	   `pri` representa la prioridad del evento. */
 
 private:
-	/* Descripcion del evento */
+	/** Descripcion del evento */
 	string desc;
 
-	/* Prioridad del evento */
+	/** Prioridad del evento */
 	int pri;
 };
 
