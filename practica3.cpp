@@ -371,7 +371,7 @@ void LD(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
                     siguienteNumDependientes(c, numDepDep, error);
                     // Dado que existe siguiente, no hay errores
 
-                    o << "[" << i++ << " -> " << idDep << " -de-> " << id << " ;;;  "
+                    o << "[" << i++ << " -> " << idDep << " -de-> " << id << " ;;; "
                       << numDepDep << " ] --- " << descripcion(evDep) << " --- ( "
                       << suPrioridad(evDep) << " ) ;;;;" << endl;
                 }
@@ -413,7 +413,7 @@ void LT(colecInterdep<string, evento> &c, ofstream &o)
         }
         else // El elemento es dependiente
         {
-            o << "[ " << id << " -de-> " << sup << " ;;;  " << numDep << " ] --- "
+            o << "[ " << id << " -de-> " << sup << " ;;; " << numDep << " ] --- "
               << descripcion(ev) << " --- ( " << suPrioridad(ev) << " )" << endl;
         }
 
