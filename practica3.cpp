@@ -75,23 +75,41 @@ int main()
         getline(entrada, salto); // Ignorar el resto de la línea
 
         if (instruccion == "A")
+        {
             A(c, entrada, salida);
+        }
         else if (instruccion == "C")
+        {
             C(c, entrada, salida);
+        }
         else if (instruccion == "O")
+        {
             O(c, entrada, salida);
+        }
         else if (instruccion == "E")
+        {
             E(c, entrada, salida);
+        }
         else if (instruccion == "I")
+        {
             I(c, entrada, salida);
+        }
         else if (instruccion == "D")
+        {
             D(c, entrada, salida);
+        }
         else if (instruccion == "B")
+        {
             B(c, entrada, salida);
+        }
         else if (instruccion == "LD")
+        {
             LD(c, entrada, salida);
+        }
         else if (instruccion == "LT")
+        {
             LT(c, salida);
+        }
     }
 
     entrada.close();
@@ -301,9 +319,13 @@ void B(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
     borrar(id, c);
 
     if (tamanyo(c) < tamAntes)
+    {
         o << "BORRADO: " << id << endl;
+    }
     else // No se ha podido borrar
+    {
         o << "NO BORRADO: " << id << endl;
+    }
 }
 
 // LD: Listar eventos dependientes de un evento dado (1 argumento: id del
