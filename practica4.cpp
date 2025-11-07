@@ -1,16 +1,16 @@
 /**
- * @file practica3.cpp
- * Practica 3 - Estructuras de Datos y Algoritmos
+ * @file practica4.cpp
+ * Practica 4 - Estructuras de Datos y Algoritmos
  * Grupo 422 - Curso 2025/2026
  *
  * @authors
  * Hugo García Sánchez (930108)
  * Óscar Grimal Torres (926897)
  *
- * Programa principal de la práctica 3.
+ * Programa principal de la práctica 4.
  *
  * Repositorio
- * https://github.com/oscar30gt/practica-3-eda
+ * https://github.com/oscar30gt/practica-3-eda (rama practica-4)
  */
 
 #include <iostream>
@@ -40,7 +40,7 @@ void LD(colecInterdep<string, evento> &c, ifstream &i, ofstream &o);
 void LT(colecInterdep<string, evento> &c, ofstream &o);
 
 /**
- * @brief Programa principal de la práctica 3.
+ * @brief Programa principal de la práctica 4.
  *
  * Lee las instrucciones de un fichero de entrada y las ejecuta sobre una
  * colección de eventos `colecInterdep<string, evento>`. Escribe de forma
