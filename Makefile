@@ -6,7 +6,7 @@
 
 CXX = g++
 CXXFLAGS = -std=c++11
-SRCS = practica3.cpp evento.cpp
+SRCS = *.cpp
 TARGET = practica3
 
 all: $(TARGET)
