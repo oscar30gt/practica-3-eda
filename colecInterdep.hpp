@@ -301,8 +301,8 @@ void avanzarIterador(colecInterdep<I, V> &c, bool &error);
 template <typename I, typename V>
 struct colecInterdep
 {
-    /* Funciones amigas para permitir el acceso a los campos privados del TAD, asi como su modificacion. 
-       Por especificacion, dichas funciones emplean unicamente en su implementacion los operadores de 
+    /* Funciones amigas para permitir el acceso a los campos privados del TAD, asi como su modificacion.
+       Por especificacion, dichas funciones emplean unicamente en su implementacion los operadores de
        comparacion de igualdad (`==`) y de orden (`<`) a la hora de comparar identificadores. */
     friend void crear<I, V>(colecInterdep<I, V> &c);
     friend int tamanyo<I, V>(const colecInterdep<I, V> &c);
@@ -572,46 +572,62 @@ bool existeIndependiente(const I &id, const colecInterdep<I, V> &c)
  * @param[in] v Valor del elemento dependiente que se quiere añadir a la coleccion.
  *
  * Post: si no existe un elemento con identificador `id` en la coleccion `c`, se añade un nuevo nodo con los campos `ident` y `val`
- *       iguales a `id` y `v`, el campo `super` igual a `nullptr` y `numDepend`, 0. Este nodo se inserta en la posicion
- *       que mantiene el orden creciente de los identificadores en la coleccion. En caso contrario, no se añade nada.
+ *       iguales a `id` y `v`, el campo `super` igual a `nullptr` y `numDepend`, 0. Este nodo se inserta como hoja en la posicion
+ *       que corresponde para satisfacer la definicion de arbol binario de busqueda ordenado por identificadores. 
+ *       En caso contrario, no se añade nada.
  */
 template <typename I, typename V>
 void anyadirIndependiente(colecInterdep<I, V> &c, const I &id, const V &v)
 {
-    // Se insertara justo antes del `nodoActual`, y despues del `nodoAnterior`
-    typename colecInterdep<I, V>::nodo *nodoActual = c.primero;
+    // Se insertara como hijo de `nodoAnterior`
+    typename colecInterdep<I, V>::nodo *nodoActual = c.raiz;
     typename colecInterdep<I, V>::nodo *nodoAnterior = nullptr;
 
-    // Itera la coleccion para encontrar la posicion donde insertar el nuevo nodo
-    while (nodoActual != nullptr && nodoActual->ident < id)
+    // Realiza una busqueda binaria en el arbol para encontrar el nodo con identificador `id`
+    while (nodoActual != nullptr && nodoActual->ident != id)
     {
-        nodoAnterior = nodoActual;
-        nodoActual = nodoActual->sig;
-    }
+        // El nodo actual tiene un identificador mayor que `id`, por lo que el nodo buscado
+        // (si existe) debe estar en la rama izquierda
+        if (id < nodoActual->ident)
+        {
+            nodoAnterior = nodoActual;
+            nodoActual = nodoActual->izda;
+        }
 
-    // Añadir al principio
-    if (nodoAnterior == nullptr)
-    {
-        typename colecInterdep<I, V>::nodo *nuevoNodo = new typename colecInterdep<I, V>::nodo;
-        nuevoNodo->ident = id;
-        nuevoNodo->val = v;
-        nuevoNodo->sig = c.primero;
-        c.primero = nuevoNodo;
-        c.tam++;
-    }
-
-    // Añadir en medio o al final
-    else if (nodoActual == nullptr || !(nodoActual->ident == id))
-    {
-        typename colecInterdep<I, V>::nodo *nuevoNodo = new typename colecInterdep<I, V>::nodo;
-        nuevoNodo->ident = id;
-        nuevoNodo->val = v;
-        nuevoNodo->sig = nodoActual;
-        nodoAnterior->sig = nuevoNodo;
-        c.tam++;
+        // El nodo actual tiene un identificador menor que `id`, por lo que el nodo buscado
+        // (si existe) debe estar en la rama derecha
+        else
+        {
+            nodoAnterior = nodoActual;
+            nodoActual = nodoActual->dcha;
+        }
     }
 
     // Si el identificador ya existe, no se añade nada
+    if (!(nodoActual->ident == id))
+    {
+        // Nuevo nodo a añadir (hoja, sin ramas izda ni dcha)
+        typename colecInterdep<I, V>::nodo *nuevoNodo = new typename colecInterdep<I, V>::nodo;
+        nuevoNodo->ident = id;
+        nuevoNodo->val = v;
+        c.tam++;
+
+        // Arbol vacio => añadir como raiz
+        if (c.tam == 1)
+        {
+            c.raiz = nuevoNodo;
+        }
+
+        // Añadir en la rama izquierda o derecha segun corresponda
+        else if (id < nodoAnterior->ident)
+        {
+            nodoAnterior->izda = nuevoNodo;
+        }
+        else
+        {
+            nodoAnterior->dcha = nuevoNodo;
+        }
+    }
 }
 
 /**
@@ -626,8 +642,9 @@ void anyadirIndependiente(colecInterdep<I, V> &c, const I &id, const V &v)
  *
  * Post: si no existe un elemento con identificador `id` en la coleccion `c` y existe un elemento con identificador `super`,
  *       se añade un nuevo nodo con los campos `ident` y `val` igual a `id` y `v`, el campo `super` apuntando al nodo con
- *       identificador `super` y el campo `numDepend`, 0. Este nodo se inserta en la posicion que mantiene el orden 
- *       creciente de los identificadores en la coleccion. En caso contrario, no se añade nada.
+ *       identificador `super` y el campo `numDepend`, 0. Este nodo se inserta como hoja en la posicion que corresponde 
+ *       para satisfacer la definicion de arbol binario de busqueda ordenado por identificadores. 
+ *       En caso contrario, no se añade nada.
  */
 template <typename I, typename V>
 void anyadirDependiente(colecInterdep<I, V> &c, const I &id, const V &v, const I &super)
@@ -636,65 +653,70 @@ void anyadirDependiente(colecInterdep<I, V> &c, const I &id, const V &v, const I
     // Ademas, ya que un elemento no puede depender de si mismo, `id` y `super` deben ser distintos.
     if (c.tam > 0 && !(id == super))
     {
-        // Se insertara justo antes del `nodoActual`, y despues del `nodoAnterior`, con dependencia del `nodoSuper`
-        typename colecInterdep<I, V>::nodo *nodoActual = c.primero;
+        // Se insertara como hijo de `nodoAnterior`, y con dependencia de `nodoSuper`
+        typename colecInterdep<I, V>::nodo *nodoActual = c.raiz;
         typename colecInterdep<I, V>::nodo *nodoAnterior = nullptr;
         typename colecInterdep<I, V>::nodo *nodoSuper = nullptr;
 
-        // Itera la coleccion para encontrar la posicion donde insertar el nuevo nodo
-        while (nodoActual != nullptr && nodoActual->ident < id)
+        // Realiza una busqueda binaria en el arbol para encontrar el nodo con identificador `id`
+        while (nodoActual != nullptr && nodoActual->ident != id)
         {
-            // Busca el supervisor mientras itera
-            if (nodoActual->ident == super)
+            // El nodo actual tiene un identificador mayor que `id`, por lo que el nodo buscado
+            // (si existe) debe estar en la rama izquierda
+            if (id < nodoActual->ident)
             {
-                nodoSuper = nodoActual;
+                nodoAnterior = nodoActual;
+                nodoActual = nodoActual->izda;
             }
-            nodoAnterior = nodoActual;
-            nodoActual = nodoActual->sig;
-        }
 
-        // Si aun no se ha encontrado el supervisor, sigue buscando desde el punto
-        // donde se ha quedado, manteniendo un coste O(n), pero sin avanzar `nodoActual`
-        if (nodoSuper == nullptr)
-        {
-            nodoSuper = nodoActual;
-            while (nodoSuper != nullptr && !(nodoSuper->ident == super))
+            // El nodo actual tiene un identificador menor que `id`, por lo que el nodo buscado
+            // (si existe) debe estar en la rama derecha
+            else
             {
-                nodoSuper = nodoSuper->sig;
+                nodoAnterior = nodoActual;
+                nodoActual = nodoActual->dcha;
             }
         }
 
-        // Debe haber encontrado el supervisor para poder añadir el nuevo nodo
-        if (nodoSuper != nullptr)
+        // Realiza una busqueda binaria en el arbol para encontrar el nodo con identificador `id`
+        while (nodoSuper != nullptr && nodoSuper->ident != super)
         {
-            // Añadir al principio
-            if (nodoAnterior == nullptr)
+            // El nodo actual tiene un identificador mayor que `id`, por lo que el nodo buscado
+            // (si existe) debe estar en la rama izquierda
+            if (super < nodoSuper->ident)
             {
-                typename colecInterdep<I, V>::nodo *nuevoNodo = new typename colecInterdep<I, V>::nodo;
-                nuevoNodo->ident = id;
-                nuevoNodo->val = v;
-                nuevoNodo->sig = nodoActual;
-                nuevoNodo->super = nodoSuper;
-                c.primero = nuevoNodo;
-                nodoSuper->numDepend++;
-                c.tam++;
+                nodoSuper = nodoSuper->izda;
             }
 
-            // Añadir en medio o al final
-            else if (nodoActual == nullptr || !(nodoActual->ident == id))
+            // El nodo actual tiene un identificador menor que `id`, por lo que el nodo buscado
+            // (si existe) debe estar en la rama derecha
+            else
             {
-                typename colecInterdep<I, V>::nodo *nuevoNodo = new typename colecInterdep<I, V>::nodo;
-                nuevoNodo->ident = id;
-                nuevoNodo->val = v;
-                nuevoNodo->sig = nodoActual;
-                nuevoNodo->super = nodoSuper;
-                nodoAnterior->sig = nuevoNodo;
-                nodoSuper->numDepend++;
-                c.tam++;
+                nodoSuper = nodoSuper->dcha;
             }
         }
 
-        // Si el identificador ya existe o no se ha encontrado el supervisor, no se añade nada
+        // Si ha encontrado el supervisor y el identificador no existe, añade el nuevo nodo
+        if (nodoActual == nullptr && nodoSuper != nullptr)
+        {
+            // Nuevo nodo a añadir (hoja, sin ramas izda ni dcha)
+            typename colecInterdep<I, V>::nodo *nuevoNodo = new typename colecInterdep<I, V>::nodo;
+            nuevoNodo->ident = id;
+            nuevoNodo->val = v;
+            nuevoNodo->super = nodoSuper;
+            nodoSuper->numDepend++;
+            c.tam++;
+
+            // Añadir en la rama izquierda o derecha segun corresponda
+            if (id < nodoAnterior->ident)
+            {
+                nodoAnterior->izda = nuevoNodo;
+            }
+            else
+            {
+                nodoAnterior->dcha = nuevoNodo;
+            }
+        }
     }
 }
 
@@ -710,7 +732,7 @@ void anyadirDependiente(colecInterdep<I, V> &c, const I &id, const V &v, const I
  *
  * Post: si existen los elementos con identificadores `id` y `super` en la coleccion `c`, se establece el campo `super`
  *       del nodo con identificador `id` para que apunte al nodo con identificador `super`, independientemente del estado
- *       de dependencia previo del nodo con identificador `id`, y se actualizan los contadores de dependientes de los nodos 
+ *       de dependencia previo del nodo con identificador `id`, y se actualizan los contadores de dependientes de los nodos
  *       afectados. En caso contrario, no se realiza ningun cambio.
  */
 template <typename I, typename V>
@@ -865,7 +887,7 @@ void obtenerVal(const I &id, const colecInterdep<I, V> &c, V &v, bool &error)
  * @param[out] sup Identificador del supervisor del elemento con identificador `id`.
  * @param[out] error Indica si se ha producido un error (elemento no encontrado o elemento independiente).
  *
- * Post: si existe el elemento con identificador `id` en la coleccion `c` y es dependiente, se le asigna a `sup` 
+ * Post: si existe el elemento con identificador `id` en la coleccion `c` y es dependiente, se le asigna a `sup`
  *       el identificador de su supervisor y error=false. En caso contrario, error=true (operación parcial).
  */
 template <typename I, typename V>
