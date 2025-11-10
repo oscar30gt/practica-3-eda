@@ -22,6 +22,14 @@ template <typename T>
 struct pila;
 
 /**
+ * @brief Crea una pila vacia.
+ * @tparam T Tipo de los elementos de la pila.
+ * @param[in, out] p Pila a crear.
+ */
+template <typename T>
+void crearPila(pila<T> &p);
+
+/**
  * @brief Tamaño de la pila `p`.
  * @tparam T Tipo de los elementos de la pila.
  * @param[in] p Pila de la que se quiere obtener el tamaño.
@@ -42,11 +50,19 @@ void push(pila<T> &p, const T &e);
  * @brief Desapila un elemento de la pila `p` si no esta vacia.
  * @tparam T Tipo de los elementos de la pila.
  * @param[in, out] p Pila a desapilar.
- * @param[out] e Elemento desapilado.
  * @param[out] error Indica si se ha producido un error (pila vacia).
  */
 template <typename T>
-void pop(pila<T> &p, T &e, bool &error);
+void pop(pila<T> &p, bool &error);
+
+/**
+ * @brief Devuelve el elemento que esta en la cima de la pila `p` sin desapilarlo.
+ * @tparam T Tipo de los elementos de la pila.
+ * @param[in] p Pila de la que se quiere obtener el elemento de la cima.
+ * @returns Elemento que esta en la cima de la pila `p`.
+ */
+template <typename T>
+T cima(const pila<T> &p);
 
 // FIN PREDECLARACION DEL TAD GENERICO pila (fin INTERFAZ)
 
@@ -61,9 +77,11 @@ template <typename T>
 struct pila
 {
     /* Funciones amigas para permitir el acceso a los campos privados del TAD, asi como su modificacion. */
+    friend void crearPila<T>(pila<T> &p);
     friend int size<T>(const pila<T> &p);
     friend void push<T>(pila<T> &p, const T &e);
-    friend void pop<T>(pila<T> &p, T &e, bool &error);
+    friend void pop<T>(pila<T> &p, bool &error);
+    friend T cima<T>(const pila<T> &p);
 
     /* El TAD pila se implementa como una lista enlazada,
        en el que cada elemento es del tipo `pila::nodo`. */
@@ -85,6 +103,21 @@ private:
     /**< Tamaño de la pila. */
     int tam = 0;
 };
+
+/**
+ * @brief Crea una pila vacia.
+ * @tparam T Tipo de los elementos de la pila.
+ * @param[in, out] p Pila a crear.
+ *
+ * Post: la pila `p` esta vacia (campo `cima` apunta a nullptr
+ *       y campo `tam` vale 0).
+ */
+template <typename T>
+void crearPila(pila<T> &p)
+{
+    p.cima = nullptr;
+    p.tam = 0;
+}
 
 /**
  * @brief Tamaño de la pila `p`.
@@ -131,18 +164,29 @@ void push(pila<T> &p, const T &e)
  *       error=true (operacion parcial).
  */
 template <typename T>
-void pop(pila<T> &p, T &e, bool &error)
+void pop(pila<T> &p, bool &error)
 {
     error = p.tam == 0;
 
     // Si hay elementos en la pila, se desapila el elemento de la cima
     if (!error)
     {
-        e = p.cima->valor;
         p.cima = p.cima->sig;
         delete p.cima;
         p.tam--;
     }
+}
+
+/**
+ * @brief Devuelve el elemento que esta en la cima de la pila `p` sin desapilarlo.
+ * @tparam T Tipo de los elementos de la pila.
+ * @param[in] p Pila de la que se quiere obtener el elemento de la cima.
+ * @returns Elemento que esta en la cima de la pila `p`.
+ */
+template <typename T>
+T cima(const pila<T> &p)
+{
+    return p.cima->valor;
 }
 
 // FIN DECLARACION DEL TAD GENERICO pila (fin IMPLEMENTACION)

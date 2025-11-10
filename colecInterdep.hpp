@@ -9,6 +9,8 @@
 #ifndef COLECINTERDEP_HPP
 #define COLECINTERDEP_HPP
 
+#include "pila.hpp"
+
 using namespace std;
 
 // PREDECLARACION DEL TAD GENERICO colecInterdep (inicio INTERFAZ)
@@ -381,8 +383,8 @@ private:
     /** Puntero a la raiz del arbol. Si la coleccion esta vacia, `nullptr`. */
     nodo *raiz = nullptr;
 
-    /** Nodo actual del iterador. */
-    nodo *actual = nullptr;
+    /** Pila para gestionar la iteracion del arbol. */
+    pila<nodo*> pilaIter;
 };
 
 /**
@@ -981,12 +983,20 @@ void borrar(const I &id, colecInterdep<I, V> &c)
  * @tparam V Tipo de los elementos de la coleccion.
  * @param[in, out] c Coleccion cuyo iterador se quiere inicializar.
  *
- * Post: se inicializa el iterador de la coleccion `c`, apuntando `c.actual` al primer elemento de la coleccion.
+ * Post: se inicializa el iterador de la coleccion `c`, vaciando la pila `pilaIter` y apilando todos los nodos izquierdos
+ *       desde la raiz hasta el nodo de menor `id`.
  */
 template <typename I, typename V>
 void iniciarIterador(colecInterdep<I, V> &c)
 {
-    c.actual = c.primero;
+    typename colecInterdep<I, V>::nodo *aux = c.raiz;
+    crearPila(c.pilaIter);
+    // Apila todos los nodos izquierdos desde la raiz
+    while (aux != nullptr)
+    {
+        apilar(c.pilaIter, aux);
+        aux = aux->izda;
+    }
 }
 
 /**
@@ -996,12 +1006,12 @@ void iniciarIterador(colecInterdep<I, V> &c)
  * @param[in] c Coleccion que se quiere comprobar.
  * @returns `true` si existe un siguiente elemento, `false` en caso contrario.
  *
- * Post: devuelve `true` si el campo `actual` de la coleccion `c` no es `nullptr`, `false` en caso contrario.
+ * Post: devuelve `true` si el tamaño de la pila es mayor estricto que 0.
  */
 template <typename I, typename V>
 bool existeSiguiente(const colecInterdep<I, V> &c)
 {
-    return c.actual != nullptr;
+    return size(c.pilaIter) > 0;
 }
 
 /**
@@ -1012,7 +1022,7 @@ bool existeSiguiente(const colecInterdep<I, V> &c)
  * @param[out] id Identificador del siguiente elemento a visitar.
  * @param[out] error Indica si se ha producido un error (no quedan elementos por visitar).
  *
- * Post: si `existeSiguiente(c)`, se le asigna a `id` el campo `ident` de `c.actual` y error=false.
+ * Post: si `existeSiguiente(c)`, se le asigna a `id` el campo `ident` del nodo apuntado por el puntero en la cima de `c.pilaIter` y error=false.
  *       En caso contrario, error=true (operación parcial)
  */
 template <typename I, typename V>
@@ -1021,7 +1031,8 @@ void siguienteIdent(const colecInterdep<I, V> &c, I &id, bool &error)
     error = !existeSiguiente(c);
     if (!error)
     {
-        id = c.actual->ident;
+        typename colecInterdep<I, V>::nodo *aux = cima(c.pilaIter);
+        id = aux->ident;
     }
 }
 
@@ -1033,7 +1044,7 @@ void siguienteIdent(const colecInterdep<I, V> &c, I &id, bool &error)
  * @param[out] v Valor del siguiente elemento a visitar.
  * @param[out] error Indica si se ha producido un error (no quedan elementos por visitar).
  *
- * Post: si `existeSiguiente(c)`, se le asigna a `v` el campo `val` de `c.actual` y error=false.
+ * Post: si `existeSiguiente(c)`, se le asigna a `v` el campo `val` del nodo apuntado por el puntero en la cima de `c.pilaIter` y error=false.
  *       En caso contrario, error=true (operación parcial).
  */
 template <typename I, typename V>
@@ -1042,7 +1053,8 @@ void siguienteVal(const colecInterdep<I, V> &c, V &v, bool &error)
     error = !existeSiguiente(c);
     if (!error)
     {
-        v = c.actual->val;
+        typename colecInterdep<I, V>::nodo *aux = cima(c.pilaIter);
+        v = aux->val;
     }
 }
 
@@ -1054,8 +1066,8 @@ void siguienteVal(const colecInterdep<I, V> &c, V &v, bool &error)
  * @param[out] dep Si el siguiente elemento a visitar es dependiente. `true` si es dependiente, `false` si es independiente.
  * @param[out] error Indica si se ha producido un error (no quedan elementos por visitar).
  *
- * Post: si `existeSiguiente(c)`, se le asigna a `dep` el resultado de comprobar si el campo `super`
- *       de `c.actual` es distinto de `nullptr` y error=false. En caso contrario, error=true (operación parcial).
+ * Post: si `existeSiguiente(c)`, se le asigna a `dep` el resultado de comprobar si el campo `super` del nodo apuntado por el puntero
+ *       en la cima de `c.pilaIter` es distinto de `nullptr` y error=false. En caso contrario, error=true (operación parcial).
  */
 template <typename I, typename V>
 void siguienteDependiente(const colecInterdep<I, V> &c, bool &dep, bool &error)
@@ -1063,7 +1075,8 @@ void siguienteDependiente(const colecInterdep<I, V> &c, bool &dep, bool &error)
     error = !existeSiguiente(c);
     if (!error)
     {
-        dep = c.actual->super != nullptr;
+        typename colecInterdep<I, V>::nodo *aux = cima(c.pilaIter);
+        dep = aux->super != nullptr;
     }
 }
 
@@ -1075,8 +1088,8 @@ void siguienteDependiente(const colecInterdep<I, V> &c, bool &dep, bool &error)
  * @param[out] sup Identificador del supervisor del siguiente elemento a visitar.
  * @param[out] error Indica si se ha producido un error (no quedan elementos por visitar o el elemento es independiente).
  *
- * Post: si `siguienteDependiente(c)`, se le asigna a `sup` el campo `ident` del supervisor de `c.actual` (`c.actual->super`)
- *       y error=false. En caso contrario, error=true (operación parcial).
+ * Post: si `siguienteDependiente(c)`, se le asigna a `sup` el campo `ident` del supervisor del nodo apuntado por el puntero en la cima
+ *       de `c.pilaIter` y error=false. En caso contrario, error=true (operación parcial).
  */
 template <typename I, typename V>
 void siguienteSuperior(const colecInterdep<I, V> &c, I &id, bool &error)
@@ -1084,7 +1097,8 @@ void siguienteSuperior(const colecInterdep<I, V> &c, I &id, bool &error)
     error = !existeSiguiente(c) || c.actual->super == nullptr;
     if (!error)
     {
-        id = c.actual->super->ident;
+        typename colecInterdep<I, V>::nodo *aux = cima(c.pilaIter);
+        id = aux->super->ident;
     }
 }
 
@@ -1096,8 +1110,8 @@ void siguienteSuperior(const colecInterdep<I, V> &c, I &id, bool &error)
  * @param[out] num Numero de elementos dependientes del siguiente elemento a visitar.
  * @param[out] error Indica si se ha producido un error (no quedan elementos por visitar).
  *
- * Post: si `existeSiguiente(c)`, se le asigna a `num` el campo `numDepend` de `c.actual` y error=false.
- *       En caso contrario, error=true (operación parcial).
+ * Post: si `existeSiguiente(c)`, se le asigna a `num` el campo `numDepend` del nodo apuntado por el puntero en la cima de `c.pilaIter`
+ *       y error=false. En caso contrario, error=true (operación parcial).
  */
 template <typename I, typename V>
 void siguienteNumDependientes(const colecInterdep<I, V> &c, int &num, bool &error)
@@ -1105,7 +1119,8 @@ void siguienteNumDependientes(const colecInterdep<I, V> &c, int &num, bool &erro
     error = !existeSiguiente(c);
     if (!error)
     {
-        num = c.actual->numDepend;
+        typename colecInterdep<I, V>::nodo *aux = cima(c.pilaIter);
+        num = aux->numDepend;
     }
 }
 
@@ -1125,7 +1140,15 @@ void avanzarIterador(colecInterdep<I, V> &c, bool &error)
     error = !existeSiguiente(c);
     if (!error)
     {
-        c.actual = c.actual->sig;
+        typename colecInterdep<I, V>::nodo *aux = cima(c.pilaIter);
+        desapilar(c.pilaIter);
+        // Apila todos los nodos izquierdos desde el nodo derecho del nodo desapilado
+        aux = aux->dcha;
+        while (aux != nullptr)
+        {
+            apilar(c.pilaIter, aux);
+            aux = aux->izda;
+        }
     }
 }
 
