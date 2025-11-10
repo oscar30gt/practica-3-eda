@@ -444,34 +444,17 @@ bool esVacia(const colecInterdep<I, V> &c)
 template <typename I, typename V>
 bool existe(const I &id, const colecInterdep<I, V> &c)
 {
-    bool encontrado = false;
     typename colecInterdep<I, V>::nodo *nodo = c.raiz;
 
     // Realiza una busqueda binaria en el arbol para encontrar el nodo con identificador `id`
-    while (nodo != nullptr && !encontrado)
+    while (nodo != nullptr && !(nodo->ident == id))
     {
-        // El nodo alcanzado es el que buscamos
-        if (nodo->ident == id)
-        {
-            encontrado = true;
-        }
-
-        // El nodo actual tiene un identificador mayor que `id`, por lo que el nodo buscado
-        // (si existe) debe estar en la rama izquierda
-        else if (id < nodo->ident)
-        {
-            nodo = nodo->izda;
-        }
-
-        // El nodo actual tiene un identificador menor que `id`, por lo que el nodo buscado
-        // (si existe) debe estar en la rama derecha
-        else
-        {
-            nodo = nodo->dcha;
-        }
+        // Navega por el arbol segun corresponda hacia la izquierda o derecha en
+        // busca del nodo con identificador `id`
+        nodo = (id < nodo->ident) ? nodo->izda : nodo->dcha;
     }
 
-    return encontrado;
+    return nodo != nullptr;
 }
 
 /**
@@ -491,21 +474,11 @@ bool existeDependiente(const I &id, const colecInterdep<I, V> &c)
     typename colecInterdep<I, V>::nodo *nodo = c.raiz;
 
     // Realiza una busqueda binaria en el arbol para encontrar el nodo con identificador `id`
-    while (nodo != nullptr && nodo->ident != id)
+    while (nodo != nullptr && !(nodo->ident == id))
     {
-        // El nodo actual tiene un identificador mayor que `id`, por lo que el nodo buscado
-        // (si existe) debe estar en la rama izquierda
-        if (id < nodo->ident)
-        {
-            nodo = nodo->izda;
-        }
-
-        // El nodo actual tiene un identificador menor que `id`, por lo que el nodo buscado
-        // (si existe) debe estar en la rama derecha
-        else
-        {
-            nodo = nodo->dcha;
-        }
+        // Navega por el arbol segun corresponda hacia la izquierda o derecha en
+        // busca del nodo con identificador `id`
+        nodo = (id < nodo->ident) ? nodo->izda : nodo->dcha;
     }
 
     if (nodo == nullptr)
@@ -535,21 +508,11 @@ bool existeIndependiente(const I &id, const colecInterdep<I, V> &c)
     typename colecInterdep<I, V>::nodo *nodo = c.raiz;
 
     // Realiza una busqueda binaria en el arbol para encontrar el nodo con identificador `id`
-    while (nodo != nullptr && nodo->ident != id)
+    while (nodo != nullptr && !(nodo->ident == id))
     {
-        // El nodo actual tiene un identificador mayor que `id`, por lo que el nodo buscado
-        // (si existe) debe estar en la rama izquierda
-        if (id < nodo->ident)
-        {
-            nodo = nodo->izda;
-        }
-
-        // El nodo actual tiene un identificador menor que `id`, por lo que el nodo buscado
-        // (si existe) debe estar en la rama derecha
-        else
-        {
-            nodo = nodo->dcha;
-        }
+        // Navega por el arbol segun corresponda hacia la izquierda o derecha en
+        // busca del nodo con identificador `id`
+        nodo = (id < nodo->ident) ? nodo->izda : nodo->dcha;
     }
 
     if (nodo == nullptr)
@@ -573,7 +536,7 @@ bool existeIndependiente(const I &id, const colecInterdep<I, V> &c)
  *
  * Post: si no existe un elemento con identificador `id` en la coleccion `c`, se añade un nuevo nodo con los campos `ident` y `val`
  *       iguales a `id` y `v`, el campo `super` igual a `nullptr` y `numDepend`, 0. Este nodo se inserta como hoja en la posicion
- *       que corresponde para satisfacer la definicion de arbol binario de busqueda ordenado por identificadores. 
+ *       que corresponde para satisfacer la definicion de arbol binario de busqueda ordenado por identificadores.
  *       En caso contrario, no se añade nada.
  */
 template <typename I, typename V>
@@ -584,23 +547,14 @@ void anyadirIndependiente(colecInterdep<I, V> &c, const I &id, const V &v)
     typename colecInterdep<I, V>::nodo *nodoAnterior = nullptr;
 
     // Realiza una busqueda binaria en el arbol para encontrar el nodo con identificador `id`
-    while (nodoActual != nullptr && nodoActual->ident != id)
+    while (nodoActual != nullptr && !(nodoActual->ident == id))
     {
-        // El nodo actual tiene un identificador mayor que `id`, por lo que el nodo buscado
-        // (si existe) debe estar en la rama izquierda
-        if (id < nodoActual->ident)
-        {
-            nodoAnterior = nodoActual;
-            nodoActual = nodoActual->izda;
-        }
+        // Guarda una referencia al nodo padre
+        nodoAnterior = nodoActual;
 
-        // El nodo actual tiene un identificador menor que `id`, por lo que el nodo buscado
-        // (si existe) debe estar en la rama derecha
-        else
-        {
-            nodoAnterior = nodoActual;
-            nodoActual = nodoActual->dcha;
-        }
+        // Navega por el arbol segun corresponda hacia la izquierda o derecha en
+        // busca del nodo con identificador `id`
+        nodoActual = (id < nodoActual->ident) ? nodoActual->izda : nodoActual->dcha;
     }
 
     // Si el identificador ya existe, no se añade nada
@@ -642,8 +596,8 @@ void anyadirIndependiente(colecInterdep<I, V> &c, const I &id, const V &v)
  *
  * Post: si no existe un elemento con identificador `id` en la coleccion `c` y existe un elemento con identificador `super`,
  *       se añade un nuevo nodo con los campos `ident` y `val` igual a `id` y `v`, el campo `super` apuntando al nodo con
- *       identificador `super` y el campo `numDepend`, 0. Este nodo se inserta como hoja en la posicion que corresponde 
- *       para satisfacer la definicion de arbol binario de busqueda ordenado por identificadores. 
+ *       identificador `super` y el campo `numDepend`, 0. Este nodo se inserta como hoja en la posicion que corresponde
+ *       para satisfacer la definicion de arbol binario de busqueda ordenado por identificadores.
  *       En caso contrario, no se añade nada.
  */
 template <typename I, typename V>
@@ -659,41 +613,22 @@ void anyadirDependiente(colecInterdep<I, V> &c, const I &id, const V &v, const I
         typename colecInterdep<I, V>::nodo *nodoSuper = nullptr;
 
         // Realiza una busqueda binaria en el arbol para encontrar el nodo con identificador `id`
-        while (nodoActual != nullptr && nodoActual->ident != id)
+        while (nodoActual != nullptr && !(nodoActual->ident == id))
         {
-            // El nodo actual tiene un identificador mayor que `id`, por lo que el nodo buscado
-            // (si existe) debe estar en la rama izquierda
-            if (id < nodoActual->ident)
-            {
-                nodoAnterior = nodoActual;
-                nodoActual = nodoActual->izda;
-            }
+            // Guarda una referencia al nodo padre
+            nodoAnterior = nodoActual;
 
-            // El nodo actual tiene un identificador menor que `id`, por lo que el nodo buscado
-            // (si existe) debe estar en la rama derecha
-            else
-            {
-                nodoAnterior = nodoActual;
-                nodoActual = nodoActual->dcha;
-            }
+            // Navega por el arbol segun corresponda hacia la izquierda o derecha en
+            // busca del nodo con identificador `id`
+            nodoActual = (id < nodoActual->ident) ? nodoActual->izda : nodoActual->dcha;
         }
 
-        // Realiza una busqueda binaria en el arbol para encontrar el nodo con identificador `id`
-        while (nodoSuper != nullptr && nodoSuper->ident != super)
+        // Realiza una busqueda binaria en el arbol para encontrar el nodo con identificador `super`
+        while (nodoSuper != nullptr && !(nodoSuper->ident == super))
         {
-            // El nodo actual tiene un identificador mayor que `id`, por lo que el nodo buscado
-            // (si existe) debe estar en la rama izquierda
-            if (super < nodoSuper->ident)
-            {
-                nodoSuper = nodoSuper->izda;
-            }
-
-            // El nodo actual tiene un identificador menor que `id`, por lo que el nodo buscado
-            // (si existe) debe estar en la rama derecha
-            else
-            {
-                nodoSuper = nodoSuper->dcha;
-            }
+            // Navega por el arbol segun corresponda hacia la izquierda o derecha en
+            // busca del nodo con identificador `super`
+            nodoSuper = (super < nodoSuper->ident) ? nodoSuper->izda : nodoSuper->dcha;
         }
 
         // Si ha encontrado el supervisor y el identificador no existe, añade el nuevo nodo
@@ -742,29 +677,23 @@ void hacerDependiente(const colecInterdep<I, V> &c, const I &id, const I &super)
     if (!(id == super))
     {
         // Se busca el nodo `dep`, que dependera de `sup`
-        typename colecInterdep<I, V>::nodo *dep = c.primero;
+        typename colecInterdep<I, V>::nodo *dep = c.raiz;
         typename colecInterdep<I, V>::nodo *sup = nullptr;
 
-        // Itera la coleccion usando `dep` como iterador, pero buscando `sup` al mismo tiempo
-        while (dep != nullptr && dep->ident < id)
+        // Realiza una busqueda binaria en el arbol para encontrar el nodo con identificador `id`
+        while (dep != nullptr && !(dep->ident == id))
         {
-            // Busca el supervisor mientras itera
-            if (dep->ident == super)
-            {
-                sup = dep;
-            }
-            dep = dep->sig;
+            // Navega por el arbol segun corresponda hacia la izquierda o derecha
+            // en busca del nodo con identificador `id`
+            dep = (id < dep->ident) ? dep->izda : dep->dcha;
         }
 
-        // Si aun no se ha encontrado el supervisor, sigue buscando desde el punto
-        // donde se ha quedado, manteniendo un coste O(n), pero sin avanzar `dep`
-        if (sup == nullptr)
+        // Realiza una busqueda binaria en el arbol para encontrar el nodo con identificador `super`
+        while (sup != nullptr && !(sup->ident == super))
         {
-            sup = dep;
-            while (sup != nullptr && !(sup->ident == super))
-            {
-                sup = sup->sig;
-            }
+            // Navega por el arbol segun corresponda hacia la izquierda o derecha
+            // en busca del nodo con identificador `super`
+            sup = (super < sup->ident) ? sup->izda : sup->dcha;
         }
 
         // Si ha encontrado ambos nodos, actualiza los campos correspondientes
@@ -798,21 +727,27 @@ void hacerDependiente(const colecInterdep<I, V> &c, const I &id, const I &super)
 template <typename I, typename V>
 void hacerIndependiente(const colecInterdep<I, V> &c, const I &id)
 {
-    // Itera la coleccion hasta el punto donde deberia estar el elemento con identificador `id`
-    for (
-        typename colecInterdep<I, V>::nodo *nodo = c.primero;
-        nodo != nullptr && (nodo->ident < id || nodo->ident == id);
-        nodo = nodo->sig)
+    // Se busca el nodo `dep`, que sera convertido en independiente
+    typename colecInterdep<I, V>::nodo *dep = c.raiz;
+
+    // Realiza una busqueda binaria en el arbol para encontrar el nodo con identificador `id`
+    while (dep != nullptr && !(dep->ident == id))
     {
-        // Si encuentra el identificador, lo hace independiente (si no lo era antes)
-        if (nodo->ident == id)
+        // Navega por el arbol segun corresponda hacia la izquierda o derecha
+        // en busca del nodo con identificador `id`
+        dep = (id < dep->ident) ? dep->izda : dep->dcha;
+    }
+
+    // Si ha encontrado el nodo, actualiza los campos correspondientes
+    if (dep != nullptr)
+    {
+        // Si `dep` era dependiente, se decrementa el contador de su antiguo supervisor
+        if (dep->super != nullptr)
         {
-            if (nodo->super != nullptr)
-            {
-                nodo->super->numDepend--;
-            }
-            nodo->super = nullptr;
+            dep->super->numDepend--;
         }
+
+        dep->super = nullptr;
     }
 }
 
@@ -832,18 +767,21 @@ template <typename I, typename V>
 void actualizarVal(const colecInterdep<I, V> &c, const I &id, const V &nuevo, bool &error)
 {
     error = true;
+    typename colecInterdep<I, V>::nodo *nodo = c.raiz;
 
-    // Itera la coleccion hasta el punto donde deberia estar el elemento con identificador `id`
-    for (typename colecInterdep<I, V>::nodo *nodo = c.primero;
-         nodo != nullptr && (nodo->ident < id || nodo->ident == id);
-         nodo = nodo->sig)
+    // Realiza una busqueda binaria en el arbol para encontrar el nodo con identificador `id`
+    while (nodo != nullptr && !(nodo->ident == id))
     {
-        // Si encuentra el identificador, actualiza su valor
-        if (nodo->ident == id)
-        {
-            nodo->val = nuevo;
-            error = false;
-        }
+        // Navega por el arbol segun corresponda hacia la izquierda o derecha
+        // en busca del nodo con identificador `id`
+        nodo = (id < nodo->ident) ? nodo->izda : nodo->dcha;
+    }
+
+    // Si ha encontrado el nodo, actualiza los campos correspondientes
+    if (nodo != nullptr)
+    {
+        nodo->val = nuevo;
+        error = false;
     }
 }
 
@@ -863,18 +801,21 @@ template <typename I, typename V>
 void obtenerVal(const I &id, const colecInterdep<I, V> &c, V &v, bool &error)
 {
     error = true;
+    typename colecInterdep<I, V>::nodo *nodo = c.raiz;
 
-    // Itera la coleccion hasta el punto donde deberia estar el elemento con identificador `id`
-    for (typename colecInterdep<I, V>::nodo *nodo = c.primero;
-         nodo != nullptr && (nodo->ident < id || nodo->ident == id);
-         nodo = nodo->sig)
+    // Realiza una busqueda binaria en el arbol para encontrar el nodo con identificador `id`
+    while (nodo != nullptr && !(nodo->ident == id))
     {
-        // Si encuentra el identificador, guarda su valor
-        if (nodo->ident == id)
-        {
-            v = nodo->val;
-            error = false;
-        }
+        // Navega por el arbol segun corresponda hacia la izquierda o derecha
+        // en busca del nodo con identificador `id`
+        nodo = (id < nodo->ident) ? nodo->izda : nodo->dcha;
+    }
+
+    // Si ha encontrado el nodo, obtiene su valor
+    if (nodo != nullptr)
+    {
+        v = nodo->val;
+        error = false;
     }
 }
 
@@ -894,19 +835,21 @@ template <typename I, typename V>
 void obtenerSupervisor(const I &id, const colecInterdep<I, V> &c, I &sup, bool &error)
 {
     error = true;
+    typename colecInterdep<I, V>::nodo *nodo = c.raiz;
 
-    // Itera la coleccion hasta el punto donde deberia estar el elemento con identificador `id`
-    for (typename colecInterdep<I, V>::nodo *nodo = c.primero;
-         nodo != nullptr && (nodo->ident < id || nodo->ident == id);
-         nodo = nodo->sig)
+    // Realiza una busqueda binaria en el arbol para encontrar el nodo con identificador `id`
+    while (nodo != nullptr && !(nodo->ident == id))
     {
-        // Si encuentra el identificador, comprueba si es dependiente y guarda su supervisor
-        // Solo se puede obtener el supervisor si el nodo es dependiente
-        if (nodo->ident == id && nodo->super != nullptr)
-        {
-            sup = nodo->super->ident;
-            error = false;
-        }
+        // Navega por el arbol segun corresponda hacia la izquierda o derecha
+        // en busca del nodo con identificador `id`
+        nodo = (id < nodo->ident) ? nodo->izda : nodo->dcha;
+    }
+
+    // Si ha encontrado el nodo, obtiene su supervisor
+    if (nodo != nullptr)
+    {
+        sup = nodo->super->ident;
+        error = false;
     }
 }
 
@@ -926,18 +869,21 @@ template <typename I, typename V>
 void obtenerNumDependientes(const I &id, const colecInterdep<I, V> &c, int &num, bool &error)
 {
     error = true;
+    typename colecInterdep<I, V>::nodo *nodo = c.raiz;
 
-    // Busca el nodo con identificador `id` y devuelve su numero de dependientes
-    for (typename colecInterdep<I, V>::nodo *nodo = c.primero;
-         nodo != nullptr && (nodo->ident < id || nodo->ident == id);
-         nodo = nodo->sig)
+    // Realiza una busqueda binaria en el arbol para encontrar el nodo con identificador `id`
+    while (nodo != nullptr && !(nodo->ident == id))
     {
-        // Si encuentra el identificador, guarda su numero de dependientes
-        if (nodo->ident == id)
-        {
-            num = nodo->numDepend;
-            error = false;
-        }
+        // Navega por el arbol segun corresponda hacia la izquierda o derecha
+        // en busca del nodo con identificador `id`
+        nodo = (id < nodo->ident) ? nodo->izda : nodo->dcha;
+    }
+
+    // Si ha encontrado el nodo, obtiene su numero de dependientes
+    if (nodo != nullptr)
+    {
+        num = nodo->numDepend;
+        error = false;
     }
 }
 
@@ -951,7 +897,8 @@ void obtenerNumDependientes(const I &id, const colecInterdep<I, V> &c, int &num,
  * @param[in, out] c Coleccion de la que se quiere eliminar el elemento con identificador `id`.
  *
  * Post: si existe el elemento con identificador `id` en la coleccion `c` y no tiene elementos que dependan de él:
- *       - se elimina dicho elemento de la lista enlazada, actualizando los punteros correspondientes.
+ *       - se elimina dicho elemento del arbol, manteniendo la propiedad de arbol binario de busqueda. (el elemento
+ *         eliminado se reemplaza por el de menor valor en su subrama derecha).
  *       - se decrementa el contador de dependientes del supervisor si existe.
  *       - se decrementa el tamaño de la coleccion.
  *       - se libera la memoria ocupada por el nodo eliminado.
@@ -960,37 +907,69 @@ void obtenerNumDependientes(const I &id, const colecInterdep<I, V> &c, int &num,
 template <typename I, typename V>
 void borrar(const I &id, colecInterdep<I, V> &c)
 {
-    // Se borrara el nodoActual, que esta despues del nodoAnterior
-    typename colecInterdep<I, V>::nodo *nodoActual = c.primero;
+    // Se borrara `nodoActual`, que es hijo de `nodoAnterior`
+    typename colecInterdep<I, V>::nodo *nodoActual = c.raiz;
     typename colecInterdep<I, V>::nodo *nodoAnterior = nullptr;
 
-    // Itera la coleccion en busca del nodo con identificador `id`
-    while (nodoActual != nullptr && nodoActual->ident < id)
+    // Realiza una busqueda binaria en el arbol para encontrar el nodo con identificador `id`
+    while (nodoActual != nullptr && !(nodoActual->ident == id))
     {
+        // Guarda una referencia al nodo padre
         nodoAnterior = nodoActual;
-        nodoActual = nodoActual->sig;
+
+        // Navega por el arbol segun corresponda hacia la izquierda o derecha en
+        // busca del nodo con identificador `id`
+        nodoActual = (id < nodoActual->ident) ? nodoActual->izda : nodoActual->dcha;
     }
 
     // Si no encuentra el identificador o tiene elementos que dependen de él, no se realiza ningun cambio
-    if (nodoActual != nullptr && nodoActual->ident == id && nodoActual->numDepend == 0)
+    if (!(nodoActual == nullptr) && nodoActual->numDepend == 0)
     {
-        // Si el nodo a borrar es dependiente, actualiza el numero de dependientes del supervisor
+        // Se reemplazara el nodo a borrar por `reemplazo`, que es el de menor valor en la subrama derecha
+        typename colecInterdep<I, V>::nodo *reemplazo = nodoActual->dcha;
+        typename colecInterdep<I, V>::nodo *reemplazoAnterior = nodoActual;
+
+        // Realiza una busqueda binaria en el arbol para encontrar el nodo con identificador `id`
+        while (reemplazo->izda != nullptr)
+        {
+            reemplazoAnterior = reemplazo;
+            reemplazo = reemplazo->izda;
+        }
+
+        // Si el reemplazo tiene rama derecha, conectar dicha rama con la rama izquierda del
+        // padre del reemplazo (`reemplazoAnterior`), dejando a `reemplazo` libre para ser movido
+        if (reemplazo->dcha != nullptr)
+        {
+            reemplazoAnterior->izda = reemplazo->dcha;
+        }
+
+        // Reemplazar el nodo a borrar (`nodoActual`) por el nodo `reemplazo`
+        reemplazo->izda = nodoActual->izda;
+        reemplazo->dcha = nodoActual->dcha;
+
+        // El elemento a borrar era la raiz
+        if (nodoAnterior == nullptr)
+        {
+            c.raiz = reemplazo;
+        }
+
+        // El elemento a borrar era hijo de otro nodo
+        else if (nodoAnterior->izda == nodoActual)
+        {
+            nodoAnterior->izda = reemplazo;
+        }
+        else
+        {
+            nodoAnterior->dcha = reemplazo;
+        }
+
+        // Actualizar el contador de dependientes del supervisor si existe
         if (nodoActual->super != nullptr)
         {
             nodoActual->super->numDepend--;
         }
 
-        // Se actualizan los punteros de la lista enlazada
-        if (nodoAnterior == nullptr)
-        {
-            c.primero = nodoActual->sig;
-        }
-        else
-        {
-            nodoAnterior->sig = nodoActual->sig;
-        }
-
-        // Se libera la memoria del nodo y se decrementa el tamaño de la coleccion
+        // Liberar la memoria ocupada por el nodo eliminado y decrementar el tamaño de la coleccion
         delete nodoActual;
         c.tam--;
     }
