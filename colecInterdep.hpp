@@ -383,8 +383,14 @@ private:
     /** Puntero a la raiz del arbol. Si la coleccion esta vacia, `nullptr`. */
     nodo *raiz = nullptr;
 
-    /** Pila para gestionar la iteracion del arbol. */
-    pila<nodo*> pilaIter;
+    /** Pila de punteros a nodos que ha recorrido el iterador desde la raiz hasta su posicion actual. */
+    pila<nodo *> recorridoIterador;
+
+    /** Puntero al nodo actual del iterador. */
+    nodo *actual = nullptr;
+
+    /** Cuantos desvíos a la izquierda hay desde la raiz hasta la posicion actual del iterador */
+    int desviosIzda = 0;
 };
 
 /**
@@ -401,6 +407,8 @@ void crear(colecInterdep<I, V> &c)
     c.tam = 0;
     c.raiz = nullptr;
     c.actual = nullptr;
+    crearPila(c.recorridoIterador);
+    c.desviosIzda = 0;
 }
 
 /**
@@ -559,8 +567,8 @@ void anyadirIndependiente(colecInterdep<I, V> &c, const I &id, const V &v)
         nodoActual = (id < nodoActual->ident) ? nodoActual->izda : nodoActual->dcha;
     }
 
-    // Si el identificador ya existe, no se añade nada
-    if (!(nodoActual->ident == id))
+    // Si no se ha encontrado un elemento, lo añade
+    if (nodoActual == nullptr)
     {
         // Nuevo nodo a añadir (hoja, sin ramas izda ni dcha)
         typename colecInterdep<I, V>::nodo *nuevoNodo = new typename colecInterdep<I, V>::nodo;
@@ -612,7 +620,7 @@ void anyadirDependiente(colecInterdep<I, V> &c, const I &id, const V &v, const I
         // Se insertara como hijo de `nodoAnterior`, y con dependencia de `nodoSuper`
         typename colecInterdep<I, V>::nodo *nodoActual = c.raiz;
         typename colecInterdep<I, V>::nodo *nodoAnterior = nullptr;
-        typename colecInterdep<I, V>::nodo *nodoSuper = nullptr;
+        typename colecInterdep<I, V>::nodo *nodoSuper = c.raiz;
 
         // Realiza una busqueda binaria en el arbol para encontrar el nodo con identificador `id`
         while (nodoActual != nullptr && !(nodoActual->ident == id))
@@ -680,7 +688,7 @@ void hacerDependiente(const colecInterdep<I, V> &c, const I &id, const I &super)
     {
         // Se busca el nodo `dep`, que dependera de `sup`
         typename colecInterdep<I, V>::nodo *dep = c.raiz;
-        typename colecInterdep<I, V>::nodo *sup = nullptr;
+        typename colecInterdep<I, V>::nodo *sup = c.raiz;
 
         // Realiza una busqueda binaria en el arbol para encontrar el nodo con identificador `id`
         while (dep != nullptr && !(dep->ident == id))
@@ -804,7 +812,7 @@ void obtenerVal(const I &id, const colecInterdep<I, V> &c, V &v, bool &error)
 {
     error = true;
     typename colecInterdep<I, V>::nodo *nodo = c.raiz;
-
+    
     // Realiza una busqueda binaria en el arbol para encontrar el nodo con identificador `id`
     while (nodo != nullptr && !(nodo->ident == id))
     {
@@ -812,7 +820,7 @@ void obtenerVal(const I &id, const colecInterdep<I, V> &c, V &v, bool &error)
         // en busca del nodo con identificador `id`
         nodo = (id < nodo->ident) ? nodo->izda : nodo->dcha;
     }
-
+    
     // Si ha encontrado el nodo, obtiene su valor
     if (nodo != nullptr)
     {
@@ -848,7 +856,7 @@ void obtenerSupervisor(const I &id, const colecInterdep<I, V> &c, I &sup, bool &
     }
 
     // Si ha encontrado el nodo, obtiene su supervisor
-    if (nodo != nullptr)
+    if (nodo != nullptr && nodo->super != nullptr)
     {
         sup = nodo->super->ident;
         error = false;
@@ -931,23 +939,26 @@ void borrar(const I &id, colecInterdep<I, V> &c)
         typename colecInterdep<I, V>::nodo *reemplazo = nodoActual->dcha;
         typename colecInterdep<I, V>::nodo *reemplazoAnterior = nodoActual;
 
-        // Realiza una busqueda binaria en el arbol para encontrar el nodo con identificador `id`
-        while (reemplazo->izda != nullptr)
+        if (reemplazo != nullptr)
         {
-            reemplazoAnterior = reemplazo;
-            reemplazo = reemplazo->izda;
-        }
+            // Realiza una busqueda binaria en el arbol para encontrar el nodo con identificador `id`
+            while (reemplazo->izda != nullptr)
+            {
+                reemplazoAnterior = reemplazo;
+                reemplazo = reemplazo->izda;
+            }
 
-        // Si el reemplazo tiene rama derecha, conectar dicha rama con la rama izquierda del
-        // padre del reemplazo (`reemplazoAnterior`), dejando a `reemplazo` libre para ser movido
-        if (reemplazo->dcha != nullptr)
-        {
-            reemplazoAnterior->izda = reemplazo->dcha;
-        }
+            // Si el reemplazo tiene rama derecha, conectar dicha rama con la rama izquierda del
+            // padre del reemplazo (`reemplazoAnterior`), dejando a `reemplazo` libre para ser movido
+            if (reemplazo->dcha != nullptr)
+            {
+                reemplazoAnterior->izda = reemplazo->dcha;
+            }
 
-        // Reemplazar el nodo a borrar (`nodoActual`) por el nodo `reemplazo`
-        reemplazo->izda = nodoActual->izda;
-        reemplazo->dcha = nodoActual->dcha;
+            // Reemplazar el nodo a borrar (`nodoActual`) por el nodo `reemplazo`
+            reemplazo->izda = nodoActual->izda;
+            reemplazo->dcha = nodoActual->dcha;
+        }
 
         // El elemento a borrar era la raiz
         if (nodoAnterior == nullptr)
@@ -989,13 +1000,16 @@ void borrar(const I &id, colecInterdep<I, V> &c)
 template <typename I, typename V>
 void iniciarIterador(colecInterdep<I, V> &c)
 {
-    typename colecInterdep<I, V>::nodo *aux = c.raiz;
-    crearPila(c.pilaIter);
-    // Apila todos los nodos izquierdos desde la raiz
-    while (aux != nullptr)
+    // Coloca inicialmente el puntero `actual` en la raiz.
+    c.actual = c.raiz;
+    crearPila(c.recorridoIterador);
+
+    // Recorre la rama izquierda desde la raiz hasta el nodo de menor id, apilando los nodos encontrados
+    while (c.actual != nullptr && c.actual->izda != nullptr)
     {
-        apilar(c.pilaIter, aux);
-        aux = aux->izda;
+        push(c.recorridoIterador, c.actual);
+        c.actual = c.actual->izda;
+        c.desviosIzda++;
     }
 }
 
@@ -1011,7 +1025,7 @@ void iniciarIterador(colecInterdep<I, V> &c)
 template <typename I, typename V>
 bool existeSiguiente(const colecInterdep<I, V> &c)
 {
-    return size(c.pilaIter) > 0;
+    return c.actual != nullptr;
 }
 
 /**
@@ -1031,8 +1045,7 @@ void siguienteIdent(const colecInterdep<I, V> &c, I &id, bool &error)
     error = !existeSiguiente(c);
     if (!error)
     {
-        typename colecInterdep<I, V>::nodo *aux = cima(c.pilaIter);
-        id = aux->ident;
+        id = c.actual->ident;
     }
 }
 
@@ -1053,8 +1066,7 @@ void siguienteVal(const colecInterdep<I, V> &c, V &v, bool &error)
     error = !existeSiguiente(c);
     if (!error)
     {
-        typename colecInterdep<I, V>::nodo *aux = cima(c.pilaIter);
-        v = aux->val;
+        v = c.actual->val;
     }
 }
 
@@ -1075,8 +1087,7 @@ void siguienteDependiente(const colecInterdep<I, V> &c, bool &dep, bool &error)
     error = !existeSiguiente(c);
     if (!error)
     {
-        typename colecInterdep<I, V>::nodo *aux = cima(c.pilaIter);
-        dep = aux->super != nullptr;
+        dep = c.actual->super != nullptr;
     }
 }
 
@@ -1094,11 +1105,10 @@ void siguienteDependiente(const colecInterdep<I, V> &c, bool &dep, bool &error)
 template <typename I, typename V>
 void siguienteSuperior(const colecInterdep<I, V> &c, I &id, bool &error)
 {
-    typename colecInterdep<I, V>::nodo *aux = cima(c.pilaIter);
-    error = !existeSiguiente(c) || aux->super == nullptr;
+    error = !existeSiguiente(c) || c.actual->super == nullptr;
     if (!error)
     {
-        id = aux->super->ident;
+        id = c.actual->super->ident;
     }
 }
 
@@ -1119,8 +1129,7 @@ void siguienteNumDependientes(const colecInterdep<I, V> &c, int &num, bool &erro
     error = !existeSiguiente(c);
     if (!error)
     {
-        typename colecInterdep<I, V>::nodo *aux = cima(c.pilaIter);
-        num = aux->numDepend;
+        num = c.actual->numDepend;
     }
 }
 
@@ -1140,14 +1149,50 @@ void avanzarIterador(colecInterdep<I, V> &c, bool &error)
     error = !existeSiguiente(c);
     if (!error)
     {
-        typename colecInterdep<I, V>::nodo *aux = cima(c.pilaIter);
-        desapilar(c.pilaIter);
-        // Apila todos los nodos izquierdos desde el nodo derecho del nodo desapilado
-        aux = aux->dcha;
-        while (aux != nullptr)
+        // Seguir bajando por la rama derecha si existe
+        if (c.actual->dcha != nullptr)
         {
-            apilar(c.pilaIter, aux);
-            aux = aux->izda;
+            // Baja un nivel por la rama derecha
+            push(c.recorridoIterador, c.actual);
+            c.actual = c.actual->dcha;
+
+            // Si hay rama izquierda, bajar por ella hasta el nodo de menor id
+            while (c.actual != nullptr && c.actual->izda != nullptr)
+            {
+                push(c.recorridoIterador, c.actual);
+                c.actual = c.actual->izda;
+                c.desviosIzda++;
+            }
+        }
+
+        // Si no existe rama derecha y no hay mas nodos por visitar por la derecha, finalizamos
+        else if (c.desviosIzda == 0)
+        {
+            // No hay mas nodos por visitar
+            c.actual = nullptr;
+        }
+
+        // Si no existe rama derecha, retroceder por la pila hasta encontrar un nodo con rama derecha no visitada
+        // No comprobamos la rama izquierda, ya que si la hubiera, habriamos bajado por ella antes
+        else
+        {
+            bool e;
+
+            // Obtener el padre del nodo actual
+            typename colecInterdep<I, V>::nodo *padre;
+            pop(c.recorridoIterador, padre, e);
+
+            // Mientras venimos por la derecha, seguir subiendo
+            while (padre->dcha == c.actual)
+            {
+                c.actual = padre;
+                pop(c.recorridoIterador, padre, e);
+            }
+
+            // El ultimo salto hacia arriba ha sido por la rama izquierda de `padre`,
+            // Su valor es mayor a todo lo que hemos visitado hasta ahora
+            c.actual = padre;
+            c.desviosIzda--;
         }
     }
 }
