@@ -1037,10 +1037,12 @@ void siguienteDependiente(const colecInterdep<I, V> &c, bool &dep, bool &error)
 template <typename I, typename V>
 void siguienteSuperior(const colecInterdep<I, V> &c, I &id, bool &error)
 {
-    error = !existeSiguiente(c) || c.actual->super == nullptr;
+    error = !existeSiguiente(c);
     if (!error)
     {
-        id = c.actual->super->ident;
+        typename colecInterdep<I, V>::nodo *aux = cima(c.pilaIter);
+        error = aux->super == nullptr;
+        if (!error) id = aux->super->ident;
     }
 }
 
