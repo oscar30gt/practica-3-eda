@@ -41,11 +41,29 @@ void push(pila<T> &p, const T &e);
  * @brief Desapila un elemento de la pila `p` si no esta vacia.
  * @tparam T Tipo de los elementos de la pila.
  * @param[in, out] p Pila a desapilar.
- * @param[out] e Elemento desapilado.
  * @param[out] error Indica si se ha producido un error (pila vacia).
  */
 template <typename T>
-void pop(pila<T> &p, T &e, bool &error);
+void pop(pila<T> &p, bool &error);
+
+/**
+ * @brief Obtiene el tamaño de la pila `p`.
+ * @tparam T Tipo de los elementos de la pila.
+ * @param[in] p Pila de la que se quiere obtener el tamaño.
+ * @return Tamaño de la pila `p`.
+ */
+template <typename T>
+int tamanyo(const pila<T> &p);
+
+/**
+ * @brief Obtiene el elemento que esta en la cima de la pila `p` sin desapilarlo.
+ * @tparam T Tipo de los elementos de la pila.
+ * @param[in] p Pila de la que se quiere obtener el elemento de la cima.
+ * @param[out] e Elemento en la cima de la pila.
+ * @param[out] error Indica si se ha producido un error (pila vacia).
+ */
+template <typename T>
+void cima(const pila<T> &p, T &e, bool &error);
 
 // FIN PREDECLARACION DEL TAD GENERICO pila (fin INTERFAZ)
 
@@ -61,7 +79,9 @@ struct pila
     /* Funciones amigas para permitir el acceso a los campos privados del TAD, asi como su modificacion. */
     friend void crear<T>(pila<T> &p);
     friend void push<T>(pila<T> &p, const T &e);
-    friend void pop<T>(pila<T> &p, T &e, bool &error);
+    friend void pop<T>(pila<T> &p, bool &error);
+    friend int tamanyo<T>(const pila<T> &p);
+    friend void cima<T>(const pila<T> &p, T &e, bool &error);
 
     /* El TAD pila se implementa como una lista enlazada,
        en el que cada elemento es del tipo `pila::nodo`. */
@@ -100,7 +120,7 @@ void crear(pila<T> &p)
     {
         T aux;
         bool error;
-        pop(p, aux, error);
+        pop(p, error);
     }
 
     p.cima = nullptr;
@@ -132,27 +152,62 @@ void push(pila<T> &p, const T &e)
  * @brief Desapila un elemento de la pila `p` si no esta vacia.
  * @tparam T Tipo de los elementos de la pila.
  * @param[in, out] p Pila a desapilar.
- * @param[out] e Elemento desapilado.
  * @param[out] error Indica si se ha producido un error (pila vacia).
  *
- * Post: si la pila `p` no esta vacia, `e` contiene el campo `valor`
- *       del nodo que estaba en la cima de la pila y error=false. El
- *       nodo se ha eliminado de la lista enlazada y el campo `tam`
- *       de la pila `p` se ha decrementado en 1. En caso contrario,
- *       error=true (operacion parcial).
+ * Post: si la pila `p` no esta vacia, se elimina el nodo que esta en la cima 
+ *       de la pila y el campo `tam` de la pila `p` se ha decrementado en 1. 
+ *       error=false. En caso contrario, error=true (operacion parcial).
  */
 template <typename T>
-void pop(pila<T> &p, T &e, bool &error)
+void pop(pila<T> &p, bool &error)
 {
     error = p.tam == 0;
 
     // Si hay elementos en la pila, se desapila el elemento de la cima
     if (!error)
     {
-        e = p.cima->valor;
+        // Se actualizan los punteros de la lista enlazada
+        typename pila<T>::nodo *aux = p.cima;
         p.cima = p.cima->sig;
-        delete p.cima;
+        
+        // Libera la memoria del nodo desapilado
+        delete aux;
         p.tam--;
+    }
+}
+
+/**
+ * @brief Obtiene el tamaño de la pila `p`.
+ * @tparam T Tipo de los elementos de la pila.
+ * @param[in] p Pila de la que se quiere obtener el tamaño.
+ * @return Tamaño de la pila `p`.
+ */
+template <typename T>
+int tamanyo(const pila<T> &p)
+{
+    return p.tam;
+}
+
+/**
+ * @brief Obtiene el elemento que esta en la cima de la pila `p` sin desapilarlo.
+ * @tparam T Tipo de los elementos de la pila.
+ * @param[in] p Pila de la que se quiere obtener el elemento de la cima.
+ * @param[out] e Elemento en la cima de la pila.
+ * @param[out] error Indica si se ha producido un error (pila vacia).
+ *
+ * Post: si la pila `p` no esta vacia, `e` contiene el campo `valor`
+ *       del nodo que esta en la cima de la pila y error=false. En caso
+ *       contrario, error=true (operacion parcial).
+ */
+template <typename T>
+void cima(const pila<T> &p, T &e, bool &error)
+{
+    error = p.tam == 0;
+
+    // Si hay elementos en la pila, se obtiene el elemento de la cima
+    if (!error)
+    {
+        e = p.cima->valor;
     }
 }
 

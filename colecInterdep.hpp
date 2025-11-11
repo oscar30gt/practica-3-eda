@@ -384,13 +384,7 @@ private:
     nodo *raiz = nullptr;
 
     /** Pila de punteros a nodos que ha recorrido el iterador desde la raiz hasta su posicion actual. */
-    pila<nodo *> recorridoIterador;
-
-    /** Puntero al nodo actual del iterador. */
-    nodo *actual = nullptr;
-
-    /** Cuantos desvíos a la izquierda hay desde la raiz hasta la posicion actual del iterador */
-    int desviosIzda = 0;
+    pila<nodo *> iterador;
 };
 
 /**
@@ -406,9 +400,6 @@ void crear(colecInterdep<I, V> &c)
 {
     c.tam = 0;
     c.raiz = nullptr;
-    c.actual = nullptr;
-    crear(c.recorridoIterador);
-    c.desviosIzda = 0;
 }
 
 /**
@@ -1002,60 +993,57 @@ void borrar(const I &id, colecInterdep<I, V> &c)
         c.tam--;
     }
 }
-#include <type_traits>
-#include <string>
+
 /**
- * @brief Inicializa el iterador de la coleccion `c` para recorrer sus elementos de menor a mayor identificador
+ * @brief Inicializa el iterador de la coleccion c para recorrer sus elementos de menor a mayor identificador
  * @tparam I Tipo del identificador de los elementos de la coleccion.
  * @tparam V Tipo de los elementos de la coleccion.
  * @param[in, out] c Coleccion cuyo iterador se quiere inicializar.
  *
- * Post: se inicializa el iterador de la coleccion `c`, inicializando la pila `c.recorridoIterador` y se recorre la rama izquierda
- *       en busca del nodo de menor identificador, apilando los nodos recorridos. El puntero `c.actual` apunta al nodo de menor
- *       identificador encontrado (o a `nullptr` si la coleccion esta vacia).
+ * Post: se ha inicializado el iterador de la coleccion `c` para recorrer sus elementos 
+ *       de menor a mayor identificador. La cima de la pila `c.iterador` apunta al nodo con
+ *       el menor identificador, ubicado en la rama izquierda mas profunda del arbol.
  */
 template <typename I, typename V>
 void iniciarIterador(colecInterdep<I, V> &c)
 {
-    // Coloca inicialmente el puntero `actual` en la raiz.
-    c.actual = c.raiz;
-    c.desviosIzda = 0;
-    crear(c.recorridoIterador);
+    // Inicializa la pila del iterador
+    crear(c.iterador);
+    typename colecInterdep<I, V>::nodo *nodo = c.raiz;
 
-    // Recorre la rama izquierda desde la raiz hasta el nodo de menor id, apilando los nodos encontrados
-    while (c.actual != nullptr && c.actual->izda != nullptr)
+    // Apila todos los nodos izquierdos desde la raiz
+    while (nodo != nullptr)
     {
-        push(c.recorridoIterador, c.actual);
-        c.actual = c.actual->izda;
-        c.desviosIzda++;
+        push(c.iterador, nodo);
+        nodo = nodo->izda;
     }
 }
 
 /**
- * @brief Comprueba queda algún elemento por visitar en la colección `c`.
+ * @brief Comprueba queda algún elemento por visitar en la colección c.
  * @tparam I Tipo del identificador de los elementos de la coleccion.
  * @tparam V Tipo de los elementos de la coleccion.
  * @param[in] c Coleccion que se quiere comprobar.
- * @returns `true` si existe un siguiente elemento, `false` en caso contrario.
+ * @returns true si existe un siguiente elemento, false en caso contrario.
  *
- * Post: devuelve `true` si el `c.actual` no es `nullptr`, `false` en caso contrario.
+ * Post: devuelve `true` si el tamaño de la pila es mayor estricto que 0.
  */
 template <typename I, typename V>
 bool existeSiguiente(const colecInterdep<I, V> &c)
 {
-    return c.actual != nullptr;
+    return tamanyo(c.iterador) > 0;
 }
 
 /**
- * @brief Obtiene el identificador del siguiente elemento a visitar en la coleccion `c`.
+ * @brief Obtiene el identificador del siguiente elemento a visitar en la coleccion c.
  * @tparam I Tipo del identificador de los elementos de la coleccion.
  * @tparam V Tipo de los elementos de la coleccion.
  * @param[in] c Coleccion de la que se quiere obtener el identificador del siguiente elemento.
  * @param[out] id Identificador del siguiente elemento a visitar.
  * @param[out] error Indica si se ha producido un error (no quedan elementos por visitar).
  *
- * Post: si `existeSiguiente(c)`, se le asigna a `id` el campo `ident` del nodo apuntado por `c.actual` y error=false.
- *       En caso contrario, error=true (operación parcial)
+ * Post: si existeSiguiente(c), se le asigna a `id` el campo `ident` del nodo apuntado por el puntero
+ *       en la cima de `c.iterador` y error=false. En caso contrario, error=true (operación parcial)
  */
 template <typename I, typename V>
 void siguienteIdent(const colecInterdep<I, V> &c, I &id, bool &error)
@@ -1063,20 +1051,22 @@ void siguienteIdent(const colecInterdep<I, V> &c, I &id, bool &error)
     error = !existeSiguiente(c);
     if (!error)
     {
-        id = c.actual->ident;
+        typename colecInterdep<I, V>::nodo *nodo;
+        cima(c.iterador, nodo, error); // No hay error porque existeSiguiente(c)
+        id = nodo->ident;
     }
 }
 
 /**
- * @brief Obtiene el valor del siguiente elemento a visitar en la coleccion `c`.
+ * @brief Obtiene el valor del siguiente elemento a visitar en la coleccion c.
  * @tparam I Tipo del identificador de los elementos de la coleccion.
  * @tparam V Tipo de los elementos de la coleccion.
  * @param[in] c Coleccion de la que se quiere obtener el valor del siguiente elemento.
  * @param[out] v Valor del siguiente elemento a visitar.
  * @param[out] error Indica si se ha producido un error (no quedan elementos por visitar).
  *
- * Post: si `existeSiguiente(c)`, se le asigna a `v` el campo `val` del nodo apuntado por `c.actual` y error=false.
- *       En caso contrario, error=true (operación parcial).
+ * Post: si existeSiguiente(c), se le asigna a `v` el campo `val` del nodo apuntado por el puntero
+ *       en la cima de `c.iterador` y error=false. En caso contrario, error=true (operación parcial).
  */
 template <typename I, typename V>
 void siguienteVal(const colecInterdep<I, V> &c, V &v, bool &error)
@@ -1084,20 +1074,22 @@ void siguienteVal(const colecInterdep<I, V> &c, V &v, bool &error)
     error = !existeSiguiente(c);
     if (!error)
     {
-        v = c.actual->val;
+        typename colecInterdep<I, V>::nodo *nodo;
+        cima(c.iterador, nodo, error); // No hay error porque existeSiguiente(c)
+        v = nodo->val;
     }
 }
 
 /**
- * @brief Indica si el siguiente elemento a visitar en la coleccion `c` es dependiente.
+ * @brief Indica si el siguiente elemento a visitar en la coleccion c es dependiente.
  * @tparam I Tipo del identificador de los elementos de la coleccion.
  * @tparam V Tipo de los elementos de la coleccion.
  * @param[in] c Coleccion de la que se quiere comprobar si el siguiente elemento es dependiente.
- * @param[out] dep Si el siguiente elemento a visitar es dependiente. `true` si es dependiente, `false` si es independiente.
+ * @param[out] dep Si el siguiente elemento a visitar es dependiente. true si es dependiente, false si es independiente.
  * @param[out] error Indica si se ha producido un error (no quedan elementos por visitar).
  *
- * Post: si `existeSiguiente(c)`, se le asigna a `dep` el resultado de comprobar si el campo `super` del nodo apuntado por `c.actual`
- *       es distinto de `nullptr` y error=false. En caso contrario, error=true (operación parcial).
+ * Post: si existeSiguiente(c), se le asigna a `dep` el resultado de comprobar si el campo `super` del nodo apuntado por el puntero
+ *       en la cima de `c.iterador` es distinto de `nullptr` y error=false. En caso contrario, `error=true` (operación parcial).
  */
 template <typename I, typename V>
 void siguienteDependiente(const colecInterdep<I, V> &c, bool &dep, bool &error)
@@ -1105,41 +1097,46 @@ void siguienteDependiente(const colecInterdep<I, V> &c, bool &dep, bool &error)
     error = !existeSiguiente(c);
     if (!error)
     {
-        dep = c.actual->super != nullptr;
+        typename colecInterdep<I, V>::nodo *nodo;
+        cima(c.iterador, nodo, error); // No hay error porque existeSiguiente(c)
+        dep = nodo->super != nullptr;
     }
 }
 
 /**
- * @brief Obtiene el supervisor del siguiente elemento a visitar en la coleccion `c`.
+ * @brief Obtiene el supervisor del siguiente elemento a visitar en la coleccion c.
  * @tparam I Tipo del identificador de los elementos de la coleccion.
  * @tparam V Tipo de los elementos de la coleccion.
  * @param[in] c Coleccion de la que se quiere obtener el identificador del supervisor del siguiente elemento.
  * @param[out] sup Identificador del supervisor del siguiente elemento a visitar.
  * @param[out] error Indica si se ha producido un error (no quedan elementos por visitar o el elemento es independiente).
  *
- * Post: si `siguienteDependiente(c)`, se le asigna a `sup` el campo `ident` del supervisor del nodo apuntado por `c.actual` y error=false.
- *       En caso contrario, error=true (operación parcial).
+ * Post: si siguienteDependiente(c), se le asigna a `sup` el campo ident del supervisor
+ *       del nodo apuntado por el puntero en la cima de `c.iterador` y error=false. En caso contrario, error=true (operación parcial).
  */
 template <typename I, typename V>
 void siguienteSuperior(const colecInterdep<I, V> &c, I &id, bool &error)
 {
-    error = !existeSiguiente(c) || c.actual->super == nullptr;
+    typename colecInterdep<I, V>::nodo *nodo;
+    cima(c.iterador, nodo, error); // Si hay error, no existe siguiente
+
+    error = error || (nodo->super == nullptr);
     if (!error)
     {
-        id = c.actual->super->ident;
+        id = nodo->super->ident;
     }
 }
 
 /**
- * @brief Obtiene el numero de elementos que dependen del siguiente elemento a visitar en la coleccion `c`.
+ * @brief Obtiene el numero de elementos que dependen del siguiente elemento a visitar en la coleccion c.
  * @tparam I Tipo del identificador de los elementos de la coleccion.
  * @tparam V Tipo de los elementos de la coleccion.
  * @param[in] c Coleccion de la que se quiere obtener el numero de elementos dependientes del siguiente elemento.
  * @param[out] num Numero de elementos dependientes del siguiente elemento a visitar.
  * @param[out] error Indica si se ha producido un error (no quedan elementos por visitar).
  *
- * Post: si `existeSiguiente(c)`, se le asigna a `num` el campo `numDepend` del nodo apuntado por `c.actual` y error=false.
- *       En caso contrario, error=true (operación parcial).
+ * Post: si existeSiguiente(c), se le asigna a `num` el campo `numDepend` del nodo apuntado por el puntero 
+ *       en la cima de `c.iterador` y error=false. En caso contrario, error=true (operación parcial).
  */
 template <typename I, typename V>
 void siguienteNumDependientes(const colecInterdep<I, V> &c, int &num, bool &error)
@@ -1147,71 +1144,50 @@ void siguienteNumDependientes(const colecInterdep<I, V> &c, int &num, bool &erro
     error = !existeSiguiente(c);
     if (!error)
     {
-        num = c.actual->numDepend;
+        typename colecInterdep<I, V>::nodo *aux;
+        cima(c.iterador, aux, error); // No hay error porque existeSiguiente(c)
+        num = aux->numDepend;
     }
 }
 
 /**
- * @brief Avanza el iterador de la coleccion `c` al siguiente elemento.
+ * @brief Avanza el iterador de la coleccion c al siguiente elemento.
  * @tparam I Tipo del identificador de los elementos de la coleccion.
  * @tparam V Tipo de los elementos de la coleccion
  * @param[in, out] c Coleccion cuyo iterador se quiere avanzar.
  * @param[out] error Indica si se ha producido un error (no quedan elementos por visitar).
  *
- * Post: si `existeSiguiente(c)`, el campo `c.actual` se actualiza con el valor del siguiente nodo (c.actual->sig)
- *       y error=false. En caso contrario, error=true (operación parcial)
+ * Post: si existeSiguiente(c), el campo se recorre el arbol hasta el siguiente elemento en orden
+ *       de identificadores, quedando la pila `c.iterador` actualizada para que su cima apunte a
+ *       dicho elemento. El resto de elementos en la pila describe el recorrido inverso hacia la 
+ *       raiz del arbol. error=false. En caso contrario, error=true (operación parcial).
  */
 template <typename I, typename V>
 void avanzarIterador(colecInterdep<I, V> &c, bool &error)
 {
-
     error = !existeSiguiente(c);
     if (!error)
     {
-        // Seguir bajando por la rama derecha si existe
-        if (c.actual->dcha != nullptr)
+        // Desapila el ultimo elemento de la pila en `nodo`
+        typename colecInterdep<I, V>::nodo *nodo;
+        cima(c.iterador, nodo, error);
+        pop(c.iterador, error);
+        
+        // Si se ha podido desapilar correctamente (habia al menos un elemento), navega hacia
+        // la rama derecha del nodo desapilado.
+        if(!error)
         {
-            // Baja un nivel por la rama derecha
-            push(c.recorridoIterador, c.actual);
-            c.actual = c.actual->dcha;
-
-            // Si hay rama izquierda, bajar por ella hasta el nodo de menor id
-            while (c.actual != nullptr && c.actual->izda != nullptr)
+            // Navega por la rama izquierda desde la rama derecha del nodo desapilado,
+            // apilando todos los nodos encontrados en el camino.
+            nodo = nodo->dcha;
+            while (nodo != nullptr)
             {
-                push(c.recorridoIterador, c.actual);
-                c.actual = c.actual->izda;
-                c.desviosIzda++;
-            }
-        }
-
-        // Si no existe rama derecha y no hay mas nodos por visitar por la derecha, finalizamos
-        else if (c.desviosIzda == 0)
-        {
-            // No hay mas nodos por visitar
-            c.actual = nullptr;
-        }
-
-        // Si no existe rama derecha, retroceder por la pila hasta encontrar un nodo con rama derecha no visitada
-        // No comprobamos la rama izquierda, ya que si la hubiera, habriamos bajado por ella antes
-        else
-        {
-            bool e;
-
-            // Obtener el padre del nodo actual
-            typename colecInterdep<I, V>::nodo *padre;
-            pop(c.recorridoIterador, padre, e);
-
-            // Mientras venimos por la derecha, seguir subiendo
-            while (padre->dcha == c.actual)
-            {
-                c.actual = padre;
-                pop(c.recorridoIterador, padre, e);
+                push(c.iterador, nodo);
+                nodo = nodo->izda;
             }
 
-            // El ultimo salto hacia arriba ha sido por la rama izquierda de `padre`,
-            // Su valor es mayor a todo lo que hemos visitado hasta ahora
-            c.actual = padre;
-            c.desviosIzda--;
+            // Nota: se puede ver que el nodo desapilado no se vuelve a apilar. Cuando se haga el
+            // camino inverso, se saltara directamente al padre de este, evitando bucles.
         }
     }
 }
