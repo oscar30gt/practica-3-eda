@@ -932,7 +932,7 @@ void borrar(const I &id, colecInterdep<I, V> &c)
     }
 
     // Si no encuentra el identificador o tiene elementos que dependen de él, no se realiza ningun cambio
-    if (!(nodoActual == nullptr) && nodoActual->numDepend == 0)
+    if (nodoActual != nullptr && nodoActual->numDepend == 0)
     {
         // Nodo de reemplazo que sustituira al nodo a borrar, dependiendo de los casos posibles,
         // lo hara de una forma u otra

@@ -411,12 +411,9 @@ void LD(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
 void LT(colecInterdep<string, evento> &c, ofstream &o)
 {
     o << "-----LISTADO: " << tamanyo(c) << endl;
-    int i = 0;
     iniciarIterador(c);
     while (existeSiguiente(c))
     {
-        i++;
-        if (i>20)break;
         bool error;
         int numDep;
         evento ev;
