@@ -14,8 +14,7 @@ using namespace std;
 // PREDECLARACION DEL TAD GENERICO pila (inicio INTERFAZ)
 
 /**
- * @brief Representa una pila de elementos de tipo T.
- *
+ * @brief Representa una pila de elementos basica con operaciones de apilar y desapilar.
  * @tparam T Tipo de los elementos de la pila.
  */
 template <typename T>
@@ -27,15 +26,7 @@ struct pila;
  * @param[out] p Pila a inicializar.
  */
 template <typename T>
-void crearPila(pila<T> &p);
-
-/**
- * @brief Tamaño de la pila `p`.
- * @tparam T Tipo de los elementos de la pila.
- * @param[in] p Pila de la que se quiere obtener el tamaño.
- */
-template <typename T>
-int altura(const pila<T> &p);
+void crear(pila<T> &p);
 
 /**
  * @brief Apila el elemento `e` en la pila `p`.
@@ -61,16 +52,14 @@ void pop(pila<T> &p, T &e, bool &error);
 // DECLARACION DEL TAD GENERICO pila (inicio IMPLEMENTACION)
 
 /**
- * @brief Representa una pila de elementos de tipo T.
- *
+ * @brief Representa una pila de elementos basica con operaciones de apilar y desapilar.
  * @tparam T Tipo de los elementos de la pila.
  */
 template <typename T>
 struct pila
 {
     /* Funciones amigas para permitir el acceso a los campos privados del TAD, asi como su modificacion. */
-    friend void crearPila<T>(pila<T> &p);
-    friend int altura<T>(const pila<T> &p);
+    friend void crear<T>(pila<T> &p);
     friend void push<T>(pila<T> &p, const T &e);
     friend void pop<T>(pila<T> &p, T &e, bool &error);
 
@@ -104,7 +93,7 @@ private:
  *       En caso de que la pila ya contuviera elementos, se libera la memoria ocupada por dichos elementos.
  */
 template <typename T>
-void crearPila(pila<T> &p)
+void crear(pila<T> &p)
 {
     // Libera la memoria de los nodos existentes
     while (p.tam > 0)
@@ -119,26 +108,14 @@ void crearPila(pila<T> &p)
 }
 
 /**
- * @brief Tamaño de la pila `p`.
- * @tparam T Tipo de los elementos de la pila.
- * @param[in] p Pila de la que se quiere obtener el tamaño.
- * 
- * Post: devuelve el campo `tam` de la pila `p`.
- */
-template <typename T>
-int altura(const pila<T> &p)
-{
-    return p.tam;
-}
-
-/**
  * @brief Apila el elemento `e` en la pila `p`.
  * @tparam T Tipo de los elementos de la pila.
  * @param[in, out] p Pila en la que se apilara el elemento.
  * @param[in] e Elemento a apilar.
  *
  * Post: se ha insertado un nuevo nodo al comienzo de la lista enlazada
- *       y el campo `tam` de la pila `p` se ha incrementado en 1.
+ *       y el campo `tam` de la pila `p` se ha incrementado en 1. `p.cima`
+ *       apunta al nuevo nodo.
  */
 template <typename T>
 void push(pila<T> &p, const T &e)
