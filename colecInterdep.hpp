@@ -338,13 +338,14 @@ struct colecInterdep
          otro caso, `raiz` apunta al nodo raiz del arbol y `tam` indica el numero total de nodos que contiene.
 
        Para iterar el arbol externamente, se emplean las funciones de iterador definidas en la interfaz, que
-         utilizan el puntero `actual` para llevar la cuenta del nodo actual en la iteracion. Si el arbol se modifica
-         durante una iteracion, el comportamiento de las funciones de iterador es indefinido.*/
+         utilizan la pila de punteros a nodos `iterador` para almacenar el camino desde la raiz hasta la posicion en
+         la que se encuentra el iterador actualmente. El iterador realiza el recorrido en inroden. Si el arbol se modifica durante una
+         iteracion, el comportamiento de las funciones de iterador es indefinido. */
 
 private:
     /* Representacion de un nodo del arbol que implementa la coleccion.
 
-       Un nodo contiene un identificador `ident` que es unico en la coleccion y un valor `val` que es el valor
+       Un nodo contiene un identificador `ident` que es único en la coleccion y un valor `val` que es el valor
          asociado a ese identificador.
 
        El campo `super` define la dependencia del elemento representado por el nodo:
@@ -393,7 +394,9 @@ private:
  * @tparam V Tipo de los elementos de la coleccion.
  * @param[out] c Coleccion a inicializar.
  *
- * Post: la coleccion `c` tiene asignados a sus campos los valores correspondientes a una coleccion vacia.
+ * Post: la coleccion `c` tiene asignados a sus campos los valores correspondientes a una coleccion vacia, es decir, el campo tam a 0
+ *       y el campo raiz igual a nullptr.
+ *      (El iterador queda indefinido hasta que se inicialice)
  */
 template <typename I, typename V>
 void crear(colecInterdep<I, V> &c)
@@ -536,7 +539,7 @@ bool existeIndependiente(const I &id, const colecInterdep<I, V> &c)
  * @param[in] v Valor del elemento dependiente que se quiere añadir a la coleccion.
  *
  * Post: si no existe un elemento con identificador `id` en la coleccion `c`, se añade un nuevo nodo con los campos `ident` y `val`
- *       iguales a `id` y `v`, el campo `super` igual a `nullptr` y `numDepend`, 0. Este nodo se inserta como hoja en la posicion
+ *       iguales a `id` y `v`, el campo `super` igual a `nullptr` y `numDepend` igual a 0. Este nodo se inserta como hoja en la posicion
  *       que corresponde para satisfacer la definicion de arbol binario de busqueda ordenado por identificadores.
  *       En caso contrario, no se añade nada.
  */
@@ -596,7 +599,7 @@ void anyadirIndependiente(colecInterdep<I, V> &c, const I &id, const V &v)
  *
  * Post: si no existe un elemento con identificador `id` en la coleccion `c` y existe un elemento con identificador `super`,
  *       se añade un nuevo nodo con los campos `ident` y `val` igual a `id` y `v`, el campo `super` apuntando al nodo con
- *       identificador `super` y el campo `numDepend`, 0. Este nodo se inserta como hoja en la posicion que corresponde
+ *       identificador `super` y el campo `numDepend` igual a 0. Este nodo se inserta como hoja en la posicion que corresponde
  *       para satisfacer la definicion de arbol binario de busqueda ordenado por identificadores.
  *       En caso contrario, no se añade nada.
  */
@@ -720,7 +723,7 @@ void hacerDependiente(const colecInterdep<I, V> &c, const I &id, const I &super)
  * @param[in, out] c Coleccion en la que se encuentra el elemento que se quiere convertir en independiente.
  * @param[in] id Identificador del elemento que se quiere convertir en independiente.
  *
- * Post: si existe el elemento con identificador `id` en la coleccion `c`, a dicha elemento se le asigna
+ * Post: si existe el elemento con identificador `id` en la coleccion `c`, a dicho elemento se le asigna
  *       el valor `nullptr` en su campo `super`, convirtiendolo en independiente, y se decrementa el contador
  *       de dependientes del antiguo supervisor si existe. En caso contrario, no se realiza ningun cambio.
  */
@@ -897,7 +900,7 @@ void obtenerNumDependientes(const I &id, const colecInterdep<I, V> &c, int &num,
  * @param[in, out] c Coleccion de la que se quiere eliminar el elemento con identificador `id`.
  *
  * Post: si existe el elemento con identificador `id` en la coleccion `c` y no tiene elementos que dependan de él:
- *       - se elimina dicho elemento del arbol, manteniendo la propiedad de arbol binario de busqueda. (el elemento
+ *       - se elimina dicho elemento del arbol, manteniendo la propiedad de arbol binario de busqueda (el elemento
  *         eliminado se reemplaza por el de menor valor en su subrama derecha).
  *       - se decrementa el contador de dependientes del supervisor si existe.
  *       - se decrementa el tamaño de la coleccion.
@@ -957,7 +960,7 @@ void borrar(const I &id, colecInterdep<I, V> &c)
                 reemplazo = reemplazo->izda;
             }
 
-            // Enazar la rama izquierda del nodo padre del reemplazo con la rama derecha del reemplazo, como en el caso 2.
+            // Enlazar la rama izquierda del nodo padre del reemplazo con la rama derecha del reemplazo, como en el caso 2.
             reemplazoAnterior->izda = reemplazo->dcha;
 
             // Copiar las ramas del nodo a borrar al nodo de reemplazo
@@ -1157,10 +1160,10 @@ void siguienteNumDependientes(const colecInterdep<I, V> &c, int &num, bool &erro
  * @param[in, out] c Coleccion cuyo iterador se quiere avanzar.
  * @param[out] error Indica si se ha producido un error (no quedan elementos por visitar).
  *
- * Post: si existeSiguiente(c), el campo se recorre el arbol hasta el siguiente elemento en orden
+ * Post: si existeSiguiente(c), el iterador se recorre el arbol hasta el siguiente elemento según el orden
  *       de identificadores, quedando la pila `c.iterador` actualizada para que su cima apunte a
  *       dicho elemento. El resto de elementos en la pila describe el recorrido inverso hacia la 
- *       raiz del arbol. error=false. En caso contrario, error=true (operación parcial).
+ *       raiz del arbol. Si puede hacerlo, error=false. En caso contrario, error=true (operación parcial).
  */
 template <typename I, typename V>
 void avanzarIterador(colecInterdep<I, V> &c, bool &error)
