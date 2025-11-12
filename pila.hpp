@@ -50,7 +50,7 @@ void pop(pila<T> &p, bool &error);
  * @brief Obtiene el tamaño de la pila `p`.
  * @tparam T Tipo de los elementos de la pila.
  * @param[in] p Pila de la que se quiere obtener el tamaño.
- * @return Tamaño de la pila `p`.
+ * @returns Tamaño de la pila `p`.
  */
 template <typename T>
 int tamanyo(const pila<T> &p);
@@ -155,7 +155,7 @@ void push(pila<T> &p, const T &e)
  * @param[out] error Indica si se ha producido un error (pila vacia).
  *
  * Post: si la pila `p` no esta vacia, se elimina el nodo que esta en la cima 
- *       de la pila y el campo `tam` de la pila `p` se ha decrementado en 1. 
+ *       de la misma y el campo `tam` de la pila `p` se decrementa en 1. 
  *       error=false. En caso contrario, error=true (operacion parcial).
  */
 template <typename T>
@@ -180,7 +180,9 @@ void pop(pila<T> &p, bool &error)
  * @brief Obtiene el tamaño de la pila `p`.
  * @tparam T Tipo de los elementos de la pila.
  * @param[in] p Pila de la que se quiere obtener el tamaño.
- * @return Tamaño de la pila `p`.
+ * @returns Tamaño de la pila `p`.
+ * 
+ * Post: devuelve el campo `tam` de la pila `p`.
  */
 template <typename T>
 int tamanyo(const pila<T> &p)

@@ -339,8 +339,8 @@ struct colecInterdep
 
        Para iterar el arbol externamente, se emplean las funciones de iterador definidas en la interfaz, que
          utilizan la pila de punteros a nodos `iterador` para almacenar el camino desde la raiz hasta la posicion en
-         la que se encuentra el iterador actualmente. El iterador realiza el recorrido en inroden. Si el arbol se modifica durante una
-         iteracion, el comportamiento de las funciones de iterador es indefinido. */
+         la que se encuentra el iterador actualmente. El iterador realiza el recorrido en orden ascendente.
+         Si el arbol se modifica durante una iteracion, el comportamiento de las funciones de iterador es indefinido. */
 
 private:
     /* Representacion de un nodo del arbol que implementa la coleccion.
@@ -394,9 +394,8 @@ private:
  * @tparam V Tipo de los elementos de la coleccion.
  * @param[out] c Coleccion a inicializar.
  *
- * Post: la coleccion `c` tiene asignados a sus campos los valores correspondientes a una coleccion vacia, es decir, el campo tam a 0
- *       y el campo raiz igual a nullptr.
- *      (El iterador queda indefinido hasta que se inicialice)
+ * Post: la coleccion `c` tiene asignados a sus campos los valores correspondientes a una coleccion vacia, es decir,
+ *       el campo `tam` a 0 y el campo `raiz` igual a `nullptr` (el iterador queda indefinido hasta que se inicialice).
  */
 template <typename I, typename V>
 void crear(colecInterdep<I, V> &c)
@@ -469,8 +468,8 @@ bool existe(const I &id, const colecInterdep<I, V> &c)
  * @param[in] c Coleccion en la que se quiere buscar el elemento dependiente con identificador `id`.
  * @returns `true` si existe un elemento dependiente con identificador `id` en la coleccion, `false` en caso contrario.
  *
- * Post: devuelve `true` si existe un nodo en la coleccion `c` cuyo campo `ident` es igual a `id` y cuyo campo `super` no es `nullptr`,
- *       `false` en caso contrario.
+ * Post: devuelve `true` si existe un nodo en la coleccion `c` cuyo campo `ident` es igual a `id` 
+ *       y cuyo campo `super` no es `nullptr`, `false` en caso contrario.
  */
 template <typename I, typename V>
 bool existeDependiente(const I &id, const colecInterdep<I, V> &c)
@@ -503,8 +502,8 @@ bool existeDependiente(const I &id, const colecInterdep<I, V> &c)
  * @param[in] c Coleccion en la que se quiere buscar el elemento independiente con identificador `id`.
  * @returns `true` si existe un elemento independiente con identificador `id` en la coleccion, `false` en caso contrario.
  *
- * Post: devuelve `true` si existe un nodo en la coleccion `c` cuyo campo `ident` es igual a `id` y cuyo campo `super` es `nullptr`,
- *       `false` en caso contrario.
+ * Post: devuelve `true` si existe un nodo en la coleccion `c` cuyo campo `ident` es igual a `id`
+ *       y cuyo campo `super` es `nullptr`, `false` en caso contrario.
  */
 template <typename I, typename V>
 bool existeIndependiente(const I &id, const colecInterdep<I, V> &c)
@@ -538,22 +537,23 @@ bool existeIndependiente(const I &id, const colecInterdep<I, V> &c)
  * @param[in] id Identificador del elemento dependiente que se quiere añadir a la coleccion.
  * @param[in] v Valor del elemento dependiente que se quiere añadir a la coleccion.
  *
- * Post: si no existe un elemento con identificador `id` en la coleccion `c`, se añade un nuevo nodo con los campos `ident` y `val`
- *       iguales a `id` y `v`, el campo `super` igual a `nullptr` y `numDepend` igual a 0. Este nodo se inserta como hoja en la posicion
- *       que corresponde para satisfacer la definicion de arbol binario de busqueda ordenado por identificadores.
- *       En caso contrario, no se añade nada.
+ * Post: si no existe un elemento con identificador `id` en la coleccion `c`, se añade un nuevo nodo con los 
+ *       campos `ident` y `val` iguales a `id` y `v`, el campo `super` igual a `nullptr` y `numDepend` igual a 0. 
+ *       Este nodo se inserta como hoja en la posicion que corresponde para satisfacer la definicion de arbol 
+ *       binario de busqueda ordenado por identificadores. En caso contrario, no se añade nada.
  */
 template <typename I, typename V>
 void anyadirIndependiente(colecInterdep<I, V> &c, const I &id, const V &v)
 {
-    // Buscamos `nodoActual`. Si no existe, se insertara como hijo de `nodoAnterior`
+    // En caso de existir, el nodo estaría en `nodoActual` al finalizar la busqueda
+    // Si no existe, se insertara el nuevo nodo en esa posicion, como hijo de `nodoAnterior`
     typename colecInterdep<I, V>::nodo *nodoActual = c.raiz;
     typename colecInterdep<I, V>::nodo *nodoAnterior = nullptr;
 
     // Realiza una busqueda binaria en el arbol para encontrar el nodo con identificador `id`
     while (nodoActual != nullptr && !(nodoActual->ident == id))
     {
-        // Guarda una referencia al nodo padre
+        // Actualiza la referencia al nodo padre
         nodoAnterior = nodoActual;
 
         // Navega por el arbol segun corresponda hacia la izquierda o derecha en
@@ -606,11 +606,13 @@ void anyadirIndependiente(colecInterdep<I, V> &c, const I &id, const V &v)
 template <typename I, typename V>
 void anyadirDependiente(colecInterdep<I, V> &c, const I &id, const V &v, const I &super)
 {
-    // A diferencia de `anyadirIndependiente()`, aqui no podemos un nodo a una coleccion vacia, ya que seguro que no existe el supervisor.
-    // Ademas, ya que un elemento no puede depender de si mismo, `id` y `super` deben ser distintos.
+    // A diferencia de `anyadirIndependiente()`, aqui no podemos un nodo a una coleccion vacia, ya que seguro que no existe 
+    // el supervisor. Ademas, ya que un elemento no puede depender de si mismo, `id` y `super` deben ser distintos.
     if (c.tam > 0 && !(id == super))
     {
-        // Se insertara como hijo de `nodoAnterior`, y con dependencia de `nodoSuper`
+        // En caso de existir, el nodo estaría en `nodoActual` al finalizar la busqueda
+        // Si no existe, se insertara el nuevo nodo en esa posicion, como hijo de `nodoAnterior`
+        // y con dependencia de `nodoSuper`
         typename colecInterdep<I, V>::nodo *nodoActual = c.raiz;
         typename colecInterdep<I, V>::nodo *nodoAnterior = nullptr;
         typename colecInterdep<I, V>::nodo *nodoSuper = c.raiz;
@@ -977,7 +979,7 @@ void borrar(const I &id, colecInterdep<I, V> &c)
             // Enlazar la rama izquierda del nodo padre del reemplazo con la rama derecha del reemplazo, como en el caso 2.
             reemplazoAnterior->izda = reemplazo->dcha;
 
-            // Copiar las ramas del nodo a borrar al nodo de reemplazo
+            // Copiar las referencias a las ramas del nodo a borrar al nodo de reemplazo
             reemplazo->izda = nodoActual->izda;
             reemplazo->dcha = nodoActual->dcha;
         }
@@ -1043,7 +1045,7 @@ void iniciarIterador(colecInterdep<I, V> &c)
  * @param[in] c Coleccion que se quiere comprobar.
  * @returns true si existe un siguiente elemento, false en caso contrario.
  *
- * Post: devuelve `true` si el tamaño de la pila es mayor estricto que 0.
+ * Post: devuelve `true` si el tamaño de la pila `c.iterador` es mayor estricto que 0.
  */
 template <typename I, typename V>
 bool existeSiguiente(const colecInterdep<I, V> &c)
@@ -1105,8 +1107,9 @@ void siguienteVal(const colecInterdep<I, V> &c, V &v, bool &error)
  * @param[out] dep Si el siguiente elemento a visitar es dependiente. true si es dependiente, false si es independiente.
  * @param[out] error Indica si se ha producido un error (no quedan elementos por visitar).
  *
- * Post: si existeSiguiente(c), se le asigna a `dep` el resultado de comprobar si el campo `super` del nodo apuntado por el puntero
- *       en la cima de `c.iterador` es distinto de `nullptr` y error=false. En caso contrario, `error=true` (operación parcial).
+ * Post: si existeSiguiente(c), se le asigna a `dep` el resultado de comprobar si el campo `super` del nodo apuntado 
+ *       por el puntero en la cima de `c.iterador` es distinto de `nullptr` y error=false. En caso contrario, 
+ *       error=true (operación parcial).
  */
 template <typename I, typename V>
 void siguienteDependiente(const colecInterdep<I, V> &c, bool &dep, bool &error)
@@ -1128,8 +1131,8 @@ void siguienteDependiente(const colecInterdep<I, V> &c, bool &dep, bool &error)
  * @param[out] sup Identificador del supervisor del siguiente elemento a visitar.
  * @param[out] error Indica si se ha producido un error (no quedan elementos por visitar o el elemento es independiente).
  *
- * Post: si siguienteDependiente(c), se le asigna a `sup` el campo ident del supervisor
- *       del nodo apuntado por el puntero en la cima de `c.iterador` y error=false. En caso contrario, error=true (operación parcial).
+ * Post: si siguienteDependiente(c), se le asigna a `sup` el campo ident del supervisor el nodo apuntado
+ *       por el puntero en la cima de `c.iterador` y error=false. En caso contrario, error=true (operación parcial).
  */
 template <typename I, typename V>
 void siguienteSuperior(const colecInterdep<I, V> &c, I &id, bool &error)
@@ -1176,7 +1179,7 @@ void siguienteNumDependientes(const colecInterdep<I, V> &c, int &num, bool &erro
  *
  * Post: si existeSiguiente(c), el iterador se recorre el arbol hasta el siguiente elemento según el orden
  *       de identificadores, quedando la pila `c.iterador` actualizada para que su cima apunte a
- *       dicho elemento. El resto de elementos en la pila describe el recorrido inverso hacia la 
+ *       dicho elemento. El resto de elementos en la pila describen el recorrido inverso hacia la 
  *       raiz del arbol. Si puede hacerlo, error=false. En caso contrario, error=true (operación parcial).
  */
 template <typename I, typename V>
@@ -1186,16 +1189,17 @@ void avanzarIterador(colecInterdep<I, V> &c, bool &error)
     if (!error)
     {
         // Desapila el ultimo elemento de la pila en `nodo`
+        // Si el nodo actual no tiene rama derecha, este sera el siguiente nodo a visitar
         typename colecInterdep<I, V>::nodo *nodo;
         cima(c.iterador, nodo, error);
         pop(c.iterador, error);
         
-        // Si se ha podido desapilar correctamente (habia al menos un elemento), navega hacia
-        // la rama derecha del nodo desapilado.
+        // Si se ha podido desapilar correctamente (habia al menos un elemento), 
+        // navega hacia la rama derecha del nodo desapilado
         if(!error)
         {
-            // Navega por la rama izquierda desde la rama derecha del nodo desapilado,
-            // apilando todos los nodos encontrados en el camino.
+            // Navega por la subrama izquierda desde la rama derecha del nodo desapilado,
+            // en busca del menor elemento de dicha subrama.
             nodo = nodo->dcha;
             while (nodo != nullptr)
             {
