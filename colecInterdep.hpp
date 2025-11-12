@@ -615,6 +615,13 @@ void anyadirDependiente(colecInterdep<I, V> &c, const I &id, const V &v, const I
         // Realiza una busqueda binaria en el arbol para encontrar el nodo con identificador `id`
         while (nodoActual != nullptr && !(nodoActual->ident == id))
         {
+            if (nodoActual->ident == super)
+            {
+                // Si de paso encuentra el supervisor, lo guarda para
+                // evitar buscarlo de nuevo despues
+                nodoSuper = nodoActual;
+            }
+
             // Guarda una referencia al nodo padre
             nodoAnterior = nodoActual;
 
@@ -632,7 +639,7 @@ void anyadirDependiente(colecInterdep<I, V> &c, const I &id, const V &v, const I
         }
 
         // Si ha encontrado el supervisor y el identificador no existe, añade el nuevo nodo
-        if (nodoActual == nullptr && nodoSuper != nullptr && nodoSuper->ident == super)
+        if (nodoActual == nullptr && nodoSuper != nullptr)
         {
             // Nuevo nodo a añadir (hoja, sin ramas izda ni dcha)
             typename colecInterdep<I, V>::nodo *nuevoNodo = new typename colecInterdep<I, V>::nodo;
@@ -683,6 +690,13 @@ void hacerDependiente(const colecInterdep<I, V> &c, const I &id, const I &super)
         // Realiza una busqueda binaria en el arbol para encontrar el nodo con identificador `id`
         while (dep != nullptr && !(dep->ident == id))
         {
+            // Si de paso encuentra el supervisor, lo guarda para
+            // evitar buscarlo de nuevo despues
+            if (dep->ident == super)
+            {
+                sup = dep;
+            }
+
             // Navega por el arbol segun corresponda hacia la izquierda o derecha
             // en busca del nodo con identificador `id`
             dep = (id < dep->ident) ? dep->izda : dep->dcha;
@@ -939,14 +953,14 @@ void borrar(const I &id, colecInterdep<I, V> &c)
         // con el padre del nodo a borrar
         else if (nodoActual->izda == nullptr || nodoActual->dcha == nullptr)
         {
-            // Se reemplazara por la rama nula
+            // Se reemplazara por la rama no nula (la unica que existe)
             reemplazo = (nodoActual->izda != nullptr) ? nodoActual->izda : nodoActual->dcha;
         }
 
         // Caso 3: el nodo a borrar tiene dos ramas. Se busca el nodo de menor valor en la subrama derecha.
         else
         {
-            // Se reemplazara el nodo a borrar por `reemplazo`, que es el de menor valor en la subrama derecha
+            // Se reemplazara el nodo a borrar por el de menor valor en la subrama derecha
             typename colecInterdep<I, V>::nodo *reemplazoAnterior = nodoActual;
             reemplazo = reemplazoAnterior->dcha;
 
