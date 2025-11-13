@@ -47,13 +47,13 @@ template <typename T>
 void pop(pila<T> &p, bool &error);
 
 /**
- * @brief Obtiene el tamaño de la pila `p`.
+ * @brief Obtiene si la pila `p` esta vacia.
  * @tparam T Tipo de los elementos de la pila.
- * @param[in] p Pila de la que se quiere obtener el tamaño.
- * @returns Tamaño de la pila `p`.
+ * @param[in] p Pila de la que se quiere obtener si esta vacia.
+ * @returns `true` si la pila `p` esta vacia, false en caso contrario.
  */
 template <typename T>
-int tamanyo(const pila<T> &p);
+bool esVacia(const pila<T> &p);
 
 /**
  * @brief Obtiene el elemento que esta en la cima de la pila `p` sin desapilarlo.
@@ -80,7 +80,7 @@ struct pila
     friend void crear<T>(pila<T> &p);
     friend void push<T>(pila<T> &p, const T &e);
     friend void pop<T>(pila<T> &p, bool &error);
-    friend int tamanyo<T>(const pila<T> &p);
+    friend bool esVacia<T>(const pila<T> &p);
     friend void cima<T>(const pila<T> &p, T &e, bool &error);
 
     /* El TAD pila se implementa como una lista enlazada,
@@ -177,17 +177,17 @@ void pop(pila<T> &p, bool &error)
 }
 
 /**
- * @brief Obtiene el tamaño de la pila `p`.
+ * @brief Obtiene si la pila `p` esta vacia.
  * @tparam T Tipo de los elementos de la pila.
- * @param[in] p Pila de la que se quiere obtener el tamaño.
- * @returns Tamaño de la pila `p`.
+ * @param[in] p Pila de la que se quiere obtener si esta vacia.
+ * @returns `true` si la pila `p` esta vacia, false en caso contrario.
  * 
- * Post: devuelve el campo `tam` de la pila `p`.
+ * Post: devuelve `true` si el campo `tam` de la pila `p` es 0, `false` en caso contrario.
  */
 template <typename T>
-int tamanyo(const pila<T> &p)
+bool esVacia(const pila<T> &p)
 {
-    return p.tam;
+    return p.tam == 0;
 }
 
 /**
