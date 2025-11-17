@@ -547,7 +547,7 @@ void anyadirIndependiente(colecInterdep<I, V> &c, const I &id, const V &v)
     }
 
     // Añadir al principio
-    if (nodoAnterior == nullptr)
+    if (nodoAnterior == nullptr && !(nodoActual != nullptr && nodoActual->ident == id))
     {
         typename colecInterdep<I, V>::nodo *nuevoNodo = new typename colecInterdep<I, V>::nodo;
         nuevoNodo->ident = id;
@@ -625,7 +625,7 @@ void anyadirDependiente(colecInterdep<I, V> &c, const I &id, const V &v, const I
         if (nodoSuper != nullptr)
         {
             // Añadir al principio
-            if (nodoAnterior == nullptr)
+            if (nodoAnterior == nullptr && !(nodoActual != nullptr && nodoActual->ident == id))
             {
                 typename colecInterdep<I, V>::nodo *nuevoNodo = new typename colecInterdep<I, V>::nodo;
                 nuevoNodo->ident = id;
