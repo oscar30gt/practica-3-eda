@@ -113,6 +113,7 @@ int main()
     }
 
     entrada.close();
+    salida.close();
     return 0;
 }
 
@@ -120,46 +121,40 @@ int main()
 // tipo (INDependiente/DEPendiente) e id del supervisor (si es dependiente))
 void A(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
 {
-    string id, desc, dep, sup;
+    string id, desc, sup;
     int prio, tamInicial = tamanyo(c);
 
     getline(i, id);
     getline(i, desc);
     i >> prio;
-    i.ignore(); // Ignorar el salto de línea después de leer prio
-    getline(i, dep);
+    i.ignore();      // Ignorar el salto de línea después de leer prio
+    getline(i, sup); // Usamos temporalmente `sup` para leer el tipo. Ya no lo necesitaremos después
+    bool esDependiente = sup == "DEPendiente";
     getline(i, sup);
 
     evento e;
     crearEvento(desc, prio, e);
 
-    if (dep == "INDependiente")
-    {
-        anyadirIndependiente(c, id, e);
-    }
-    else
+    if (esDependiente)
     {
         anyadirDependiente(c, id, e, sup);
     }
-
-    if (tamanyo(c) > tamInicial)
-    {
-        o << "INTRODUCIDO: [ " << id;
-        if (dep == "DEPendiente")
-        {
-            o << " -de-> " << sup;
-        }
-        o << " ] --- " << desc << " --- ( " << prio << " )" << endl;
-    }
     else
     {
-        o << "NO INTRODUCIDO: [ " << id;
-        if (dep == "DEPendiente")
-        {
-            o << " -de-> " << sup;
-        }
-        o << " ] --- " << desc << " --- ( " << prio << " )" << endl;
+        anyadirIndependiente(c, id, e);
     }
+
+    if (tamanyo(c) == tamInicial)
+    {
+        o << "NO ";
+    }
+
+    o << "INTRODUCIDO: [ " << id;
+    if (esDependiente)
+    {
+        o << " -de-> " << sup;
+    }
+    o << " ] --- " << desc << " --- ( " << prio << " )" << endl;
 }
 
 // C: Cambiar la información de un evento (3 argumentos: id del evento, nueva
@@ -187,6 +182,7 @@ void C(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
         cambiarDescripcion(e, desc);
         cambiarPrioridad(e, prio);
         actualizarVal(c, id, e, error);
+        // El elemento siempre existe (comprobado antes)
 
         int numDep;
         obtenerNumDependientes(id, c, numDep, error);
@@ -195,16 +191,17 @@ void C(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
         string sup;
         obtenerSupervisor(id, c, sup, error);
 
+        o << "CAMBIADO: [ " << id;
         if (error) // El elemento es independiente
         {
-            o << "CAMBIADO: [ " << id << " --- " << numDep << " ]"
-              << " --- " << desc << " --- ( " << prio << " )" << endl;
+            o << " --- ";
         }
         else // El elemento es dependiente
         {
-            o << "CAMBIADO: [ " << id << " -de-> " << sup << " ;;; " << numDep << " ]"
-              << " --- " << desc << " --- ( " << prio << " )" << endl;
+            o << " -de-> " << sup << " ;;; ";
         }
+        o << numDep << " ]"
+          << " --- " << desc << " --- ( " << prio << " )" << endl;
     }
 }
 
@@ -226,23 +223,23 @@ void O(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
     {
         int numDep;
         obtenerNumDependientes(id, c, numDep, error);
+        // El elemento siempre existe (comprobado antes)
 
         string sup;
         obtenerSupervisor(id, c, sup, error);
 
+        o << "LOCALIZADO: [ " << id;
         if (error) // El elemento es independiente
         {
-            o << "LOCALIZADO: [ " << id << " --- " << numDep << " ]"
-              << " --- " << descripcion(e) << " --- ( " << suPrioridad(e) << " )"
-              << endl;
+            o << " --- ";
         }
         else // El elemento es dependiente
         {
-            o << "LOCALIZADO: [ " << id << " -de-> " << sup << " ;;; " << numDep
-              << " ]"
-              << " --- " << descripcion(e) << " --- ( " << suPrioridad(e) << " )"
-              << endl;
+            o << " -de-> " << sup << " ;;; ";
         }
+        o << numDep << " ]"
+          << " --- " << descripcion(e) << " --- ( " << suPrioridad(e) << " )"
+          << endl;
     }
 }
 
@@ -370,33 +367,25 @@ void LD(colecInterdep<string, evento> &c, ifstream &i, ofstream &o)
 
         // ==== Lista de dependientes ====
         iniciarIterador(c);
-        int i = 1;
+        evento evDep;
+        string idDep;
+        int numDepDep, i = 1;
+
         while (existeSiguiente(c))
         {
-            bool dep;
-            siguienteDependiente(c, dep, error);
+            siguienteSuperior(c, sup, error);
             // Dado que existe siguiente, no hay error
 
-            if (dep) // Es dependiente
+            if (!error && sup == id) // Es dependiente de `id`
             {
-                string sup;
-                siguienteSuperior(c, sup, error);
-                // Dado que es dependiente, no hay error
+                siguienteVal(c, evDep, error);
+                siguienteIdent(c, idDep, error);
+                siguienteNumDependientes(c, numDepDep, error);
+                // Dado que existe siguiente, no hay errores
 
-                if (sup == id) // Es dependiente del evento buscado
-                {
-                    evento evDep;
-                    string idDep;
-                    int numDepDep;
-                    siguienteVal(c, evDep, error);
-                    siguienteIdent(c, idDep, error);
-                    siguienteNumDependientes(c, numDepDep, error);
-                    // Dado que existe siguiente, no hay errores
-
-                    o << "[" << i++ << " -> " << idDep << " -de-> " << id << " ;;; "
-                      << numDepDep << " ] --- " << descripcion(evDep) << " --- ( "
-                      << suPrioridad(evDep) << " ) ;;;;" << endl;
-                }
+                o << "[" << i++ << " -> " << idDep << " -de-> " << id << " ;;; "
+                  << numDepDep << " ] --- " << descripcion(evDep) << " --- ( "
+                  << suPrioridad(evDep) << " ) ;;;;" << endl;
             }
 
             avanzarIterador(c, error);
@@ -412,31 +401,31 @@ void LT(colecInterdep<string, evento> &c, ofstream &o)
 {
     o << "-----LISTADO: " << tamanyo(c) << endl;
     iniciarIterador(c);
+    bool error;
+    int numDep;
+    evento ev;
+    string id;
+
     while (existeSiguiente(c))
     {
-        bool error;
-        int numDep;
-        evento ev;
-        string id;
-
         siguienteVal(c, ev, error);
         siguienteIdent(c, id, error);
         siguienteNumDependientes(c, numDep, error);
         // Dado que existe siguiente, no hay errores
 
-        string sup;
-        siguienteSuperior(c, sup, error);
+        o << "[ " << id;
+        siguienteSuperior(c, id, error); // Reutilizamos `id` para obtener el supervisor
 
         if (error) // El elemento es independiente
         {
-            o << "[ " << id << " --- " << numDep << " ] --- " << descripcion(ev)
-              << " --- ( " << suPrioridad(ev) << " )" << endl;
+            o << " --- ";
         }
         else // El elemento es dependiente
         {
-            o << "[ " << id << " -de-> " << sup << " ;;; " << numDep << " ] --- "
-              << descripcion(ev) << " --- ( " << suPrioridad(ev) << " )" << endl;
+            o << " -de-> " << id << " ;;; ";
         }
+        o << numDep << " ]"
+          << " --- " << descripcion(ev) << " --- ( " << suPrioridad(ev) << " )" << endl;
 
         avanzarIterador(c, error);
         // if (error) break; -> no hay siguiente

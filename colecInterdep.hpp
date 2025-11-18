@@ -17,8 +17,8 @@ using namespace std;
 
 /**
  * @brief Representa una colección de elementos con dependencias entre ellos. Los elementos tienen la forma:
- *      - (ident, val, -, NumDepend) para elementos independientes.
- *      - (ident, val, identSup, NumDepend) para elementos dependientes.
+ *      - (i, V, -, NumDepend) para elementos independientes.
+ *      - (i, V, identSup, NumDepend) para elementos dependientes.
  *
  * @tparam I Tipo del identificador de los elementos de la coleccion. Debe tener definidos los operadores de comparacion `<` y `==`.
  * @tparam V Tipo de los elementos de la coleccion.
@@ -290,9 +290,20 @@ void avanzarIterador(colecInterdep<I, V> &c, bool &error);
 // DECLARACION DEL TAD GENERICO coleccionInterdep (inicio IMPLEMENTACION)
 
 /**
+ * @brief Libera la memoria ocupada por la coleccion.
+ * @tparam I Tipo del identificador de los elementos de la coleccion.
+ * @tparam V Tipo de los elementos de la coleccion.
+ * @param nodo Puntero al nodo raiz de la coleccion a liberar.
+ * 
+ * @note Esta funcion es auxiliar y NO forma parte de la interfaz del TAD.
+ */
+template <typename I, typename V>
+void liberar(const typename colecInterdep<I, V>::nodo *nodo);
+
+/**
  * @brief Representa una colección de elementos con dependencias entre ellos. Los elementos tienen la forma:
- *      - (ident, val, -, NumDepend) para elementos independientes.
- *      - (ident, val, identSup, NumDepend) para elementos dependientes.
+ *      - (i, V, -, NumDepend) para elementos independientes.
+ *      - (i, V, identSup, NumDepend) para elementos dependientes.
  *
  * @tparam I Tipo del identificador de los elementos de la coleccion. Debe tener definidos los operadores de comparacion `<` y `==`.
  * @tparam V Tipo de los elementos de la coleccion.
@@ -386,7 +397,30 @@ private:
 
     /** Pila de punteros a nodos que ha recorrido el iterador desde la raiz hasta su posicion actual. */
     pila<nodo *> iterador;
+
+    // Funcion auxiliar para liberar memoria de la coleccion en su inicializacion.
+    // NO forma parte de la interfaz del TAD
+    friend void liberar<I, V>(const nodo *nodo);
 };
+
+/**
+ * @brief Libera la memoria ocupada por la coleccion.
+ * @tparam I Tipo del identificador de los elementos de la coleccion.
+ * @tparam V Tipo de los elementos de la coleccion.
+ * @param nodo Puntero al nodo raiz de la coleccion a liberar.
+ * 
+ * @note Esta funcion es auxiliar y NO forma parte de la interfaz del TAD.
+ */
+template <typename I, typename V>
+void liberar(const typename colecInterdep<I, V>::nodo *nodo)
+{
+    if (nodo != nullptr)
+    {
+        liberar<I, V>(nodo->izda);
+        liberar<I, V>(nodo->dcha);
+        delete nodo;
+    }
+}
 
 /**
  * @brief Inicializa `c` como una coleccion vacia, sin elementos.
@@ -400,6 +434,7 @@ private:
 template <typename I, typename V>
 void crear(colecInterdep<I, V> &c)
 {
+    liberar<I, V>(c.raiz);
     c.tam = 0;
     c.raiz = nullptr;
 }
@@ -976,12 +1011,15 @@ void borrar(const I &id, colecInterdep<I, V> &c)
                 reemplazo = reemplazo->izda;
             }
 
-            // Enlazar la rama izquierda del nodo padre del reemplazo con la rama derecha del reemplazo, como en el caso 2.
-            reemplazoAnterior->izda = reemplazo->dcha;
-
-            // Copiar las referencias a las ramas del nodo a borrar al nodo de reemplazo
+            // Enlazar la rama izquierda del nodo de reemplazo con la izquierda del nodo a borrar
             reemplazo->izda = nodoActual->izda;
-            reemplazo->dcha = nodoActual->dcha;
+
+            // Si el nodo de reemplazo no es hijo directo, actualizar los enlaces correspondientes
+            if (nodoActual != reemplazoAnterior)
+            {
+                reemplazoAnterior->izda = reemplazo->dcha;
+                reemplazo->dcha = nodoActual->dcha;
+            }
         }
 
         // Conectar el nodo de reemplazo con el padre del nodo a borrar
