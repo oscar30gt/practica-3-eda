@@ -11,8 +11,6 @@
 
 #include "pila.hpp"
 
-using namespace std;
-
 // PREDECLARACION DEL TAD GENERICO colecInterdep (inicio INTERFAZ)
 
 /**
@@ -294,7 +292,7 @@ void avanzarIterador(colecInterdep<I, V> &c, bool &error);
  * @tparam I Tipo del identificador de los elementos de la coleccion.
  * @tparam V Tipo de los elementos de la coleccion.
  * @param nodo Puntero al nodo raiz de la coleccion a liberar.
- * 
+ *
  * @note Esta funcion es auxiliar y NO forma parte de la interfaz del TAD.
  */
 template <typename I, typename V>
@@ -408,7 +406,7 @@ private:
  * @tparam I Tipo del identificador de los elementos de la coleccion.
  * @tparam V Tipo de los elementos de la coleccion.
  * @param nodo Puntero al nodo raiz de la coleccion a liberar.
- * 
+ *
  * @note Esta funcion es auxiliar y NO forma parte de la interfaz del TAD.
  */
 template <typename I, typename V>
@@ -429,7 +427,8 @@ void liberar(const typename colecInterdep<I, V>::nodo *nodo)
  * @param[out] c Coleccion a inicializar.
  *
  * Post: la coleccion `c` tiene asignados a sus campos los valores correspondientes a una coleccion vacia, es decir,
- *       el campo `tam` a 0 y el campo `raiz` igual a `nullptr` (el iterador queda indefinido hasta que se inicialice).
+ *       el campo `tam` a 0 y el campo `raiz` igual a `nullptr`. Si `c` ya contenia elementos, se libera la memoria
+ *       ocupada por ellos antes de la inicializacion.
  */
 template <typename I, typename V>
 void crear(colecInterdep<I, V> &c)
@@ -580,8 +579,9 @@ bool existeIndependiente(const I &id, const colecInterdep<I, V> &c)
 template <typename I, typename V>
 void anyadirIndependiente(colecInterdep<I, V> &c, const I &id, const V &v)
 {
-    // En caso de existir, el nodo estaría en `nodoActual` al finalizar la busqueda
-    // Si no existe, se insertara el nuevo nodo en esa posicion, como hijo de `nodoAnterior`
+    // En caso de existir un elemento con identificador `id`, el nodo estaría en `nodoActual`
+    // al finalizar la busqueda. Si no existe, se insertara el nuevo nodo en esa posicion,
+    // como hijo de `nodoAnterior`
     typename colecInterdep<I, V>::nodo *nodoActual = c.raiz;
     typename colecInterdep<I, V>::nodo *nodoAnterior = nullptr;
 
@@ -605,7 +605,7 @@ void anyadirIndependiente(colecInterdep<I, V> &c, const I &id, const V &v)
         nuevoNodo->val = v;
 
         // Arbol vacio => añadir como raiz
-        if (c.tam++ == 0)
+        if (c.tam == 0)
         {
             c.raiz = nuevoNodo;
         }
@@ -619,6 +619,8 @@ void anyadirIndependiente(colecInterdep<I, V> &c, const I &id, const V &v)
         {
             nodoAnterior->dcha = nuevoNodo;
         }
+
+        c.tam++;
     }
 }
 
@@ -645,9 +647,9 @@ void anyadirDependiente(colecInterdep<I, V> &c, const I &id, const V &v, const I
     // el supervisor. Ademas, ya que un elemento no puede depender de si mismo, `id` y `super` deben ser distintos.
     if (c.tam > 0 && !(id == super))
     {
-        // En caso de existir, el nodo estaría en `nodoActual` al finalizar la busqueda
-        // Si no existe, se insertara el nuevo nodo en esa posicion, como hijo de `nodoAnterior`
-        // y con dependencia de `nodoSuper`
+        // En caso de existir un elemento con identificador `id`, el nodo estaría en `nodoActual`
+        // al finalizar la busqueda. Si no existe, se insertara el nuevo nodo en esa posicion,
+        // como hijo de `nodoAnterior` y con dependencia de `nodoSuper`
         typename colecInterdep<I, V>::nodo *nodoActual = c.raiz;
         typename colecInterdep<I, V>::nodo *nodoAnterior = nullptr;
         typename colecInterdep<I, V>::nodo *nodoSuper = c.raiz;
@@ -687,7 +689,6 @@ void anyadirDependiente(colecInterdep<I, V> &c, const I &id, const V &v, const I
             nuevoNodo->val = v;
             nuevoNodo->super = nodoSuper;
             nodoSuper->numDepend++;
-            c.tam++;
 
             // Añadir en la rama izquierda o derecha segun corresponda
             if (id < nodoAnterior->ident)
@@ -698,6 +699,8 @@ void anyadirDependiente(colecInterdep<I, V> &c, const I &id, const V &v, const I
             {
                 nodoAnterior->dcha = nuevoNodo;
             }
+
+            c.tam++;
         }
     }
 }
@@ -1231,24 +1234,21 @@ void avanzarIterador(colecInterdep<I, V> &c, bool &error)
         // Si el nodo actual no tiene rama derecha, este sera el siguiente nodo a visitar
         typename colecInterdep<I, V>::nodo *nodo;
         cima(c.iterador, nodo, error);
-        pop(c.iterador, error);
+        // No hay error porque existeSiguiente(c)
 
-        // Si se ha podido desapilar correctamente (habia al menos un elemento),
-        // navega hacia la rama derecha del nodo desapilado
-        if (!error)
+        pop(c.iterador);
+
+        // Navega por la subrama izquierda desde la rama derecha del nodo desapilado,
+        // en busca del menor elemento de dicha subrama.
+        nodo = nodo->dcha;
+        while (nodo != nullptr)
         {
-            // Navega por la subrama izquierda desde la rama derecha del nodo desapilado,
-            // en busca del menor elemento de dicha subrama.
-            nodo = nodo->dcha;
-            while (nodo != nullptr)
-            {
-                push(c.iterador, nodo);
-                nodo = nodo->izda;
-            }
-
-            // Nota: se puede ver que el nodo desapilado no se vuelve a apilar. Cuando se haga el
-            // camino inverso, se saltara directamente al padre de este, evitando bucles.
+            push(c.iterador, nodo);
+            nodo = nodo->izda;
         }
+
+        // Nota: se puede ver que el nodo desapilado no se vuelve a apilar. Cuando se haga el
+        // camino inverso, se saltara directamente al padre de este, evitando bucles.
     }
 }
 

@@ -1,5 +1,5 @@
 /**
- * @file colecInterdep.hpp
+ * @file pila.hpp
  *
  * @authors
  * Hugo García Sánchez (930108)
@@ -8,8 +8,6 @@
 
 #ifndef PILA_HPP
 #define PILA_HPP
-
-using namespace std;
 
 // PREDECLARACION DEL TAD GENERICO pila (inicio INTERFAZ)
 
@@ -39,12 +37,12 @@ void push(pila<T> &p, const T &e);
 
 /**
  * @brief Desapila un elemento de la pila `p` si no esta vacia.
+ * En caso contrario, no realiza ningun cambio.
  * @tparam T Tipo de los elementos de la pila.
  * @param[in, out] p Pila a desapilar.
- * @param[out] error Indica si se ha producido un error (pila vacia).
  */
 template <typename T>
-void pop(pila<T> &p, bool &error);
+void pop(pila<T> &p);
 
 /**
  * @brief Obtiene si la pila `p` esta vacia.
@@ -79,7 +77,7 @@ struct pila
     /* Funciones amigas para permitir el acceso a los campos privados del TAD, asi como su modificacion. */
     friend void crear<T>(pila<T> &p);
     friend void push<T>(pila<T> &p, const T &e);
-    friend void pop<T>(pila<T> &p, bool &error);
+    friend void pop<T>(pila<T> &p);
     friend bool esVacia<T>(const pila<T> &p);
     friend void cima<T>(const pila<T> &p, T &e, bool &error);
 
@@ -118,9 +116,7 @@ void crear(pila<T> &p)
     // Libera la memoria de los nodos existentes
     while (p.tam > 0)
     {
-        T aux;
-        bool error;
-        pop(p, error);
+        pop(p);
     }
 
     p.cima = nullptr;
@@ -150,26 +146,24 @@ void push(pila<T> &p, const T &e)
 
 /**
  * @brief Desapila un elemento de la pila `p` si no esta vacia.
+ * En caso contrario, no realiza ningun cambio.
  * @tparam T Tipo de los elementos de la pila.
  * @param[in, out] p Pila a desapilar.
- * @param[out] error Indica si se ha producido un error (pila vacia).
  *
- * Post: si la pila `p` no esta vacia, se elimina el nodo que esta en la cima 
- *       de la misma y el campo `tam` de la pila `p` se decrementa en 1. 
- *       error=false. En caso contrario, error=true (operacion parcial).
+ * Post: si la pila `p` no esta vacia, se elimina el nodo (liberando memoria)
+ *       que esta en la cima de la misma y el campo `tam` de la pila `p` se
+ *       decrementa en 1. En caso contrario, no se realiza ningun cambio.
  */
 template <typename T>
-void pop(pila<T> &p, bool &error)
+void pop(pila<T> &p)
 {
-    error = p.tam == 0;
-
     // Si hay elementos en la pila, se desapila el elemento de la cima
-    if (!error)
+    if (p.tam > 0)
     {
         // Se actualizan los punteros de la lista enlazada
         typename pila<T>::nodo *aux = p.cima;
         p.cima = p.cima->sig;
-        
+
         // Libera la memoria del nodo desapilado
         delete aux;
         p.tam--;
@@ -181,7 +175,7 @@ void pop(pila<T> &p, bool &error)
  * @tparam T Tipo de los elementos de la pila.
  * @param[in] p Pila de la que se quiere obtener si esta vacia.
  * @returns `true` si la pila `p` esta vacia, false en caso contrario.
- * 
+ *
  * Post: devuelve `true` si el campo `tam` de la pila `p` es 0, `false` en caso contrario.
  */
 template <typename T>
