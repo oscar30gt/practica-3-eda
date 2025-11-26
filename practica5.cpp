@@ -40,7 +40,7 @@ void LD(colecInterdep<string, evento> &c, ifstream &i, ofstream &o);
 void LT(colecInterdep<string, evento> &c, ofstream &o);
 
 /**
- * @brief Programa principal de la práctica 4.
+ * @brief Programa principal de la práctica 5.
  *
  * Lee las instrucciones de un fichero de entrada y las ejecuta sobre una
  * colección de eventos `colecInterdep<string, evento>`. Escribe de forma
