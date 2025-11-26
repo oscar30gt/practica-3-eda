@@ -1,16 +1,16 @@
 /**
- * @file practica4.cpp
- * Practica 4 - Estructuras de Datos y Algoritmos
+ * @file practica5.cpp
+ * Practica 5 - Estructuras de Datos y Algoritmos
  * Grupo 422 - Curso 2025/2026
  *
  * @authors
  * Hugo García Sánchez (930108)
  * Óscar Grimal Torres (926897)
  *
- * Programa principal de la práctica 4.
+ * Programa principal de la práctica 5.
  *
  * Repositorio
- * https://github.com/oscar30gt/practica-3-eda (rama practica-4)
+ * https://github.com/oscar30gt/practica-3-eda (rama practica-5)
  */
 
 #include <iostream>
